@@ -1,0 +1,13 @@
+<!-- Logo decoration: the beacon above the wordmark. Colours are the tokens of src/index.css:
+     butter, coral-edge, coral, blue-ink, with a cotton outline like the letters. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 110" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#fffcf7" stroke-width="20">
+    <path d="M80 8v14M38 22l9 13M122 22l-9 13M12 52l15 6M148 52l-15 6"/>
+    <path d="M52 86V64a28 28 0 0 1 56 0v22Z" fill="#fffcf7"/>
+    <rect x="38" y="80" width="84" height="20" rx="10" fill="#fffcf7"/>
+  </g>
+  <path d="M80 8v14M38 22l9 13M122 22l-9 13M12 52l15 6M148 52l-15 6" stroke="#f7dc93" stroke-width="9"/>
+  <path d="M52 86V64a28 28 0 0 1 56 0v22Z" fill="#db857b"/>
+  <path d="M64 66a16 16 0 0 1 10-14" stroke="#f4aaa1" stroke-width="7"/>
+  <rect x="38" y="80" width="84" height="20" rx="10" fill="#3a5f94"/>
+</svg>

@@ -33,3 +33,11 @@ e2e/.results
 
 # Raw generated images (the compressed copies in src/assets/art are tracked)
 art/raw
+
+# Poster work in progress (not part of the app yet)
+poster/
+poster-kit/
+poster-kit.zip
+art/poster-manifest.json
+scripts/gen-poster-art.mjs
+scripts/poster-kit.mjs

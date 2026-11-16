@@ -1,0 +1,12 @@
+<!-- Logo decoration: the heartbeat line under the wordmark, blue under "Life" and coral
+     under "saver", with a mint cross badge in the middle. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 104" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#fffcf7" stroke-width="32">
+    <path d="M20 52h104l18-30 26 60 18-30h30"/>
+    <path d="M304 52h30l18-30 26 60 18-30h104"/>
+  </g>
+  <path d="M20 52h104l18-30 26 60 18-30h30" stroke="#7fa6d6" stroke-width="15"/>
+  <path d="M304 52h30l18-30 26 60 18-30h104" stroke="#db857b" stroke-width="15"/>
+  <circle cx="260" cy="52" r="40" fill="#7dbd9f" stroke="#fffcf7" stroke-width="12"/>
+  <path d="M260 33v38M241 52h38" stroke="#fffcf7" stroke-width="13"/>
+</svg>

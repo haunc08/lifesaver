@@ -41,7 +41,7 @@ Section 9 of the requirements and the earlier style reference image describe a s
 
 | Requirement says | How I will treat it |
 | --- | --- |
-| Logo: "Life" in blue, "saver" in red, 3D bubble lettering, dark-blue shadow, light rays | Same name and layout in the pastel blue and coral, set in type: solid letters, pale outline, dark-blue offset |
+| Logo: "Life" in blue, "saver" in red, 3D bubble lettering, dark-blue shadow, light rays | Same name and layout in the pastel blue and coral, set in type: solid letters, pale outline, dark-blue offset. The beacon and its rays, a cross at each side and the heartbeat line with a cross under the letters are redrawn from the original as flat SVGs with the same outline and offset; the crosses are mint. No light rays behind it |
 | Loading screen: light rays, round white clouds, hospital, ambulance, helicopter, running character | The town picture with clouds, hospital and ambulance. No helicopter, running character or light rays yet |
 | Environments: fresh colours, bright lighting, soft shadows | Pastel fills; soft shadows are fine now that blur is allowed |
 | Chibi characters with big heads and strong expressions | Kept |
@@ -63,7 +63,7 @@ You chose image generation through Kie on 2026-11-16, with the `seedream/5-5-tex
 | Close-ups | The spot being handled in a gesture mini-game: a forearm to bandage, a hand with a ring, a sting | Generated like a scene, one each, named `closeup-<level id>` |
 | Items | Objects the player drags, holds, rubs with or turns in a mini-game | Generated six to a sheet on a transparent background and cut apart, like the guide. The gas valve is one larger picture, because it is shown big and turned |
 | Interface | Cards, buttons, bars, pins, line icons | Built in code with the palette above |
-| Logo | "Lifesaver" wordmark | Still set in type in code; image models are unreliable at lettering |
+| Logo | "Lifesaver" wordmark and its decorations | Letters set in type in code, because image models are unreliable at lettering; the decorations are hand-written SVGs in `src/assets/logo/`, coloured with the palette's values |
 
 Every prompt ends with one shared style description (pastel palette, flat fills, no gradients, chibi people, no text in the picture), which is what keeps the set consistent. Pictures never contain writing, because image models garble Vietnamese text.
 
@@ -98,7 +98,7 @@ Every prompt ends with one shared style description (pastel palette, flat fills,
 ### What I need from you
 
 1. Your verdict on the generated art, and on the art-direction reading in section 1.
-2. The original logo and loading screen as files, if they exist.
+2. The original loading screen as a file, if it exists (the logo now follows the one on the project poster).
 3. The guide's real name and look (placeholder: "Bông", drawn as a cotton ball with a first-aid satchel).
 
 ## 3. Sound and music

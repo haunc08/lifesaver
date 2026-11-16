@@ -101,7 +101,7 @@ I write level and lesson text as drafts from general first-aid knowledge. I am n
 | M0 | Setup and walking skeleton | Project runs; all MVP screens exist with placeholder art; one level is playable through all six phases; progress saves; tests pass | Done |
 | M1 | Mini-game set and level feel | The four remaining mechanics exist; feedback has motion; each mechanic has guidance, tolerance and retry | Done |
 | M2 | All 12 levels as drafts | Every level is playable with placeholder art; an automated check enforces the content rules (for example exactly one right assessment answer, a mandatory safety step and call-for-help step) | Done; all content is unreviewed draft |
-| M3 | Art | A sample (player, guide with six expressions, one scene) is approved; then logo, loading screen, characters, scenes, map and icons replace all placeholders | Scenes, characters, town map and area pictures are in; the logo is still drawn in code. Waiting on your verdict |
+| M3 | Art | A sample (player, guide with six expressions, one scene) is approved; then logo, loading screen, characters, scenes, map and icons replace all placeholders | Scenes, characters, town map and area pictures are in; the logo follows the poster's, with its letters set in code. Waiting on your verdict |
 | M4 | Sound | Sound effects and music play; the two settings switches control them | Done; nobody has listened to the result yet (see status.md) |
 | M5 | Polish | Screen transitions, result animation, empty and locked states reviewed, works on small phones, loads fast on mobile data | Done in the browser test at 320 × 568 and 360 × 640; not yet tried on a real phone |
 | M6 | Review and playtest | Every lesson has a source, reviewer and date; a few people from the target group have played it; fixes are in | Needs a reviewer |
@@ -113,7 +113,7 @@ M0 to M5 and M8 were built on 2026-11-16. What remains is M6, which needs people
 ## 5. Questions for you
 
 1. **Medical reviewer.** Who will review the first-aid content, and which reference should lessons cite (for example Vietnam Red Cross or Ministry of Health material)?
-2. **Original logo and loading screen.** The requirements say all visuals must match them. Do these exist as image files? If so, please put them in the project; I have only the one style reference image.
+2. **Original loading screen.** The requirements say all visuals must match the original logo and loading screen. The logo now follows the one on the project poster; does the loading screen exist as an image file?
 3. **Art direction.** [art-and-audio.md](art-and-audio.md) explains how I read "pastel, simple, no gradients" against section 9 of the requirements. Please confirm that reading.
 4. **Guide character.** I used the placeholder name "Bông". What is the guide's real name and look?
 5. **Hosting.** Answered on 2026-11-16: GitHub Pages.

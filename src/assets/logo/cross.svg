@@ -1,0 +1,11 @@
+<!-- Logo decoration: a first-aid cross. Mint with a cotton outline, never a red cross. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <g fill="#fffcf7" stroke="#fffcf7" stroke-width="16" stroke-linejoin="round">
+    <rect x="30" y="12" width="20" height="56" rx="7"/>
+    <rect x="12" y="30" width="56" height="20" rx="7"/>
+  </g>
+  <g fill="#7dbd9f">
+    <rect x="30" y="12" width="20" height="56" rx="7"/>
+    <rect x="12" y="30" width="56" height="20" rx="7"/>
+  </g>
+</svg>

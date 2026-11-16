@@ -107,6 +107,11 @@ input {
   filter: drop-shadow(0 0.07em 0 var(--color-blue-ink));
 }
 
+/* The logo's decorations get the same dark-blue drop as its letters. */
+.bubble-art {
+  filter: drop-shadow(0 0.07em 0 var(--color-blue-ink));
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -1,6 +1,6 @@
 # Lifesaver — status
 
-Last updated: 2026-11-16, after the round that replaced the school's background sound and gave three levels a background sound of their own.
+Last updated: 2026-11-16, after the round that gave the loading screen the new logo.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: 
 
 ### Working now
 
-- First launch: loading screen (shown for at least 2.2 seconds, lengthened from 0.9 at the owner's request on 2026-11-16), three-slide town intro, character creation (name only), home.
+- First launch: loading screen with the logo (shown for at least 2.2 seconds, lengthened from 0.9 at the owner's request on 2026-11-16), three-slide town intro, character creation (name only), home.
 - Home is the town map: one marker per area, the player's name, level and XP bar above, the library and "play the next level" below. There is no separate map screen.
 - Locked areas and levels: tapping one explains how it opens and offers to open it at once. The choice is saved.
 - Twelve levels across five areas, each with all six phases, a progress bar, and hint and pause in every phase. The clock is shown only in the phases where it runs, and every round (assess, choose, each mini-game) has its own clock that starts afresh.
@@ -51,7 +51,7 @@ Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: 
 - The level-timeout path (letting the whole clock run out) has unit tests but no end-to-end test.
 - Music restarts with a short fade at the loop point; it is not seamless.
 - Side characters have no portraits; they appear only inside their scene.
-- The logo is still type set in code, not artwork. The loading screen has no helicopter or running character (requirements section 9).
+- The logo follows the original artwork from the owner's project poster: the "Lifesaver" letters are still set in type, and the beacon, the two crosses and the heartbeat line are redrawn as flat SVGs in the game's palette (`src/assets/logo/`). Its crosses are mint, not red. The loading screen still has no helicopter or running character (requirements section 9).
 - Kie's and the model's terms on ownership and commercial use of the generated pictures have not been read.
 
 ## Things a reviewer should look at first
@@ -70,7 +70,7 @@ Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: 
 1. Listen to the sound effects, the town tune and the eight recordings of places; say which to swap. Start with the four new ones: the three school levels and the park's first level.
 2. Verdict on the generated art and the pastel palette.
 3. Who reviews the medical content, and which reference lessons should cite.
-4. Original logo and loading screen files, if they exist.
+4. The original loading screen as a file, if it exists. The logo now follows the one on the project poster; say if it should differ.
 5. Guide character's name and look (placeholder: "Bông", a cotton ball with a first-aid satchel).
 6. Whether saving on one device only is acceptable for the MVP.
 
@@ -126,4 +126,5 @@ Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: 
 | 2026-11-16 | A locked level's button says only "Đang khoá"; the home screen's play button drops the area name; speech boxes get larger type and more padding | Owner. The larger type applies on screens at least 700 px high, because on shorter ones it pushed the main button off the screen |
 | 2026-11-16 | Remove "hold the cold pack" from the third school level | Owner agreed to my proposal: the step before it already places the cold pack, and the level had grown to three steps |
 | 2026-11-16 | Where an old mini-game repeats a new one in the same level, remove the old one | Owner. I checked all nine chained levels and found no such pair, so nothing was removed |
+| 2026-11-16 | The logo takes the decorations of the original artwork on the project poster (beacon, crosses, heartbeat line), redrawn flat in the palette; the letters stay set in type | Owner supplied the poster. I made the crosses mint instead of red, following the rule for first-aid symbols |
 | 2026-11-16 | Replace the school's background sound; a level may have a background sound of its own where that is reasonable, in any area | Owner, who approved four CC0 downloads from Freesound. I gave a level its own sound only where its place differs from the rest of its area: the school library and football pitch, and the park's first level (midday heat, cicadas). The dormitory, streets and food district keep one sound each |
