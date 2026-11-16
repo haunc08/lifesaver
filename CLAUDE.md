@@ -68,7 +68,7 @@ The level flow: `LevelScreen` runs `step(level, state, event)` from `levelMachin
 - **Game rules live in `src/game/` and are tested.** Change a rule there with its test, and update the rules table in `docs/plan.md`. Mini-game scoring constants live beside each mechanic in `src/minigames/`.
 - **Content rules are tested.** `src/content/levels.test.ts` runs over every level file; keep it passing rather than loosening it.
 - **Unsafe options never pass.** An unsafe choice is blocked and can never lead to a pass; a high score cannot make up for a safety mistake. Do not weaken this.
-- **Medical content is draft until reviewed.** You may write level and lesson text, but leave `source`, `reviewer` and `reviewedOn` as `null`; the game then labels the lesson as a draft. Never fill these in yourself.
+- **Medical content is draft until reviewed.** You may write level and lesson text, but leave `source`, `reviewer` and `reviewedOn` as `null`. Never fill these in yourself. The game no longer shows a "draft, not reviewed" line on such a lesson (the owner had it removed on 2026-11-16); do not add it back unasked. A reviewed lesson shows its source and reviewer.
 - **Scene safety and calling for help are mandatory steps** in every level's `choose` phase.
 - **Every phase needs a hint.** `LevelDef.hints` is typed to require all six.
 - **All player-facing text is Vietnamese.** Code, comments and docs are English.
@@ -98,7 +98,7 @@ The level flow: `LevelScreen` runs `step(level, state, event)` from `levelMachin
 - **Gestures follow the finger but not across the path.** `followPath` in `minigames/geometry.ts` walks the tool forward along the path; do not replace it with "nearest point", which lets a straight swipe finish a zigzag. Distances there are in units (percent of the picture's width), not pixels.
 - **A gesture stands for something simple.** Do not turn a complex technique (back blows, chest compressions, the recovery position) into one gesture; state the real-life version in `realityNote`.
 - **The phone call does not give the number.** Its instruction names the service; the content test rejects an instruction that contains the number. A wrong reply is explained and never ends the call.
-- **Background sound belongs to the place.** Each area plays its own recording (`ambience-<area>.mp3`) in its level list and levels; the town tune plays elsewhere. Do not add music inside areas.
+- **Background sound belongs to the place.** Each area's recording (`ambience-<area>.mp3`) plays only inside that area's levels; every menu, including an area's level list, keeps the town tune (owner, 2026-11-16). Do not add music inside levels.
 - **Sound** comes only from CC0 or public-domain files, mapped in `scripts/import-audio.mjs`. Play effects with `sfx(name)` from `@/audio`. Buttons get the tap sound automatically; wrap an area in `data-sfx="none"` when its buttons make their own sound.
 - **Scenes must stay visible.** Mark places on a scene with `Pin` (small, numbered) and put names in a list under the scene, not label chips on the picture.
 - **No rhythm-based first-aid mini-games**, and a `hold` must state the real-life duration in `realityNote`.

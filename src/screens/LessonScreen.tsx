@@ -37,11 +37,12 @@ export function LessonScreen() {
       <Section title="Không nên làm" items={lesson.donts} tone="text-coral-ink" />
       <Section title="Khi nào cần gọi trợ giúp" items={lesson.callForHelp} tone="text-coral-ink" />
 
-      <p className="px-2 text-sm text-ink-soft">
-        {reviewed
-          ? `Nguồn: ${lesson.source}. Thẩm định: ${lesson.reviewer}, ${lesson.reviewedOn}.`
-          : 'Bản nháp: nội dung chưa được chuyên gia thẩm định.'}
-      </p>
+      {/* An unreviewed lesson carries no label (owner, 2026-11-16); a reviewed one names its source. */}
+      {reviewed && (
+        <p className="px-2 text-sm text-ink-soft">
+          Nguồn: {lesson.source}. Thẩm định: {lesson.reviewer}, {lesson.reviewedOn}.
+        </p>
+      )}
       <p className="px-2 text-sm text-ink-soft">
         Trò chơi giúp bạn làm quen với sơ cứu, không thay thế một khoá học sơ cứu thực hành.
       </p>

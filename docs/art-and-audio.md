@@ -105,7 +105,7 @@ Every prompt ends with one shared style description (pastel palette, flat fills,
 
 Sound effects, music and background recordings come from public sources under CC0 or as public-domain works, as you asked; nothing was composed or synthesised. You approved the first four downloads and then the five area recordings on 2026-11-16. Every file is listed in [credits.md](credits.md).
 
-Each area has its own background sound, which plays in that area's level list and in its levels (your instruction: a sound that fits the place is better than more music). The town tune plays everywhere else. The piano track that used to play inside levels is gone.
+Each area has its own background sound, which plays inside that area's levels (your instruction: a sound that fits the place is better than more music). The town tune plays everywhere else, including on an area's level list (your instruction of 2026-11-16: the level list keeps the music). The piano track that used to play inside levels is gone.
 
 I cannot listen to audio. I chose the files from their names, tags and descriptions, and from measurements (length, loudness, and whether the pitch rises or falls). Please listen to the game once and tell me which sounds to swap; swapping one is a one-line change.
 
@@ -124,11 +124,11 @@ I cannot listen to audio. I chose the files from their names, tags and descripti
 | pass | Result screen, level passed | Kenney Music Jingles, `jingles_PIZZA02` (rising, plucked strings) |
 | fail | Result screen, level not passed | Kenney Music Jingles, `jingles_PIZZA01` (falling, plucked strings) |
 | Town music | Every screen outside the areas | "Cozy Puzzle Title" by MintoDog, 61 seconds |
-| School | The school's level list and levels | "Ambient Classroom-Mono" by rcrossley: a classroom with very few distinct words, by its description |
-| Dormitory | The dormitory's level list and levels | "Sound Atmosphere in a House" by Joseph Sardin: quiet room tone |
-| Streets | The streets' level list and levels | "Street and Roads" by Joseph Sardin: traffic at a crossroads |
-| Food district | The food district's level list and levels | "Restaurant #3" by Joseph Sardin and Axeline T.: about 40 people at brunch |
-| Park | The park's level list and levels | "Birds in the City #1" by Joseph Sardin: garden birds |
+| School | The school's levels | "Ambient Classroom-Mono" by rcrossley: a classroom with very few distinct words, by its description |
+| Dormitory | The dormitory's levels | "Sound Atmosphere in a House" by Joseph Sardin: quiet room tone |
+| Streets | The streets' levels | "Street and Roads" by Joseph Sardin: traffic at a crossroads |
+| Food district | The food district's levels | "Restaurant #3" by Joseph Sardin and Axeline T.: about 40 people at brunch |
+| Park | The park's levels | "Birds in the City #1" by Joseph Sardin: garden birds |
 
 None of the five recordings was made in Vietnam: I found no CC0 or public-domain street or market recording from South-East Asia. The school one is a computer classroom and the restaurant is French, so voices may sound foreign if they are clear enough to make out. Listen for that.
 

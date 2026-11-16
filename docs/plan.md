@@ -92,7 +92,7 @@ Nine mini-game mechanics are built: tap the targets, scan the scene, hold, drag 
 
 ### Medical content
 
-I write level and lesson text as drafts from general first-aid knowledge. I am not a qualified reviewer, and the requirements say each lesson must name its source, reviewer and review date. Until a lesson has all three, the game labels it "Bản nháp: nội dung chưa được chuyên gia thẩm định". The MVP should not go to real players with draft lessons.
+I write level and lesson text as drafts from general first-aid knowledge. I am not a qualified reviewer, and the requirements say each lesson must name its source, reviewer and review date. Until 2026-11-16 the game labelled a lesson without all three "Bản nháp: nội dung chưa được chuyên gia thẩm định"; you had that line removed, so the game no longer tells a player that a lesson is unreviewed. The lessons are still drafts, and the MVP should not go to real players until they are reviewed.
 
 ## 4. Milestones
 
