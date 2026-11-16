@@ -3,13 +3,14 @@ import { useSave } from '@/state/save'
 
 /**
  * Sound effects and background sound. Files live in src/assets/audio as
- * `sfx-<name>.mp3`, `music-<name>.mp3` and `ambience-<area>.mp3`; a name with no
- * file is silently skipped, so the game runs the same with or without audio
- * files. Nothing plays before the player's first tap, which phone browsers
- * require.
+ * `sfx-<name>.mp3`, `music-<name>.mp3` and `ambience-<area or level id>.mp3`; a
+ * name with no file is silently skipped, so the game runs the same with or
+ * without audio files. Nothing plays before the player's first tap, which phone
+ * browsers require.
  *
- * One background sound plays at a time: the town tune outside the areas, and
- * inside an area the sound of that place (a classroom, a street, a park).
+ * One background sound plays at a time: the town tune in the menus, and inside
+ * a level the sound of its place. That is the level's own recording if it has
+ * one (the school library, the football pitch), otherwise its area's.
  */
 
 export type SfxName =
@@ -17,8 +18,9 @@ export type SfxName =
 
 export type MusicName = 'town'
 
-/** What plays in the background: a music track, or the sound of an area. */
-export type Background = { kind: 'music'; name: MusicName } | { kind: 'ambience'; area: AreaId }
+/** What plays in the background: a music track, or the sound of the place a level is set in. */
+export type Background =
+  { kind: 'music'; name: MusicName } | { kind: 'ambience'; area: AreaId; levelId?: string }
 
 const FILES = import.meta.glob<string>('../assets/audio/*.mp3', {
   eager: true,
@@ -85,8 +87,11 @@ export function sfx(name: SfxName) {
 function resolve(background: Background | null) {
   if (!background) return null
   if (background.kind === 'ambience') {
-    const src = url('ambience', background.area)
-    return src ? { name: `ambience-${background.area}`, src, volume: AMBIENCE_VOLUME } : null
+    // A level set somewhere unlike the rest of its area has its own recording.
+    const { area, levelId } = background
+    const place = levelId && url('ambience', levelId) ? levelId : area
+    const src = url('ambience', place)
+    return src ? { name: `ambience-${place}`, src, volume: AMBIENCE_VOLUME } : null
   }
   const src = url('music', background.name)
   return src ? { name: background.name, src, volume: MUSIC_VOLUME } : null

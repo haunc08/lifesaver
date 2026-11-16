@@ -1,6 +1,6 @@
 # Lifesaver — status
 
-Last updated: 2026-11-16, after the round that split choosing into two steps (pick, then order and confirm), added the ankle wrap to the third school level, and made three small interface changes.
+Last updated: 2026-11-16, after the round that replaced the school's background sound and gave three levels a background sound of their own.
 
 ## Where things stand
 
@@ -21,7 +21,7 @@ Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: 
 - Nine mini-game mechanics. From the MVP: tap the targets (with things that must not be done mixed in), scan for hazards (a hazard that was found turns mint with a tick, not red), hold (the held thing is pictured on the scene), drag and place (the item's picture follows the finger and lands in the nearest slot; tapping an item, then a slot, also works), quick decision. New: follow a path with a tool on a close-up picture (wrap a bandage, scrape a stinger off, slide a ring off slowly), rub a tool over marked places (wet towel, soap), turn a dial the right way (gas valve), and a phone call (dial 114 or 115 yourself, then answer the dispatcher). Nine levels chain two or three mechanics. The third school level now ends with wrapping the ankle in an elastic bandage, in place of holding the cold pack.
 - Result screen: the score counts up, stars land one by one, then score by component, XP reward, what was right and wrong with reasons, when to call for help, links to the lesson, replay and next level.
 - Knowledge library: one core lesson open from the start and one lesson per level played; none is reviewed yet. The lesson screen no longer says so: the owner had the "draft, not reviewed by an expert" line removed on 2026-11-16, so nothing in the game now tells a player the content is unreviewed.
-- Sound: ten effects, the town tune, and one background recording per area (classroom, quiet room, street, restaurant, garden birds) that plays inside the area's levels; menus, including an area's level list, keep the town tune. All CC0 or public domain. The two switches in Settings control them.
+- Sound: ten effects, the town tune, and one background recording per area (classroom, quiet room, street, restaurant, garden birds) that plays inside the area's levels; menus, including an area's level list, keep the town tune. Three levels set somewhere unlike the rest of their area have a recording of their own: the school library, the school football pitch, and the park's jogging track at midday (cicadas). The school's classroom recording is new: the first one was mostly a low drone. All CC0 or public domain. The two switches in Settings control them.
 - Settings: a switch for music and background sound, a switch for effects, and a reset of saved data.
 - Art: twelve level scenes, six close-ups for the gesture mini-games, the town, five area pictures, 26 item pictures, the call operator, the player and the guide with six expressions, all generated with Seedream 5.5 through Kie. Icons are line drawings in code, and every main button carries one.
 
@@ -38,15 +38,15 @@ Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: 
   - mistake paths: a failed quick-decision run, a card that runs out of time, an early release of a hold, a harmless spot in a scan;
   - the new mechanics, played with real pointer movement: each path is followed, each place rubbed, the valve turned, each call dialled and answered. Mistakes: a bandage dragged straight across the arm stays behind and can be picked up again; a ring pulled off fast is refused and comes off slowly; the valve turned the wrong way makes no progress; a wrong emergency number and an unhelpful reply are explained;
   - the home screen and a whole level at 320 × 568 and 360 × 640, with no sideways scrolling and the main buttons on screen; and at 320 × 568 the two levels that between them use every new mechanic (gas leak, sting), played to a pass;
-  - the sound engine: silent before the first tap, effects loaded and the town tune playing after it, the switch obeyed, the town tune on an area's level list, each area's own recording inside its levels, the town tune again outside.
+  - the sound engine: silent before the first tap, effects loaded and the town tune playing after it, the switch obeyed, the town tune on an area's level list, each area's own recording inside its levels, the three levels with a recording of their own, the town tune again outside.
 - A demo sheet for product documents, [demo/lifesaver-screens.jpg](demo/lifesaver-screens.jpg): 24 captioned screens in four rows (getting in, one level from story to ordering, mini-games, other mini-games with hint and result). It is written for the product team, so it does not call anything "new" or "demo"; the character in it is named Nhi (owner, 2026-11-16). `pnpm demo:sheet` retakes the screenshots and rebuilds it; it does not update by itself when the game changes.
 - Typecheck, lint and production build pass, and the build served from a sub-folder (as on GitHub Pages) loads, saves and survives a reload.
 - I looked at screenshots of the home screen (four sizes), pause and unlock dialogs, the level phases (including picking, ordering and both reviews, also at 320 × 568), the result and the mistake paths.
 
 ### Not done or not checked
 
-- **Nobody has listened to the sound.** I cannot hear audio; files were chosen by name, description and measurement. The owner should listen once and name any sound to swap. This matters most for the five area recordings: none was made in Vietnam, and the classroom and restaurant ones contain voices that may be clear enough to sound foreign.
-- Area recordings loop after one minute with a two-second dip, not seamlessly.
+- **Nobody has listened to the sound.** I cannot hear audio; files were chosen by name, description and measurement. The owner should listen once and name any sound to swap. This matters most for the eight recordings of places: none was made in Vietnam, and the restaurant and football ones contain voices that may be clear enough to sound foreign. Of the four added in the last round, the football pitch is the weakest fit (quiet, with a few groups of distant shouts and a faint aeroplane); art-and-audio.md, section 3, says what was measured on each and names two alternatives.
+- Recordings of places loop after one minute with a two-second dip, not seamlessly.
 - Not tried on a real phone. WebKit on a computer is close to Safari on iOS but not the same. Dragging (items, and the steps being put in order) and the new gestures are tested with a simulated mouse only: under a real finger the tolerances (how far from the path counts as leaving it, how fast is too fast for the ring, how far to rub) may need tuning, and the finger covers part of what it is doing.
 - The level-timeout path (letting the whole clock run out) has unit tests but no end-to-end test.
 - Music restarts with a short fade at the loop point; it is not seamless.
@@ -67,7 +67,7 @@ Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: 
 ## Waiting on the owner
 
 0. Optional: GitHub reports a billing lock on the account, which stops GitHub Actions. Automatic deploys on push are only possible once that is cleared in GitHub's billing settings.
-1. Listen to the sound effects, the town tune and the five area recordings; say which to swap.
+1. Listen to the sound effects, the town tune and the eight recordings of places; say which to swap. Start with the four new ones: the three school levels and the park's first level.
 2. Verdict on the generated art and the pastel palette.
 3. Who reviews the medical content, and which reference lessons should cite.
 4. Original logo and loading screen files, if they exist.
@@ -126,3 +126,4 @@ Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: 
 | 2026-11-16 | A locked level's button says only "Đang khoá"; the home screen's play button drops the area name; speech boxes get larger type and more padding | Owner. The larger type applies on screens at least 700 px high, because on shorter ones it pushed the main button off the screen |
 | 2026-11-16 | Remove "hold the cold pack" from the third school level | Owner agreed to my proposal: the step before it already places the cold pack, and the level had grown to three steps |
 | 2026-11-16 | Where an old mini-game repeats a new one in the same level, remove the old one | Owner. I checked all nine chained levels and found no such pair, so nothing was removed |
+| 2026-11-16 | Replace the school's background sound; a level may have a background sound of its own where that is reasonable, in any area | Owner, who approved four CC0 downloads from Freesound. I gave a level its own sound only where its place differs from the rest of its area: the school library and football pitch, and the park's first level (midday heat, cicadas). The dormitory, streets and food district keep one sound each |

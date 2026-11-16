@@ -50,7 +50,7 @@ src/
   ui/          Shared pieces: Button, Card, Dialog, UnlockDialog, Screen, Sticker, Stars,
                Logo, Icon, Pin, Guide, Player (and PlayerAvatar)
   assets/art/  Generated pictures (WebP), loaded by id through src/art.ts
-  assets/audio/  sfx-<name>.mp3, music-<name>.mp3 and ambience-<area>.mp3, made by
+  assets/audio/  sfx-<name>.mp3, music-<name>.mp3 and ambience-<area or level id>.mp3, made by
                scripts/import-audio.mjs
   app/         Router and the phone-sized shell
 art/           manifest.json (every picture's prompt), spend.json; raw/ is not in git
@@ -98,7 +98,7 @@ The level flow: `LevelScreen` runs `step(level, state, event)` from `levelMachin
 - **Gestures follow the finger but not across the path.** `followPath` in `minigames/geometry.ts` walks the tool forward along the path; do not replace it with "nearest point", which lets a straight swipe finish a zigzag. Distances there are in units (percent of the picture's width), not pixels.
 - **A gesture stands for something simple.** Do not turn a complex technique (back blows, chest compressions, the recovery position) into one gesture; state the real-life version in `realityNote`.
 - **The phone call does not give the number.** Its instruction names the service; the content test rejects an instruction that contains the number. A wrong reply is explained and never ends the call.
-- **Background sound belongs to the place.** Each area's recording (`ambience-<area>.mp3`) plays only inside that area's levels; every menu, including an area's level list, keeps the town tune (owner, 2026-11-16). Do not add music inside levels.
+- **Background sound belongs to the place.** Each area's recording (`ambience-<area>.mp3`) plays only inside that area's levels; every menu, including an area's level list, keeps the town tune (owner, 2026-11-16). A level set somewhere unlike the rest of its area has its own recording, `ambience-<level id>.mp3`, which replaces the area's in that level (the school library and football pitch, the park at midday); give a level one only when its place really sounds different. Do not add music inside levels.
 - **Sound** comes only from CC0 or public-domain files, mapped in `scripts/import-audio.mjs`. Play effects with `sfx(name)` from `@/audio`. Buttons get the tap sound automatically; wrap an area in `data-sfx="none"` when its buttons make their own sound.
 - **Scenes must stay visible.** Mark places on a scene with `Pin` (small, numbered) and put names in a list under the scene, not label chips on the picture.
 - **No rhythm-based first-aid mini-games**, and a `hold` must state the real-life duration in `realityNote`.
@@ -137,7 +137,7 @@ Small objects are generated six to a sheet (`items-1` … in the manifest, style
 
 ## Sound
 
-Files are `src/assets/audio/sfx-<name>.mp3`, `music-<name>.mp3` and `ambience-<area id>.mp3`; names are the `SfxName` and `MusicName` types in `src/audio/index.ts` and the area ids. `setBackground` in `src/audio` chooses what plays behind a screen; `AppShell` calls it from the route. To swap a sound, change its line in the tables at the top of `scripts/import-audio.mjs` and run the script on a folder holding the downloads, naming the group to convert (`sfx`, `music` or `ambience`; layout in the script's header; sources in `docs/credits.md`). Downloading a new file needs the owner's permission first, with its name, source and size. Update `docs/credits.md` and the table in `docs/art-and-audio.md` section 3 in the same change. No agent can hear the result: say so, and ask the owner to listen.
+Files are `src/assets/audio/sfx-<name>.mp3`, `music-<name>.mp3` and `ambience-<area id>.mp3` or `ambience-<level id>.mp3`; names are the `SfxName` and `MusicName` types in `src/audio/index.ts`, the area ids and the level ids. A level plays its own recording if that file exists, otherwise its area's. `setBackground` in `src/audio` chooses what plays behind a screen; `AppShell` calls it from the route. To swap a sound, change its line in the tables at the top of `scripts/import-audio.mjs` and run the script on a folder holding the downloads, naming the group to convert (`sfx`, `music` or `ambience`; layout in the script's header; sources in `docs/credits.md`). Downloading a new file needs the owner's permission first, with its name, source and size. Update `docs/credits.md` and the table in `docs/art-and-audio.md` section 3 in the same change. No agent can hear the result: say so, and ask the owner to listen.
 
 ## Deploying
 

@@ -103,9 +103,9 @@ Every prompt ends with one shared style description (pastel palette, flat fills,
 
 ## 3. Sound and music
 
-Sound effects, music and background recordings come from public sources under CC0 or as public-domain works, as you asked; nothing was composed or synthesised. You approved the first four downloads and then the five area recordings on 2026-11-16. Every file is listed in [credits.md](credits.md).
+Sound effects, music and background recordings come from public sources under CC0 or as public-domain works, as you asked; nothing was composed or synthesised. You approved the first four downloads, then the five area recordings, then four more recordings from Freesound (a new classroom, the library, the football pitch and cicadas), all on 2026-11-16. Every file is listed in [credits.md](credits.md).
 
-Each area has its own background sound, which plays inside that area's levels (your instruction: a sound that fits the place is better than more music). The town tune plays everywhere else, including on an area's level list (your instruction of 2026-11-16: the level list keeps the music). The piano track that used to play inside levels is gone.
+Each area has its own background sound, which plays inside that area's levels (your instruction: a sound that fits the place is better than more music). A level set somewhere unlike the rest of its area has a recording of its own (your instruction of 2026-11-16: a sound per level where that is reasonable). I went through all twelve levels and gave one to three of them: the school's library and football pitch, which do not sound like a classroom, and the park's first level, a jogging track in the midday heat, which now has cicadas. The other levels share their area's sound, because both dormitory levels are quiet rooms, both street levels are at the roadside, both food-district levels are small shops, and the other two park levels are on the grass under the trees. The town tune plays everywhere else, including on an area's level list (your instruction of 2026-11-16: the level list keeps the music). The piano track that used to play inside levels is gone.
 
 I cannot listen to audio. I chose the files from their names, tags and descriptions, and from measurements (length, loudness, and whether the pitch rises or falls). Please listen to the game once and tell me which sounds to swap; swapping one is a one-line change.
 
@@ -124,26 +124,40 @@ I cannot listen to audio. I chose the files from their names, tags and descripti
 | pass | Result screen, level passed | Kenney Music Jingles, `jingles_PIZZA02` (rising, plucked strings) |
 | fail | Result screen, level not passed | Kenney Music Jingles, `jingles_PIZZA01` (falling, plucked strings) |
 | Town music | Every screen outside the areas | "Cozy Puzzle Title" by MintoDog, 61 seconds |
-| School | The school's levels | "Ambient Classroom-Mono" by rcrossley: a classroom with very few distinct words, by its description |
+| School | The school's first level, in a classroom | "classroom_ambiance.wav" by joedeshon: students studying, papers shuffling, very muffled talk, an air conditioner, by its description |
+| School library | The school's second level | "Quiet library ambience" by xkeril: a dozen people reading, with pens, pages and chairs and no voices, by its description. The minute from 4:40 |
+| School football pitch | The school's third level | "Football training session Notodden FK" by LarsErikErtzgaardRingen: a training session heard from a distance. The minute from 3:05 |
 | Dormitory | The dormitory's levels | "Sound Atmosphere in a House" by Joseph Sardin: quiet room tone |
 | Streets | The streets' levels | "Street and Roads" by Joseph Sardin: traffic at a crossroads |
 | Food district | The food district's levels | "Restaurant #3" by Joseph Sardin and Axeline T.: about 40 people at brunch |
-| Park | The park's levels | "Birds in the City #1" by Joseph Sardin: garden birds |
+| Park | The park's second and third levels | "Birds in the City #1" by Joseph Sardin: garden birds |
+| Park at midday | The park's first level | "230904 Cicadas, hot summer day, wind trees, city, Toronto 4pm" by TRP: cicadas and light wind in trees. The minute from 3:20 |
 
-None of the five recordings was made in Vietnam: I found no CC0 or public-domain street or market recording from South-East Asia. The school one is a computer classroom and the restaurant is French, so voices may sound foreign if they are clear enough to make out. Listen for that.
+None of the recordings was made in Vietnam. The restaurant is French and the football training is Norwegian, so voices may sound foreign if they are clear enough to make out; the cicadas are North American and may not sound like the ones in a Vietnamese summer. Listen for that.
+
+The first school recording ("Ambient Classroom-Mono" by rcrossley, a computer classroom) was replaced on 2026-11-16 after you found it poor. Measured afterwards, its sound below 250 Hz was 18 dB louder than everything above: mostly a low drone. The new classroom recording has the two in balance.
+
+What I could and could not check on the four new recordings, from measurements and pictures of their frequency content:
+
+- Classroom and library: even from start to end, no loud event. Both originals are very quiet (about -43 and -47 LUFS), so they are turned up by about 20 dB and their room noise comes up with them.
+- Football pitch: the weakest fit. Most of the recording is near silence under strong wind rumble, with shouting only in its fourth and fifth minute. The cut has three groups of shouts and avoids the loudest burst, but a steady tone near 250 Hz, which I take to be the aeroplane its tags mention, is present in its first half, and the level swings by about 10 dB between the quiet and the shouts. If it sounds wrong, ["Spanish school children play soccer in recess"](https://freesound.org/people/nomadas/sounds/676850/) and ["Kids playing football from distance and trees rustling"](https://freesound.org/people/vhio/sounds/788479/) are CC0 alternatives I have not downloaded.
+- Cicadas: the calls come in waves of ten to fifteen seconds between 5 and 10 kHz. I took the steadiest minute, not the loudest calls, since a phone speaker makes that range sharp.
 
 ### How it works
 
-- The downloads are converted by `node scripts/import-audio.mjs <folder>` into small MP3 files in `src/assets/audio/` (3.1 MB in total: the town tune, five area recordings of about 0.5 MB each, and the effects). The tables at the top of that script map each game sound to its source file. The original downloads are not in git.
+- The downloads are converted by `node scripts/import-audio.mjs <folder>` into small MP3 files in `src/assets/audio/` (4.5 MB in total: the town tune, eight recordings of places of about 0.5 MB each, and the effects). The tables at the top of that script map each game sound to its source file. The original downloads are not in git. A recording that is not in the folder is left as it is, so one place can be swapped without the other downloads.
 - Effects are brought to the same peak level; music is levelled and given a short fade at its start and end, because an MP3 cannot loop without a tiny gap.
-- Each area recording is cut to one minute (skipping its first three seconds), brought to about the same loudness as the others, faded at both ends and saved in mono. It loops with a two-second dip, not seamlessly.
+- Each recording of a place is cut to one minute (skipping its first three seconds, or starting at the second given as `from` in the script's table), brought to about the same loudness as the others, faded at both ends and saved in mono. It loops with a two-second dip, not seamlessly.
+- The four recordings added on 2026-11-16 also have everything below 180 Hz removed (`highpass` in the table): wind on the microphone and ventilation fans, which a phone speaker cannot play and which is a drone in headphones. The four older recordings were converted without this and have not been converted again.
+- A level plays `ambience-<level id>.mp3` if that file exists, otherwise `ambience-<area id>.mp3`.
 - The code is in `src/audio/`. A sound with no file is skipped, so removing a file never breaks the game.
 - Sound starts only after the player's first tap, which phone browsers require.
 - The two switches in Settings control playback: one for music and background sound, one for effects. Background sound stops while the game is in the background.
 
 ### Rules
 
-- Inside an area the background is the sound of the place, not music; the playful tune is for the town only.
+- Inside a level the background is the sound of the place, not music; the playful tune is for the menus.
+- A level gets a recording of its own only when its place sounds unlike the rest of its area.
 - No mini-game is timed to the music, so the music cannot teach a wrong first-aid rhythm.
 - Only CC0 or an equally permissive licence, checked on the source page at download time.
 
@@ -165,4 +179,5 @@ The credits were already on the Kie account you provided; I have not bought anyt
 - [Kenney Interface Sounds](https://kenney.nl/assets/interface-sounds) and [Music Jingles](https://kenney.nl/assets/music-jingles), downloaded from Kenney's uploads on OpenGameArt; each zip carries a CC0 licence file
 - [Cozy Puzzle Title](https://opengameart.org/content/cozy-puzzle-title) on OpenGameArt, listed as CC0 on 2026-11-16
 - [Bigsoundbank licences](https://bigsoundbank.com/licenses.html): every sound there is CC0, and each sound page repeats it under "License"
-- [Ambient classroom mono](https://commons.wikimedia.org/wiki/File:Ambient_classroom_mono.ogg) on Wikimedia Commons, released into the public domain by its author
+- [Ambient classroom mono](https://commons.wikimedia.org/wiki/File:Ambient_classroom_mono.ogg) on Wikimedia Commons, released into the public domain by its author (no longer in the game)
+- Freesound pages of the four recordings added on 2026-11-16 ([classroom](https://freesound.org/people/joedeshon/sounds/258094/), [library](https://freesound.org/people/xkeril/sounds/620683/), [football](https://freesound.org/people/LarsErikErtzgaardRingen/sounds/533861/), [cicadas](https://freesound.org/people/TRP/sounds/717893/)): each links to the Creative Commons 0 licence. Downloading the original file needs a Freesound account, so I took the MP3 preview each page plays, which is the whole recording at a lower bit rate

@@ -9,10 +9,12 @@
 //   iface/Audio/*.ogg        Kenney "Interface Sounds", unzipped              (sfx)
 //   jingles/OGG/jingles_*/   Kenney "Music Jingles", unzipped                 (sfx)
 //   music-town.ogg           "Cozy Puzzle Title" by MintoDog                  (music)
-//   ambience/<area>.ogg      one recording per area, named by area id         (ambience)
-//                            (sources in docs/credits.md)
+//   ambience/<place>.*       one recording per place, named as in the         (ambience)
+//                            AMBIENCE table below (sources in docs/credits.md).
+//                            A recording that is not in the folder is left as
+//                            it is, so one place can be swapped by itself.
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, statSync } from 'node:fs'
+import { existsSync, mkdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
 const OUT = 'src/assets/audio'
@@ -33,13 +35,24 @@ const SFX = {
 
 const MUSIC = { town: 'music-town.ogg' }
 
-/** Area id -> recording of that kind of place. Change a line here to swap one. */
+/**
+ * Area id or level id -> recording of that kind of place. An area's recording
+ * plays in all of its levels, except a level that has an entry of its own.
+ * Change a line here to swap one. `from` is the second the one-minute cut
+ * starts at, for a long recording whose best minute is not its first.
+ * `highpass` removes everything below that many hertz: the drone of wind on
+ * the microphone or of a ventilation fan, which a phone speaker cannot play
+ * and which drowns the place itself in headphones.
+ */
 const AMBIENCE = {
-  school: 'ambience/school.ogg',
-  dormitory: 'ambience/dormitory.ogg',
-  streets: 'ambience/streets.ogg',
-  'food-district': 'ambience/food-district.ogg',
-  park: 'ambience/park.ogg',
+  school: { file: 'ambience/school.mp3', highpass: 180 }, // a classroom (school-01)
+  'school-02': { file: 'ambience/school-02.mp3', from: 280, highpass: 180 }, // the library
+  'school-03': { file: 'ambience/school-03.mp3', from: 185, highpass: 180 }, // the football pitch
+  dormitory: { file: 'ambience/dormitory.ogg' },
+  streets: { file: 'ambience/streets.ogg' },
+  'food-district': { file: 'ambience/food-district.ogg' },
+  park: { file: 'ambience/park.ogg' },
+  'park-01': { file: 'ambience/park-01.mp3', from: 200, highpass: 180 }, // the jogging track at midday: cicadas
 }
 
 /** Peak level every effect is brought to, so none is much louder than the rest. */
@@ -47,7 +60,7 @@ const SFX_PEAK_DB = -3
 /** A soft start and end, because an MP3 cannot loop without a tiny gap. */
 const MUSIC_FADE_IN_SEC = 0.4
 const MUSIC_FADE_OUT_SEC = 1.5
-/** A recording of a place is cut to this length, skipping its first seconds. */
+/** A recording of a place is cut to this length, skipping its first seconds unless `from` is set. */
 const AMBIENCE_SKIP_SEC = 3
 const AMBIENCE_LENGTH_SEC = 60
 const AMBIENCE_FADE_SEC = 2
@@ -106,14 +119,20 @@ for (const [name, path] of wanted('music') ? Object.entries(MUSIC) : []) {
   console.log(`${output}  ${statSync(output).size} bytes`)
 }
 
-for (const [area, path] of wanted('ambience') ? Object.entries(AMBIENCE) : []) {
-  const input = join(source, path)
-  const length = Math.min(AMBIENCE_LENGTH_SEC, duration(input) - AMBIENCE_SKIP_SEC)
-  const output = join(OUT, `ambience-${area}.mp3`)
+for (const [place, { file, from = AMBIENCE_SKIP_SEC, highpass }] of wanted('ambience') ? Object.entries(AMBIENCE) : []) {
+  const input = join(source, file)
+  if (!existsSync(input)) {
+    console.log(`ambience-${place}: ${file} is not in the folder, left as it is`)
+    continue
+  }
+  const length = Math.min(AMBIENCE_LENGTH_SEC, duration(input) - from)
+  const output = join(OUT, `ambience-${place}.mp3`)
+  // Two passes of the filter, for a steeper cut.
+  const rumbleCut = highpass ? `highpass=f=${highpass},highpass=f=${highpass},` : ''
   ffmpeg([
-    '-ss', String(AMBIENCE_SKIP_SEC), '-t', length.toFixed(2), '-i', input,
+    '-ss', String(from), '-t', length.toFixed(2), '-i', input,
     '-af',
-    `loudnorm=I=${AMBIENCE_LUFS}:TP=-3:LRA=11,afade=t=in:d=${AMBIENCE_FADE_SEC},afade=t=out:st=${(length - AMBIENCE_FADE_SEC).toFixed(2)}:d=${AMBIENCE_FADE_SEC}`,
+    `${rumbleCut}loudnorm=I=${AMBIENCE_LUFS}:TP=-3:LRA=11,afade=t=in:d=${AMBIENCE_FADE_SEC},afade=t=out:st=${(length - AMBIENCE_FADE_SEC).toFixed(2)}:d=${AMBIENCE_FADE_SEC}`,
     '-ac', '1', '-ar', '44100', '-b:a', '64k', output,
   ])
   console.log(`${output}  ${statSync(output).size} bytes`)

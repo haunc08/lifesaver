@@ -49,11 +49,22 @@ test('sound starts on the first tap, follows the screen and obeys the settings',
   await expect.poll(async () => (await status(page)).track).toBe('ambience-school')
   await expect.poll(async () => (await status(page)).musicPlaying).toBe(true)
 
-  // Each area has its own recording, and the town tune comes back outside.
-  for (const area of ['dormitory', 'streets', 'food-district', 'park']) {
-    await page.goto(`/level/${area}-01`)
+  // Each area has its own recording; a level set somewhere unlike the rest of its
+  // area (the library, the football pitch, the park at midday) has its own.
+  const places = {
+    'school-02': 'school-02',
+    'school-03': 'school-03',
+    'dormitory-01': 'dormitory',
+    'dormitory-02': 'dormitory',
+    'streets-01': 'streets',
+    'food-district-01': 'food-district',
+    'park-01': 'park-01',
+    'park-02': 'park',
+  }
+  for (const [level, place] of Object.entries(places)) {
+    await page.goto(`/level/${level}`)
     await page.getByRole('progressbar', { name: 'Tiến trình màn chơi' }).click()
-    await expect.poll(async () => (await status(page)).track).toBe(`ambience-${area}`)
+    await expect.poll(async () => (await status(page)).track).toBe(`ambience-${place}`)
     await expect.poll(async () => (await status(page)).musicPlaying).toBe(true)
   }
   await page.goto('/lobby')
