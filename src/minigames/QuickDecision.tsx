@@ -1,3 +1,4 @@
+import { sfx } from '@/audio'
 import { useEffect, useState } from 'react'
 import type { QuickDecisionConfig } from '@/game/types'
 import { Button } from '@/ui/Button'
@@ -23,6 +24,7 @@ export function QuickDecision({ config, paused, onDone }: MinigameProps<QuickDec
     if (answered) return
     const ok = choice === card.answer
     if (ok) setRight((n) => n + 1)
+    sfx(ok ? 'right' : 'wrong')
     setNote({
       tone: ok ? 'good' : 'bad',
       text: choice === null ? `Hết giờ! ${card.why}` : card.why,
@@ -72,7 +74,9 @@ export function QuickDecision({ config, paused, onDone }: MinigameProps<QuickDec
       <Note note={note} idle="Chọn nhanh trước khi thanh thời gian chạy hết." />
       <div className="flex-1" />
       {answered ? (
-        <Button onClick={next}>{last ? 'Hoàn thành' : 'Thẻ tiếp theo'}</Button>
+        <Button icon={last ? 'check' : 'next'} onClick={next}>
+          {last ? 'Hoàn thành' : 'Thẻ tiếp theo'}
+        </Button>
       ) : (
         <div className="grid grid-cols-2 gap-3">
           <Button variant="success" onClick={() => settle(0)}>

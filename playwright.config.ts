@@ -2,19 +2,26 @@ import { defineConfig } from '@playwright/test'
 
 const PORT = 5183
 
-/** End-to-end tests run in the installed Chrome at a phone-sized viewport. */
+/**
+ * End-to-end tests run at a phone-sized viewport, in the installed Chrome
+ * (`pnpm test:e2e`) and in WebKit, the engine behind Safari (`pnpm test:e2e:safari`,
+ * after `pnpm exec playwright install webkit`).
+ */
 export default defineConfig({
   testDir: 'e2e',
   outputDir: 'e2e/.results',
   reporter: 'list',
   use: {
     baseURL: `http://localhost:${PORT}`,
-    channel: 'chrome',
     viewport: { width: 390, height: 844 },
     hasTouch: true,
     isMobile: true,
     locale: 'vi-VN',
   },
+  projects: [
+    { name: 'chrome', use: { channel: 'chrome' } },
+    { name: 'safari', use: { browserName: 'webkit' } },
+  ],
   webServer: {
     command: `pnpm dev --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}`,

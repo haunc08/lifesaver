@@ -1,16 +1,16 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { AREAS } from '@/content/areas'
+import { duckMusic, sfx } from '@/audio'
 import { LEVEL_OUTLINE, LEVELS } from '@/content/levels'
 import type { LevelState } from '@/game/levelMachine'
-import { isLevelUnlocked, type Reward } from '@/game/progression'
+import type { Reward } from '@/game/progression'
 import { MAX_POINTS, type ScoreBreakdown, type ScoreResult } from '@/game/scoring'
 import type { LevelDef, Outcome } from '@/game/types'
-import { useSave } from '@/state/save'
+import { useUnlocks } from '@/state/unlocks'
 import { Button } from '@/ui/Button'
 import { Card } from '@/ui/Card'
 import { Guide } from '@/ui/Guide'
-import { Icon } from '@/ui/Icon'
-import { Stars } from '@/ui/Stars'
+import { Stars, STAR_STAGGER_MS } from '@/ui/Stars'
 
 const OUTCOME_TITLE: Record<Outcome, string> = {
   success: 'Tuyệt vời!',
@@ -71,6 +71,29 @@ function review(level: LevelDef, state: LevelState): ReviewItem[] {
   return items
 }
 
+/** The score counts up over this long, and the first star lands as it finishes. */
+const COUNT_UP_MS = 700
+
+/** Counts from 0 to `target`; jumps straight there when the player prefers less motion. */
+function useCountUp(target: number, ms: number): number {
+  const [value, setValue] = useState(() =>
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ? target : 0,
+  )
+  useEffect(() => {
+    if (value === target) return
+    const start = performance.now()
+    let frame = requestAnimationFrame(function tick(now) {
+      const share = Math.min(1, (now - start) / ms)
+      setValue(Math.round(target * share))
+      if (share < 1) frame = requestAnimationFrame(tick)
+    })
+    return () => cancelAnimationFrame(frame)
+    // Runs once per result; `value` is only read to skip the animation.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target, ms])
+  return value
+}
+
 interface Props {
   level: LevelDef
   state: LevelState
@@ -81,25 +104,34 @@ interface Props {
 
 export function ResultView({ level, state, result, reward, onReplay }: Props) {
   const navigate = useNavigate()
-  const records = useSave((s) => s.records)
+  const { levelOpen } = useUnlocks()
+  const shown = useCountUp(result.total, COUNT_UP_MS)
+
+  // The jingle, then one chime per star as it lands.
+  useEffect(() => {
+    sfx(result.passed ? 'pass' : 'fail')
+    duckMusic(1500)
+    const timers = Array.from({ length: result.stars }, (_, i) =>
+      setTimeout(() => sfx('star'), COUNT_UP_MS + i * STAR_STAGGER_MS),
+    )
+    return () => timers.forEach(clearTimeout)
+  }, [result.passed, result.stars])
 
   const index = LEVEL_OUTLINE.findIndex((l) => l.id === level.id)
   const following = LEVEL_OUTLINE[index + 1]
   const canGoNext =
-    following !== undefined &&
-    LEVELS[following.id] !== undefined &&
-    isLevelUnlocked(AREAS, LEVEL_OUTLINE, records, following.id)
+    following !== undefined && LEVELS[following.id] !== undefined && levelOpen(following.id)
 
   return (
     <div className="h-full space-y-3 overflow-y-auto px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]">
       <Card className="text-center">
-        <Guide mood={result.passed ? 'cheer' : 'worried'} className="mx-auto h-24" />
+        <Guide mood={result.passed ? 'cheer' : 'worried'} className="mx-auto h-24 animate-pop" />
         <h1 className="font-display text-3xl font-bold text-ink">
           {OUTCOME_TITLE[result.outcome]}
         </h1>
-        <Stars count={result.stars} className="text-5xl" />
+        <Stars count={result.stars} className="text-5xl" revealAfterMs={COUNT_UP_MS} />
         <p className="font-display text-4xl font-extrabold text-blue-ink">
-          {result.total}
+          {shown}
           <span className="text-xl text-ink-soft"> / 100</span>
         </p>
         <p className="mt-1 text-ink-soft">
@@ -153,26 +185,26 @@ export function ResultView({ level, state, result, reward, onReplay }: Props) {
       </Card>
 
       <div className="grid grid-cols-2 gap-3">
-        <Button
-          variant="plain"
-          className="flex items-center justify-center gap-2"
-          onClick={() => navigate(`/library/${level.lesson.id}`)}
-        >
-          <Icon name="book" /> Bài học
+        <Button variant="plain" icon="book" onClick={() => navigate(`/library/${level.lesson.id}`)}>
+          Bài học
         </Button>
-        <Button
-          variant="plain"
-          className="flex items-center justify-center gap-2"
-          onClick={onReplay}
-        >
-          <Icon name="replay" /> Chơi lại
+        <Button variant="plain" icon="replay" onClick={onReplay}>
+          Chơi lại
         </Button>
         {canGoNext ? (
-          <Button className="col-span-2" onClick={() => navigate(`/level/${following.id}`)}>
+          <Button
+            className="col-span-2"
+            icon="next"
+            onClick={() => navigate(`/level/${following.id}`)}
+          >
             Màn tiếp theo
           </Button>
         ) : (
-          <Button className="col-span-2" onClick={() => navigate(`/area/${level.areaId}`)}>
+          <Button
+            className="col-span-2"
+            icon="list"
+            onClick={() => navigate(`/area/${level.areaId}`)}
+          >
             Về danh sách màn
           </Button>
         )}

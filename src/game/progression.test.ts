@@ -66,6 +66,20 @@ describe('unlock rules', () => {
     expect(nextLevelId(areas, outline, both)).toBe('d1')
   })
 
+  it('lets an area or a level be opened by hand without clearing what comes before', () => {
+    // Opening an area opens its first level only.
+    expect(isAreaUnlocked(areas, outline, {}, 'dormitory', ['dormitory'])).toBe(true)
+    expect(isLevelUnlocked(areas, outline, {}, 'd1', ['dormitory'])).toBe(true)
+    expect(isLevelUnlocked(areas, outline, {}, 's2', ['dormitory'])).toBe(false)
+
+    // Opening a level opens that level, and it stays behind earlier ones in the play order.
+    expect(isLevelUnlocked(areas, outline, {}, 's2', ['s2'])).toBe(true)
+    expect(nextLevelId(areas, outline, {}, ['s2'])).toBe('s1')
+    expect(
+      nextLevelId(areas, outline, { s1: cleared, s2: cleared, d1: cleared }, ['d1']),
+    ).toBeNull()
+  })
+
   it('has no next level once everything is cleared', () => {
     expect(nextLevelId(areas, outline, { s1: cleared, s2: cleared, d1: cleared })).toBeNull()
   })

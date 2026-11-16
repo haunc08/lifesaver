@@ -1,30 +1,33 @@
+import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router'
+import { art } from '@/art'
 import { AREAS } from '@/content/areas'
 import { LEVEL_OUTLINE, LEVELS } from '@/content/levels'
-import { isAreaUnlocked, isLevelUnlocked } from '@/game/progression'
+import type { LevelOutline } from '@/game/types'
 import { useSave } from '@/state/save'
+import { useUnlocks } from '@/state/unlocks'
 import { Card } from '@/ui/Card'
+import { Icon } from '@/ui/Icon'
 import { Screen } from '@/ui/Screen'
 import { Stars } from '@/ui/Stars'
-import { Icon } from '@/ui/Icon'
 import { Sticker } from '@/ui/Sticker'
-import { art } from '@/art'
+import { UnlockDialog } from '@/ui/UnlockDialog'
 
 /** Level select within one area. */
 export function AreaScreen() {
   const navigate = useNavigate()
   const { areaId } = useParams()
-  const records = useSave((s) => s.records)
+  const openByHand = useSave((s) => s.openByHand)
+  const { records, areaOpen, levelOpen } = useUnlocks()
+  const [asking, setAsking] = useState<LevelOutline | null>(null)
   const area = AREAS.find((a) => a.id === areaId)
 
-  if (!area || !isAreaUnlocked(AREAS, LEVEL_OUTLINE, records, area.id)) {
-    return <Navigate to="/map" replace />
-  }
+  if (!area || !areaOpen(area.id)) return <Navigate to="/lobby" replace />
 
   const levels = LEVEL_OUTLINE.filter((l) => l.areaId === area.id)
 
   return (
-    <Screen title={area.name} back="/map" className="space-y-3">
+    <Screen title={area.name} back="/lobby" className="space-y-3">
       <img
         src={art(`area-${area.id}`)}
         alt=""
@@ -32,26 +35,22 @@ export function AreaScreen() {
       />
       {levels.map((level, index) => {
         const built = Boolean(LEVELS[level.id])
-        const unlocked = isLevelUnlocked(AREAS, LEVEL_OUTLINE, records, level.id)
+        const open = levelOpen(level.id)
         const record = records[level.id]
-        const status = !built
-          ? 'Sắp ra mắt'
-          : !unlocked
-            ? 'Hoàn thành màn trước để mở khoá'
-            : level.theme
+        const status = !built ? 'Sắp ra mắt' : !open ? 'Đang khoá · chạm để mở' : level.theme
         return (
           <button
             key={level.id}
             type="button"
-            disabled={!built || !unlocked}
-            onClick={() => navigate(`/level/${level.id}`)}
+            disabled={!built}
+            onClick={() => (open ? navigate(`/level/${level.id}`) : setAsking(level))}
             className="block w-full text-left transition-transform active:translate-y-0.5 disabled:opacity-60"
           >
-            <Card className="flex items-center gap-3">
+            <Card className={`flex items-center gap-3 ${built && !open ? 'bg-cotton/60' : ''}`}>
               <Sticker className="!size-14">
                 {!built ? (
                   <Icon name="soon" />
-                ) : !unlocked ? (
+                ) : !open ? (
                   <Icon name="lock" />
                 ) : art(level.id) ? (
                   <img src={art(level.id)} alt="" className="size-full object-cover" />
@@ -63,11 +62,23 @@ export function AreaScreen() {
                 <p className="font-display text-lg font-bold text-ink">{level.title}</p>
                 <p className="truncate text-sm text-ink-soft">{status}</p>
               </div>
-              {built && unlocked && <Stars count={record?.stars ?? 0} className="text-xl" />}
+              {built && open && <Stars count={record?.stars ?? 0} className="text-xl" />}
             </Card>
           </button>
         )
       })}
+
+      {asking && (
+        <UnlockDialog
+          name={asking.title}
+          rule="Màn này mở khi bạn qua màn trước nó."
+          onClose={() => setAsking(null)}
+          onUnlock={() => {
+            openByHand(asking.id)
+            setAsking(null)
+          }}
+        />
+      )}
     </Screen>
   )
 }

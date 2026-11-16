@@ -13,6 +13,7 @@
 
   --color-mist: #dde9f1;
   --color-mist-deep: #c0d3e2;
+  --color-mist-edge: #a3b9cf;
   --color-cotton: #fffcf7;
   --color-ink: #2f3e57;
   --color-ink-soft: #55637b;
@@ -30,6 +31,35 @@
   --color-butter-edge: #e2bb58;
 
   --animate-fill: fill 0.9s ease-out forwards;
+  --animate-screen-in: screen-in 0.22s ease-out both;
+  --animate-pop: pop 0.32s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+  --animate-shake: shake 0.36s ease-in-out both;
+
+  @keyframes screen-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+  }
+
+  @keyframes shake {
+    20% {
+      transform: translateX(-6px);
+    }
+    50% {
+      transform: translateX(5px);
+    }
+    80% {
+      transform: translateX(-3px);
+    }
+  }
 
   @keyframes fill {
     from {

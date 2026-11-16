@@ -1,3 +1,4 @@
+import { sfx } from '@/audio'
 import { useState } from 'react'
 import type { ScanConfig } from '@/game/types'
 import { SceneBox } from '@/screens/level/SceneBox'
@@ -24,6 +25,7 @@ export function Scan({ config, artId, scene, onDone }: MinigameProps<ScanConfig>
     const next = [...tapped, id]
     setTapped(next)
     setNote({ tone: spot.hazard ? 'good' : 'warn', text: spot.note })
+    sfx(spot.hazard ? 'hit' : 'wrong')
     const nowFound = hazards.filter((s) => next.includes(s.id)).length
     if (nowFound === hazards.length) {
       done({ completed: true, accuracy: accuracyOf(nowFound, next.length - nowFound) })

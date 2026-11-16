@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
+import { Icon } from './Icon'
 
 interface Props {
   title?: string
@@ -21,9 +22,9 @@ export function Screen({ title, back, children, className = '' }: Props) {
               type="button"
               aria-label="Quay lại"
               onClick={() => navigate(back)}
-              className="flex size-11 items-center justify-center rounded-2xl bg-cotton text-xl font-bold text-blue-ink shadow-[0_3px_0_var(--color-mist-deep)] active:translate-y-[3px] active:shadow-none"
+              className="flex size-11 items-center justify-center rounded-2xl bg-cotton text-blue-ink shadow-[0_3px_0_var(--color-mist-deep)] active:translate-y-[3px] active:shadow-none"
             >
-              ‹
+              <Icon name="back" />
             </button>
           )}
           {title && <h1 className="font-display text-2xl font-bold text-ink">{title}</h1>}

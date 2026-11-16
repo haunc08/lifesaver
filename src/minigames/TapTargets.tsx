@@ -1,3 +1,4 @@
+import { sfx } from '@/audio'
 import { useState } from 'react'
 import type { TapTargetsConfig } from '@/game/types'
 import { SceneBox } from '@/screens/level/SceneBox'
@@ -17,6 +18,7 @@ export function TapTargets({ config, artId, scene, onDone }: MinigameProps<TapTa
     if (hit.includes(id)) return
     const nextHit = [...hit, id]
     setHit(nextHit)
+    sfx('hit')
     if (nextHit.length === config.targets.length) {
       onDone({ completed: true, accuracy: accuracyOf(nextHit.length, misses) })
     }

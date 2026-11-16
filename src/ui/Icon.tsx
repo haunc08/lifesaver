@@ -46,6 +46,49 @@ const PATHS = {
       <path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M12 11v5M9.5 13.5h5" />
     </>
   ),
+  play: <path d="M8 5.5v13l10.5-6.5L8 5.5Z" />,
+  next: <path d="M5 12h14M13 6l6 6-6 6" />,
+  back: <path d="M14.5 5.5 8 12l6.5 6.5" strokeWidth="2.8" />,
+  exit: (
+    <>
+      <path d="M10 4.5H6.5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H10" />
+      <path d="M10 12h10M16 8l4 4-4 4" />
+    </>
+  ),
+  check: <path d="m5 12.5 4.5 4.5L19 7.5" strokeWidth="2.8" />,
+  close: <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" strokeWidth="2.8" />,
+  eye: (
+    <>
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+      <circle cx="12" cy="12" r="2.8" />
+    </>
+  ),
+  undo: (
+    <>
+      <path d="M8 8.5h7a4.5 4.5 0 0 1 0 9h-4" />
+      <path d="M11.5 5 8 8.5l3.5 3.5" />
+    </>
+  ),
+  skip: <path d="m5 6 6 6-6 6M13 6l6 6-6 6" />,
+  trash: (
+    <>
+      <path d="M4.5 7h15M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2" />
+      <path d="M6.5 7l.8 11a2 2 0 0 0 2 1.9h5.4a2 2 0 0 0 2-1.9L17.5 7" />
+    </>
+  ),
+  unlock: (
+    <>
+      <rect x="5" y="11" width="14" height="9" rx="2.5" />
+      <path d="M8 11V8a4 4 0 0 1 7.5-2" />
+    </>
+  ),
+  list: <path d="M9 7h11M9 12h11M9 17h11M4.5 7h.01M4.5 12h.01M4.5 17h.01" />,
+  star: (
+    <path
+      d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1.1 5.9L12 16.9l-5.3 2.8 1.1-5.9-4.3-4.1 5.9-.8L12 3.5Z"
+      fill="currentColor"
+    />
+  ),
   soon: (
     <>
       <circle cx="12" cy="12" r="8.5" />

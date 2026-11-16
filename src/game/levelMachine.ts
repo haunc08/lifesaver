@@ -79,8 +79,13 @@ export function initialState(): LevelState {
   }
 }
 
+/** Whether the clock counts in this phase at all; it stays hidden in the others. */
+export function isTimedPhase(phase: PhaseId): boolean {
+  return TIMED_PHASES.includes(phase)
+}
+
 export function isClockRunning(state: LevelState): boolean {
-  return !state.paused && TIMED_PHASES.includes(state.phase)
+  return !state.paused && isTimedPhase(state.phase)
 }
 
 function option(level: LevelDef, id: string): SolutionOption | undefined {

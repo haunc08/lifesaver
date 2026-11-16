@@ -28,15 +28,18 @@ function FeedbackBanner({ feedback }: { feedback: Feedback | null }) {
   if (!feedback) return null
   return (
     <p
+      // The key replays the motion each time the message changes.
+      key={feedback.text}
       role="status"
-      className={`rounded-2xl border-2 px-4 py-3 leading-snug ${TONE[feedback.tone]}`}
+      className={`rounded-2xl border-2 px-4 py-3 leading-snug ${feedback.tone === 'good' ? 'animate-pop' : 'animate-shake'} ${TONE[feedback.tone]}`}
     >
       {feedback.text}
     </p>
   )
 }
 
-export function IntroPhase({ level, dispatch, canSkip }: PhaseProps & { canSkip: boolean }) {
+/** The story lines, one at a time. There is no skip: every line is read, also on a replay. */
+export function IntroPhase({ level, dispatch }: PhaseProps) {
   const [index, setIndex] = useState(0)
   const line = level.intro[index]
   const last = index === level.intro.length - 1
@@ -56,16 +59,9 @@ export function IntroPhase({ level, dispatch, canSkip }: PhaseProps & { canSkip:
           </p>
         </div>
       </Card>
-      <div className="flex gap-3">
-        {canSkip && !last && (
-          <Button variant="plain" onClick={done}>
-            Bỏ qua
-          </Button>
-        )}
-        <Button className="flex-1" onClick={last ? done : () => setIndex(index + 1)}>
-          {last ? 'Quan sát hiện trường' : 'Tiếp tục'}
-        </Button>
-      </div>
+      <Button icon={last ? 'eye' : 'next'} onClick={last ? done : () => setIndex(index + 1)}>
+        {last ? 'Quan sát hiện trường' : 'Tiếp tục'}
+      </Button>
     </div>
   )
 }
@@ -93,6 +89,7 @@ export function ObservePhase({ level, state, dispatch }: PhaseProps) {
         scene={level.scene}
         focus={zoomed && open ? open : null}
         onClick={() => setZoomed(false)}
+        data-sfx="none"
       >
         {level.observe.clues.map((clue) => {
           const seen = state.cluesFound.includes(clue.id)
@@ -126,7 +123,11 @@ export function ObservePhase({ level, state, dispatch }: PhaseProps) {
           <p className="text-lg leading-snug">Chạm vào các dấu “?” để tìm manh mối.</p>
         )}
       </Card>
-      <Button disabled={found < required} onClick={() => dispatch({ type: 'observe-done' })}>
+      <Button
+        icon={found < required ? 'eye' : 'check'}
+        disabled={found < required}
+        onClick={() => dispatch({ type: 'observe-done' })}
+      >
         {found < required ? `Đã xem ${found}/${required} manh mối` : 'Mình đã rõ rồi'}
       </Button>
     </div>
@@ -140,7 +141,7 @@ export function AssessPhase({ level, state, dispatch }: PhaseProps) {
         {level.assess.question}
       </h2>
       <FeedbackBanner feedback={state.feedback} />
-      <div className="flex-1 space-y-3">
+      <div className="flex-1 space-y-4" data-sfx="none">
         {level.assess.options.map((o) => (
           <Button
             key={o.id}
@@ -172,7 +173,7 @@ export function ChoosePhase({ level, state, dispatch }: PhaseProps) {
               type="button"
               disabled={position > 0 || blocked}
               onClick={() => dispatch({ type: 'pick', id: o.id })}
-              className={`flex w-full items-center gap-3 rounded-2xl border-2 px-3 py-2.5 text-left leading-snug transition-transform active:translate-y-0.5 ${position > 0 ? 'border-blue-edge bg-blue/25' : blocked ? 'border-mist-deep bg-cotton/50 text-ink-soft line-through' : 'border-cotton bg-cotton'}`}
+              className={`flex w-full items-center gap-3 rounded-2xl border-2 px-3 py-2.5 text-left leading-snug transition-transform active:translate-y-0.5 ${position > 0 ? 'border-blue-edge bg-blue/25' : blocked ? 'border-mist-deep bg-cotton/50 text-ink-soft line-through' : 'border-mist-edge bg-cotton shadow-[0_3px_0_var(--color-mist-edge)]'}`}
             >
               <span
                 className={`flex size-8 shrink-0 items-center justify-center rounded-full font-display font-bold ${position > 0 ? 'bg-blue text-ink' : 'bg-mist text-ink-soft'}`}
@@ -187,6 +188,7 @@ export function ChoosePhase({ level, state, dispatch }: PhaseProps) {
       <div className="flex gap-3">
         <Button
           variant="plain"
+          icon="undo"
           disabled={state.picks.length === 0}
           onClick={() => dispatch({ type: 'undo-pick' })}
         >
@@ -195,6 +197,7 @@ export function ChoosePhase({ level, state, dispatch }: PhaseProps) {
         <Button
           className="flex-1"
           variant="success"
+          icon="check"
           disabled={state.picks.length === 0}
           onClick={() => dispatch({ type: 'confirm-solution' })}
         >
@@ -207,13 +210,16 @@ export function ChoosePhase({ level, state, dispatch }: PhaseProps) {
 
 export function ActPhase({ level, state, dispatch }: PhaseProps) {
   return (
-    <Minigame
-      config={level.act}
-      artId={level.id}
-      scene={level.scene}
-      paused={state.paused}
-      onDone={(result) => dispatch({ type: 'act-done', result })}
-    />
+    // Mini-games make their own sounds, so their buttons skip the general tap sound.
+    <div className="h-full" data-sfx="none">
+      <Minigame
+        config={level.act}
+        artId={level.id}
+        scene={level.scene}
+        paused={state.paused}
+        onDone={(result) => dispatch({ type: 'act-done', result })}
+      />
+    </div>
   )
 }
 
@@ -231,7 +237,9 @@ export function OutcomePhase({
         <Guide mood={result.passed ? 'relieved' : 'worried'} className="size-16 shrink-0" />
         <p className="min-w-0 flex-1 text-lg leading-snug">{level.outcomes[result.outcome]}</p>
       </Card>
-      <Button onClick={onContinue}>Xem kết quả</Button>
+      <Button icon="next" onClick={onContinue}>
+        Xem kết quả
+      </Button>
     </div>
   )
 }

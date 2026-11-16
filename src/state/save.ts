@@ -9,7 +9,7 @@ import type { ScoreResult } from '@/game/scoring'
  */
 
 const SAVE_KEY = 'lifesaver-save'
-const SAVE_VERSION = 1
+const SAVE_VERSION = 2
 
 export interface Settings {
   music: boolean
@@ -24,6 +24,8 @@ interface SaveData {
   records: Records
   /** Ids of lessons added to the library by playing, oldest first. */
   lessons: string[]
+  /** Ids of areas and levels opened by hand instead of by play. */
+  opened: string[]
   settings: Settings
 }
 
@@ -33,6 +35,8 @@ interface SaveActions {
   /** Store a finished run and return the reward it earned. */
   recordResult: (levelId: string, lessonId: string, result: ScoreResult) => Reward
   setSetting: (key: keyof Settings, value: boolean) => void
+  /** Open a locked area or level without clearing what comes before it. */
+  openByHand: (id: string) => void
   resetAll: () => void
 }
 
@@ -42,6 +46,7 @@ const EMPTY: SaveData = {
   xp: 0,
   records: {},
   lessons: [],
+  opened: [],
   settings: { music: true, sfx: true },
 }
 
@@ -62,8 +67,14 @@ export const useSave = create<SaveData & SaveActions>()(
         return reward
       },
       setSetting: (key, value) => set((s) => ({ settings: { ...s.settings, [key]: value } })),
+      openByHand: (id) => set((s) => (s.opened.includes(id) ? s : { opened: [...s.opened, id] })),
       resetAll: () => set(EMPTY),
     }),
-    { name: SAVE_KEY, version: SAVE_VERSION },
+    {
+      name: SAVE_KEY,
+      version: SAVE_VERSION,
+      // Version 2 added `opened`; older saves simply have nothing opened by hand.
+      migrate: (old) => ({ ...EMPTY, ...(old as Partial<SaveData>) }),
+    },
   ),
 )

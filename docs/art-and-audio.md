@@ -1,6 +1,6 @@
 # Lifesaver — art and audio plan
 
-Status: 2026-11-16. The art is generated and in the game; it needs your verdict. No sound yet. Money spent so far: 0.36 USD of Kie credits.
+Status: 2026-11-16. The art is generated and in the game; it needs your verdict. Sound effects and music are in the game; they need your ear, because I cannot listen to audio. Money spent so far: 0.36 USD of Kie credits.
 
 ## 1. Art direction
 
@@ -77,10 +77,10 @@ Every prompt ends with one shared style description (pastel palette, flat fills,
 | Picture | Count | Where it shows |
 | --- | --- | --- |
 | Level scenes | 12 | Every phase of a level, and the level list |
-| Town | 1 | Loading screen, town intro, lobby, world map |
+| Town | 1 | Loading screen, town intro, home screen (as the map) |
 | Area pictures | 5 | Top of each area's level list |
-| Player | 1 | Lobby, character creation, town intro |
-| Guide expressions | 6 | Dialogue, outcome, result, lobby, town intro |
+| Player | 1 | Character creation, town intro, and cropped to the face as the home screen's profile picture |
+| Guide expressions | 6 | Dialogue, outcome, result, home screen, town intro |
 
 ### Known limits
 
@@ -97,31 +97,40 @@ Every prompt ends with one shared style description (pastel palette, flat fills,
 
 ## 3. Sound and music
 
-Yes: I will take sound effects and music from public sources with licences that allow free use, and will not compose or synthesise them. Every file gets an entry in [credits.md](credits.md) with its source and licence.
+Sound effects and music come from public sources under the CC0 licence, as you asked; nothing was composed or synthesised. You approved the four downloads on 2026-11-16. Every file is listed in [credits.md](credits.md).
 
-### Sources
+I cannot listen to audio. I chose the files from their names, tags and descriptions, and from measurements (length, loudness, and whether the pitch rises or falls). Please listen to the game once and tell me which sounds to swap; swapping one is a one-line change.
 
-| Need | Source | Licence |
+### What is in the game
+
+| Sound | When it plays | Source file |
 | --- | --- | --- |
-| Interface and feedback sounds | Kenney: Interface Sounds, UI Audio, Digital Audio packs | CC0 (stated on each pack's page at kenney.nl) |
-| Specific effects not in those packs | Freesound, filtered to CC0 only | CC0 |
-| Background music loops | OpenGameArt, filtered to CC0; Pixabay Music as a second choice | CC0; Pixabay's own licence |
+| tap | Any button | Kenney Interface Sounds, `click_001` |
+| clue | A clue is opened | Kenney Interface Sounds, `pluck_002` |
+| right | Right assessment, plan accepted, hold finished, right quick-decision card | Kenney Interface Sounds, `confirmation_001` |
+| wrong | Wrong assessment, irrelevant option, wrong card, hold released early, harmless spot or wrong place in a mini-game | Kenney Interface Sounds, `error_003` |
+| warn | An unsafe option is blocked, or a wrong object is used in a mini-game | Kenney Interface Sounds, `question_002` |
+| hit | A mini-game target, hazard or item placed correctly | Kenney Interface Sounds, `drop_002` |
+| tick | Each of the last 10 seconds on the clock | Kenney Interface Sounds, `tick_002` |
+| star | Each star as it lands on the result screen | Kenney Interface Sounds, `confirmation_002` |
+| pass | Result screen, level passed | Kenney Music Jingles, `jingles_PIZZA02` (rising, plucked strings) |
+| fail | Result screen, level not passed | Kenney Music Jingles, `jingles_PIZZA01` (falling, plucked strings) |
+| Town music | Every screen outside a level | "Cozy Puzzle Title" by MintoDog, 61 seconds |
+| Level music | Inside a level | "Forget Me Not" (looped version) by Kistol, solo piano, 124 seconds |
 
-I will only use CC0 or an equally permissive licence, and will re-check the licence on the source page at download time.
+### How it works
 
-### Sounds the MVP needs
-
-| Type | List |
-| --- | --- |
-| Effects | Button tap, clue found, right answer, wrong answer, unsafe option blocked, mini-game target hit, clock running low, star awarded, level passed, level failed |
-| Music | One loop for the lobby and map, one calmer loop for levels, one short result jingle |
+- The downloads are converted by `node scripts/import-audio.mjs <folder>` into small MP3 files in `src/assets/audio/` (3 MB in total, of which the two music tracks are 2.2 MB). The table at the top of that script maps each game sound to its source file. The original downloads are not in git.
+- Effects are brought to the same peak level; music is levelled and given a short fade at its start and end, because an MP3 cannot loop without a tiny gap.
+- The code is in `src/audio/`. A sound with no file is skipped, so removing a file never breaks the game.
+- Sound starts only after the player's first tap, which phone browsers require.
+- The music and sound-effect switches in Settings control playback, and music stops while the game is in the background.
 
 ### Rules
 
-- Music stops being playful once someone in the scene is hurt; level music stays calm.
+- Music inside a level stays calm; the playful tune is for the town only.
 - No mini-game is timed to the music, so the music cannot teach a wrong first-aid rhythm.
-- Sound starts only after the player's first tap, which phone browsers require anyway.
-- The music and sound-effect switches in Settings already save their state; they will control playback once audio is added.
+- Only CC0 or an equally permissive licence, checked on the source page at download time.
 
 ## 4. Budget
 
@@ -130,12 +139,13 @@ Total allowed for outside costs: about 10 USD.
 | Item | Spent | Notes |
 | --- | --- | --- |
 | Image generation (Kie credits) | 0.36 USD | 20 pictures at 3.6 credits (0.018 USD) each. The account held 573.7 credits (about 2.87 USD) before and 501.7 after |
-| Fonts, sound, music | 0 | Free licences only |
-| Hosting on a free tier | 0 | Not set up yet |
+| Fonts, sound, music | 0 | Free licences only (CC0 sound, Open Font License fonts) |
+| Hosting on a free tier | 0 | GitHub Pages |
 
 The credits were already on the Kie account you provided; I have not bought anything. A custom domain name is not in this budget. I will ask before any purchase or paid sign-up.
 
 ## Sources checked
 
 - Kie model catalogue and price for `seedream/5-5-text-to-image`, read from the Kie API on 2026-11-16
-- [Kenney Interface Sounds](https://kenney.nl/assets/interface-sounds), [UI Audio](https://kenney.nl/assets/ui-audio), [Digital Audio](https://kenney.nl/assets/digital-audio)
+- [Kenney Interface Sounds](https://kenney.nl/assets/interface-sounds) and [Music Jingles](https://kenney.nl/assets/music-jingles), downloaded from Kenney's uploads on OpenGameArt; each zip carries a CC0 licence file
+- [Cozy Puzzle Title](https://opengameart.org/content/cozy-puzzle-title) and [Forget Me Not](https://opengameart.org/content/forget-me-not) on OpenGameArt, both listed as CC0 on 2026-11-16

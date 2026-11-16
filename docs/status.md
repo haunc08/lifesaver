@@ -1,42 +1,50 @@
 # Lifesaver — status
 
-Last updated: 2026-11-16, after building the mini-games, all twelve levels and the generated art.
+Last updated: 2026-11-16, after the home-screen rework, sound, polish and the first deployment.
 
 ## Where things stand
 
-Milestones M0 to M3 are built: the app runs, all twelve MVP levels are playable from start to finish with illustrated scenes, and progress is saved. There is no sound yet. All first-aid content is unreviewed draft. Milestones are defined in [plan.md](plan.md).
+Milestones M0 to M5 are built: all twelve MVP levels are playable from start to finish with illustrated scenes, sound and saved progress, and a demo build is published. What remains before a release to real players is M6, which needs people: a qualified reviewer for the first-aid content, and playtesters. All first-aid content is still unreviewed draft. Milestones are defined in [plan.md](plan.md).
 
-The code is on GitHub at https://github.com/haunc08/lifesaver (private).
+- Code: https://github.com/haunc08/lifesaver (public since 2026-11-16, because GitHub Pages on a free plan requires it).
+- Demo: https://haunc08.github.io/lifesaver/ — rebuilt and published by `.github/workflows/deploy.yml` on every push to `main`.
 
 ### Working now
 
-- First launch: loading screen (preloads fonts and character art), three-slide town intro (skippable), character creation (name only), lobby.
-- Lobby with player name, level, XP bar, play button pointing at the next level, links to map, library and settings.
-- World map: the town picture with one pin per area, locked until the area before it is cleared. Each area has a level list.
-- Twelve levels across five areas, each with all six phases, a clock, a progress bar, and hint and pause in every phase.
+- First launch: loading screen, three-slide town intro, character creation (name only), home.
+- Home is the town map: one marker per area, the player's name, level and XP bar above, the library and "play the next level" below. There is no separate map screen.
+- Locked areas and levels: tapping one explains how it opens and offers to open it at once. The choice is saved.
+- Twelve levels across five areas, each with all six phases, a progress bar, and hint and pause in every phase. The clock is shown only in the phases where it runs.
+- Nothing can be skipped: the town intro and each level's story are read line by line.
 - Five mini-game mechanics: tap the targets, scan for hazards, hold, drag and place (also works by tapping an item, then a place), quick decision. Four levels chain two mechanics.
-- Tapping a clue zooms the scene in on it.
-- Result screen: outcome, stars, score by component, XP reward, what was right and wrong with reasons, when to call for help, links to the lesson, replay and next level.
+- Result screen: the score counts up, stars land one by one, then score by component, XP reward, what was right and wrong with reasons, when to call for help, links to the lesson, replay and next level.
 - Knowledge library: one core lesson open from the start and one lesson per level played; all are labelled as unreviewed drafts.
-- Settings: music and sound-effect switches (saved, but nothing plays yet) and a reset of saved data.
-- Art: twelve level scenes, the town, five area pictures, the player and the guide with six expressions, all generated with Seedream 5.5 through Kie. Icons are line drawings in code; no emoji remain.
+- Sound: ten effects and two music tracks (town, level), all CC0. The two switches in Settings control them.
+- Settings: music and sound-effect switches, and a reset of saved data.
+- Art: twelve level scenes, the town, five area pictures, the player and the guide with six expressions, all generated with Seedream 5.5 through Kie. Icons are line drawings in code, and every main button carries one.
 
 ### Checked
 
-- 113 unit tests pass: scoring, the level state machine, progression, and the content rules applied to every level (one right assessment, mandatory safety and call-for-help steps, all four option kinds, valid mini-game, a flawless run earns three stars, lessons left unreviewed).
-- 15 end-to-end tests pass in Chrome at a 390 × 844 phone viewport: the first-launch playthrough with reload, the guard that blocks levels without a character, a correct playthrough of each of the twelve levels, and dragging plus refusing a decoy item.
-- Typecheck, lint and production build pass.
-- I looked at screenshots of the loading screen, intro, lobby, map, level phases, result and each mini-game type, and at every generated picture with its markers.
+- 114 unit tests pass: scoring, the level state machine, progression (including opening by hand), and the content rules applied to every level.
+- 23 end-to-end tests pass in Chrome and in WebKit (the engine behind Safari), at a 390 × 844 phone viewport unless stated:
+  - the first-launch playthrough with reload, and the guard that blocks levels without a character;
+  - opening a locked area and a locked level by hand;
+  - a correct playthrough of each of the twelve levels, and dragging plus refusing a decoy item;
+  - mistake paths: a failed quick-decision run, a card that runs out of time, an early release of a hold, a harmless spot in a scan;
+  - the home screen and a whole level at 320 × 568 and 360 × 640, with no sideways scrolling and the main buttons on screen;
+  - the sound engine: silent before the first tap, effects loaded and music playing after it, music switch obeyed, calmer track inside a level.
+- Typecheck, lint and production build pass, and the build served from a sub-folder (as on GitHub Pages) loads, saves and survives a reload.
+- I looked at screenshots of the home screen (four sizes), pause and unlock dialogs, the level phases, the result and the mistake paths.
 
 ### Not done or not checked
 
-- Not tried on a real phone, on Safari or on iOS. Touch dragging and press-and-hold are only tested with a simulated mouse in Chrome.
-- Wrong-answer paths inside the new mini-games (failing a quick-decision run, repeated early release of a hold) are not covered by end-to-end tests.
-- No sound.
-- No screen transitions or result animation; the only motion is the clue zoom and the loading bar.
+- **Nobody has listened to the sound.** I cannot hear audio; files were chosen by name, description and measurement. The owner should listen once and name any sound to swap.
+- Not tried on a real phone. WebKit on a computer is close to Safari on iOS but not the same, and touch dragging and press-and-hold are only tested with a simulated pointer.
+- The level-timeout path (letting the whole clock run out) has unit tests but no end-to-end test.
+- Music restarts with a short fade at the loop point; it is not seamless.
 - Side characters have no portraits; they appear only inside their scene.
-- The logo is still type set in code, not artwork.
-- Not deployed.
+- The logo is still type set in code, not artwork. The loading screen has no helicopter or running character (requirements section 9).
+- Kie's and the model's terms on ownership and commercial use of the generated pictures have not been read.
 
 ## Things a reviewer should look at first
 
@@ -47,21 +55,19 @@ The code is on GitHub at https://github.com/haunc08/lifesaver (private).
 
 ## Waiting on the owner
 
-These are listed with detail in [plan.md](plan.md) section 5 and [art-and-audio.md](art-and-audio.md).
-
-1. Verdict on the generated art and the pastel palette.
-2. Permission to download sound files (see next steps), since sound is the next milestone.
+1. Listen to the sound effects and both music tracks; say which to swap.
+2. Verdict on the generated art and the pastel palette.
 3. Who reviews the medical content, and which reference lessons should cite.
 4. Original logo and loading screen files, if they exist.
 5. Guide character's name and look (placeholder: "Bông", a cotton ball with a first-aid satchel).
 6. Whether saving on one device only is acceptable for the MVP.
-7. Hosting preference.
 
 ## Next steps, in order
 
-1. **M4 sound:** pick effects from the Kenney CC0 packs and one or two CC0 music loops, list file names, sources and sizes for the owner's approval, then wire them to the two settings switches.
-2. **M5 polish:** screen transitions, result animation, feedback motion, a check on small phones and on a real device, load size.
-3. **M6 review and playtest**, then **M7 release**.
+1. Act on the owner's feedback on sound and art.
+2. Try the demo on a real iPhone and a real Android phone; fix what shows up.
+3. **M6 review and playtest:** fill in source, reviewer and date for each lesson once a reviewer has signed off; fix what playtesters trip over.
+4. Then announce the release (M7); the hosting is already in place.
 
 ## Decisions log
 
@@ -74,6 +80,13 @@ These are listed with detail in [plan.md](plan.md) section 5 and [art-and-audio.
 | 2026-11-16 | Visual style: muted pastel colours, simple shapes, no gradients; blur is allowed | Owner |
 | 2026-11-16 | Agent skills installed in the project: `frontend-design` (Anthropic), `game-ui-ux` and `kie-models`. `design-taste-frontend` was tried and removed | Owner asked for design skills and named the Kie skill |
 | 2026-11-16 | Art is generated with `seedream/5-5-text-to-image` through Kie; the key is in `.env` | Owner |
-| 2026-11-16 | Code is pushed to the private GitHub repository `haunc08/lifesaver` | Owner |
 | 2026-11-16 | Mini-games mark places with small numbered pins plus a list under the scene, not label chips on the picture | Mine: chips hid the artwork on a phone screen |
 | 2026-11-16 | Only the guide and the player have separate character art; other characters live in their scene | Mine, to limit cost and style drift; open to change |
+| 2026-11-16 | The home screen is the map; no separate map screen | Owner |
+| 2026-11-16 | Buttons must be easy to tell apart when stacked, and carry an icon | Owner. Plain buttons got an outline; dialogs space their buttons further apart |
+| 2026-11-16 | The clock is hidden whenever it is not running | Owner |
+| 2026-11-16 | Locked areas and levels can be opened by hand, one at a time, for demos. No "unlock everything" in Settings | Owner |
+| 2026-11-16 | Nothing can be skipped (town intro, level story) | Owner |
+| 2026-11-16 | No looping or wiggling animation on the map's markers | Owner |
+| 2026-11-16 | Four CC0 sound downloads approved (two Kenney packs, two music tracks) | Owner |
+| 2026-11-16 | Hosting on GitHub Pages; the repository became public for it | Owner |

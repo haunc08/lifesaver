@@ -50,41 +50,57 @@ export function applyResult(
 const levelsIn = (outline: LevelOutline[], areaId: AreaId) =>
   outline.filter((l) => l.areaId === areaId)
 
-/** An area opens once every level of the area before it is cleared. */
+/**
+ * Ids of areas and levels the player opened by hand, without clearing what comes
+ * before them. Normal play never needs this; it exists so anyone can jump to any
+ * level, for example when showing the game to someone.
+ */
+export type Opened = readonly string[]
+
+/** An area opens once every level of the area before it is cleared, or when opened by hand. */
 export function isAreaUnlocked(
   areas: AreaDef[],
   outline: LevelOutline[],
   records: Records,
   areaId: AreaId,
+  opened: Opened = [],
 ): boolean {
   const index = areas.findIndex((a) => a.id === areaId)
   if (index <= 0) return index === 0
+  if (opened.includes(areaId)) return true
   return levelsIn(outline, areas[index - 1].id).every((l) => records[l.id]?.cleared)
 }
 
-/** A level opens once its area is open and the level before it is cleared. */
+/**
+ * A level opens once its area is open and the level before it is cleared.
+ * A level opened by hand is open whatever the state of its area.
+ */
 export function isLevelUnlocked(
   areas: AreaDef[],
   outline: LevelOutline[],
   records: Records,
   levelId: string,
+  opened: Opened = [],
 ): boolean {
   const level = outline.find((l) => l.id === levelId)
-  if (!level || !isAreaUnlocked(areas, outline, records, level.areaId)) return false
+  if (!level) return false
+  if (opened.includes(levelId)) return true
+  if (!isAreaUnlocked(areas, outline, records, level.areaId, opened)) return false
   const siblings = levelsIn(outline, level.areaId)
   const index = siblings.findIndex((l) => l.id === levelId)
   return index === 0 || Boolean(records[siblings[index - 1].id]?.cleared)
 }
 
-/** The level the lobby should point at: the first one that is open but not cleared. */
+/** The level the home screen should point at: the first one that is open but not cleared. */
 export function nextLevelId(
   areas: AreaDef[],
   outline: LevelOutline[],
   records: Records,
+  opened: Opened = [],
 ): string | null {
   const ordered = areas.flatMap((a) => levelsIn(outline, a.id))
   const next = ordered.find(
-    (l) => !records[l.id]?.cleared && isLevelUnlocked(areas, outline, records, l.id),
+    (l) => !records[l.id]?.cleared && isLevelUnlocked(areas, outline, records, l.id, opened),
   )
   return next?.id ?? null
 }

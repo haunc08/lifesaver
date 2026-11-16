@@ -26,7 +26,7 @@ const SLIDES: { text: string; mood: GuideMood; withPlayer: boolean }[] = [
   },
 ]
 
-/** Short town intro shown once, before character creation. Skippable. */
+/** Short town intro shown once, before character creation. It cannot be skipped. */
 export function TownIntroScreen() {
   const navigate = useNavigate()
   const markIntroSeen = useSave((s) => s.markIntroSeen)
@@ -41,11 +41,6 @@ export function TownIntroScreen() {
 
   return (
     <div className="flex h-full flex-col px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-      <div className="flex justify-end">
-        <button type="button" onClick={finish} className="px-2 py-2 font-bold text-blue-ink">
-          Bỏ qua
-        </button>
-      </div>
       <div className="flex flex-1 flex-col items-center justify-center gap-5">
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border-4 border-cotton shadow-[0_5px_0_var(--color-mist-deep)]">
           <img src={art('town')} alt="" className="absolute inset-0 size-full object-cover" />
@@ -67,7 +62,11 @@ export function TownIntroScreen() {
           ))}
         </div>
       </div>
-      <Button size="lg" onClick={last ? finish : () => setIndex(index + 1)}>
+      <Button
+        size="lg"
+        icon={last ? 'play' : 'next'}
+        onClick={last ? finish : () => setIndex(index + 1)}
+      >
         {last ? 'Bắt đầu' : 'Tiếp tục'}
       </Button>
     </div>

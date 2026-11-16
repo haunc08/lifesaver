@@ -47,7 +47,7 @@ export function CharacterScreen() {
           />
         </Card>
       </div>
-      <Button size="lg" type="submit" disabled={!trimmed}>
+      <Button size="lg" icon="next" type="submit" disabled={!trimmed}>
         Vào thị trấn
       </Button>
     </form>

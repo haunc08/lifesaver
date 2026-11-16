@@ -47,7 +47,11 @@ export function LessonScreen() {
       </p>
 
       {lesson.levelId && (
-        <Button className="w-full" onClick={() => navigate(`/level/${lesson.levelId}`)}>
+        <Button
+          className="w-full"
+          icon="replay"
+          onClick={() => navigate(`/level/${lesson.levelId}`)}
+        >
           Chơi lại màn này
         </Button>
       )}

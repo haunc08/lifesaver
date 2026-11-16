@@ -1,3 +1,4 @@
+import { sfx } from '@/audio'
 import { useRef, useState, type PointerEvent } from 'react'
 import type { DragPlaceConfig } from '@/game/types'
 import { SceneBox } from '@/screens/level/SceneBox'
@@ -42,12 +43,14 @@ export function DragPlace({ config, artId, scene, onDone }: MinigameProps<DragPl
     setSelected(null)
     if (item.zoneId !== zoneId) {
       misses.current += 1
+      sfx(item.zoneId === null ? 'warn' : 'wrong')
       setNote({ tone: item.zoneId === null ? 'bad' : 'warn', text: item.wrongNote })
       if (item.zoneId === null) setRefused((r) => [...r, itemId])
       return
     }
     const next = { ...placed, [itemId]: zoneId }
     setPlaced(next)
+    sfx('hit')
     setNote({ tone: 'good', text: `${item.label}: đúng chỗ rồi!` })
     if (needed.every((i) => next[i.id])) {
       done({ completed: true, accuracy: accuracyOf(needed.length, misses.current) })

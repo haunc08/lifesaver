@@ -1,3 +1,4 @@
+import { sfx } from '@/audio'
 import { useEffect, useRef, useState } from 'react'
 import type { HoldConfig } from '@/game/types'
 import { SceneBox } from '@/screens/level/SceneBox'
@@ -31,6 +32,7 @@ export function Hold({ config, artId, scene, paused, onDone }: MinigameProps<Hol
 
   useEffect(() => {
     if (!finished) return
+    sfx('right')
     const slips = Math.max(0, releases.current - FREE_MISSES)
     done({ completed: true, accuracy: Math.max(MIN_ACCURACY, 1 - RELEASE_COST * slips) })
     // Runs once: `finished` never goes back to false.
@@ -46,6 +48,7 @@ export function Hold({ config, artId, scene, paused, onDone }: MinigameProps<Hol
     if (!holding || finished) return
     setHolding(false)
     releases.current += 1
+    sfx('wrong')
     setProgress((p) => Math.max(0, p - RELEASE_LOSS))
     setNote({ tone: 'warn', text: config.releaseText })
   }

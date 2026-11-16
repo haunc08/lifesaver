@@ -45,16 +45,21 @@ export function SettingsScreen() {
         </p>
         {confirming ? (
           <div className="mt-3 grid grid-cols-2 gap-3">
-            <Button variant="plain" onClick={() => setConfirming(false)}>
+            <Button variant="plain" icon="close" onClick={() => setConfirming(false)}>
               Giữ lại
             </Button>
             {/* RequireProfile sends the player back to the start once the profile is gone. */}
-            <Button variant="danger" onClick={resetAll}>
+            <Button variant="danger" icon="trash" onClick={resetAll}>
               Xoá hết
             </Button>
           </div>
         ) : (
-          <Button variant="plain" className="mt-3 w-full" onClick={() => setConfirming(true)}>
+          <Button
+            variant="plain"
+            icon="trash"
+            className="mt-3 w-full"
+            onClick={() => setConfirming(true)}
+          >
             Xoá dữ liệu
           </Button>
         )}

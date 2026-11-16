@@ -20,6 +20,7 @@ Keep these current as you work, in the same change as the work: the owner review
 pnpm dev          # dev server
 pnpm test         # unit tests (Vitest), game rules
 pnpm test:e2e     # plays every level in installed Chrome (Playwright); starts the dev server on 5183
+pnpm test:e2e:safari  # the same tests in WebKit; needs `pnpm exec playwright install webkit` once
 pnpm typecheck    # tsc
 pnpm lint         # oxlint
 pnpm format       # prettier on src and e2e
@@ -35,17 +36,22 @@ src/
   game/        Pure rules, no React: types.ts (content schema), levelMachine.ts
                (six-phase reducer), scoring.ts, progression.ts (rewards, unlocks)
   content/     Data only: areas.ts, levels/ (one file per level + index.ts), lessons.ts
-  state/       save.ts: the persisted save (zustand + localStorage)
+  state/       save.ts: the persisted save (zustand + localStorage);
+               unlocks.ts: the unlock rules applied to the save
+  audio/       Sound effects and music; a sound with no file is skipped
   minigames/   One component per mechanic; index.tsx picks by config.type and
                runs `sequence` configs step by step
   screens/     One file per screen; level/ holds the in-level screen, HUD, phases, result
-  ui/          Shared pieces: Button, Card, Screen, Sticker, Stars, Logo, Icon, Pin,
-               Guide, Player
+  ui/          Shared pieces: Button, Card, Dialog, UnlockDialog, Screen, Sticker, Stars,
+               Logo, Icon, Pin, Guide, Player (and PlayerAvatar)
   assets/art/  Generated pictures (WebP), loaded by id through src/art.ts
+  assets/audio/  sfx-<name>.mp3 and music-<name>.mp3, made by scripts/import-audio.mjs
   app/         Router and the phone-sized shell
 art/           manifest.json (every picture's prompt), spend.json; raw/ is not in git
-scripts/       gen-art.mjs (Kie image generation), scene-grid.mjs, contact-sheet.mjs
-e2e/           Playwright tests
+scripts/       gen-art.mjs (Kie image generation), scene-grid.mjs, contact-sheet.mjs,
+               import-audio.mjs (downloads -> MP3)
+e2e/           Playwright tests; helpers.ts holds the shared steps
+.github/workflows/deploy.yml  Builds and publishes to GitHub Pages on every push to main
 ```
 
 The level flow: `LevelScreen` runs `step(level, state, event)` from `levelMachine.ts` in a reducer; phase components dispatch events; at the end `summarize` then `score` produce the result, and `save.recordResult` stores it.
@@ -64,6 +70,13 @@ The level flow: `LevelScreen` runs `step(level, state, event)` from `levelMachin
 - **Outside assets** need a CC0 or similarly permissive licence and a row in `docs/credits.md`.
 - **Money:** the budget for outside costs is about 10 USD in total. Ask the owner before any spend.
 - **No emoji in the interface.** Use `Icon` (line icons) or generated art.
+- **Buttons carry an icon and must be easy to tell apart.** Pass `icon` to `Button`. The `plain` variant is outlined so it shows on a card of its own colour; stack buttons inside `Dialog`, which spaces them.
+- **Home is the map.** There is no separate map screen; `/lobby` shows the town with one marker per area.
+- **Nothing can be skipped.** No skip button on the town intro or a level's story, also on a replay.
+- **The clock is hidden when it is not running** (intro, observe, outcome).
+- **Nothing moves on its own.** Motion answers an action (a screen opening, feedback, the result); no looping or wiggling decorations, such as bobbing map markers.
+- **Locked things can be opened by hand, one at a time** (`UnlockDialog`), for demos. Do not add an "unlock everything" control.
+- **Sound** comes only from CC0 files, mapped in `scripts/import-audio.mjs`. Play effects with `sfx(name)` from `@/audio`. Buttons get the tap sound automatically; wrap an area in `data-sfx="none"` when its buttons make their own sound.
 - **Scenes must stay visible.** Mark places on a scene with `Pin` (small, numbered) and put names in a list under the scene, not label chips on the picture.
 - **No rhythm-based first-aid mini-games**, and a `hold` must state the real-life duration in `realityNote`.
 - **MVP scope:** one fixed player character (name only). Shop, coins, leaderboard, quizzes and the like are Phase 2; do not build them.
@@ -82,9 +95,9 @@ Agent skills are installed in `.claude/skills/` (tracked by `skills-lock.json`).
 
 1. Copy a level file in `src/content/levels/`, name it `<level-id>-<topic>.ts`, keep the `id` from `LEVEL_OUTLINE` in `levels/index.ts`, and default-export the `LevelDef`. Every file matching `*-*.ts` in that folder is registered automatically.
 2. Fill every field of `LevelDef`: at least as many clues as `observe.required`, 3–4 assessment options with exactly one correct, solution options of all four kinds, `choose.order` listing the correct steps in order, outcome text for all five end states.
-3. If the level needs a new mechanic, add its config to `SingleMinigameConfig` in `game/types.ts`, a component in `minigames/`, a case in `minigames/index.tsx`, a check in `levels.test.ts` and a case in `e2e/all-levels.spec.ts`. A mini-game calls `onDone` once with `{ completed, accuracy }` and must stop its timers while `paused`.
+3. If the level needs a new mechanic, add its config to `SingleMinigameConfig` in `game/types.ts`, a component in `minigames/`, a case in `minigames/index.tsx`, a check in `levels.test.ts` and a case in `playMinigame` in `e2e/helpers.ts`. A mini-game calls `onDone` once with `{ completed, accuracy }` and must stop its timers while `paused`.
 4. Add the scene to `art/manifest.json` with the level id as its `id`, generate it (below), and place the clue and mini-game coordinates from the grid picture.
-5. Add the level id to `LEVEL_IDS` in `e2e/all-levels.spec.ts`.
+5. Add the level id to `LEVEL_IDS` in `e2e/helpers.ts`.
 
 ## Generating art
 
@@ -99,6 +112,14 @@ node scripts/scene-grid.mjs <level-id>…             # art/raw/_grid-<id>.jpg w
 
 Prompts describe only the subject; the shared style text in `manifest.styles` is appended. Keep writing out of pictures, show injuries without blood or gore, and use a white cross on mint green for first-aid items, not a red cross. Look at every generated picture before using it. `art(id)` in `src/art.ts` returns the picture's URL, or undefined if it does not exist.
 
+## Sound
+
+Files are `src/assets/audio/sfx-<name>.mp3` and `music-<name>.mp3`; names are the `SfxName` and `MusicName` types in `src/audio/index.ts`. To swap a sound, change its line in the table at the top of `scripts/import-audio.mjs` and run the script on a folder holding the downloads (layout in the script's header; sources in `docs/credits.md`). Downloading a new file needs the owner's permission first, with its name, source and size. Update `docs/credits.md` and the table in `docs/art-and-audio.md` section 3 in the same change. No agent can hear the result: say so, and ask the owner to listen.
+
+## Deploying
+
+Pushing to `main` runs `.github/workflows/deploy.yml`: unit tests, a build with `BASE_PATH=/lifesaver/`, and a publish to https://haunc08.github.io/lifesaver/. The site lives in a sub-folder there, so never hard-code a path that starts with `/`: use imports for assets and the router for links. `BASE_PATH=/lifesaver/ pnpm build && BASE_PATH=/lifesaver/ pnpm exec vite preview` serves the same build locally.
+
 ## Changing the save format
 
 Bump `SAVE_VERSION` in `src/state/save.ts` and add a `migrate` function to the persist options; players' progress lives only in their browser.
@@ -108,3 +129,5 @@ Bump `SAVE_VERSION` in `src/state/save.ts` and add a `migrate` function to the p
 - TypeScript has `erasableSyntaxOnly` on: no enums, no constructor parameter properties. Use `import type` for types.
 - Import from `src` with the `@/` alias.
 - The Chrome browser extension was not connected in the setup session; Playwright with `channel: 'chrome'` is the way to look at the app.
+- Playwright empties `e2e/.results` at the start of every run, so screenshots from an earlier run are gone; run the specs you want pictures of together.
+- Screenshots taken by the `shot` helper finish CSS animations first; the result screen's count-up is JavaScript, so wait for it.

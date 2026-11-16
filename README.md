@@ -4,6 +4,8 @@ A Vietnamese-language web game for phone screens that teaches first-aid skills t
 
 The game is in early development. Its first-aid content is draft text that has not been checked by a qualified reviewer, and the game is not a substitute for first-aid training.
 
+Play the current demo build at https://haunc08.github.io/lifesaver/ (best on a phone, or in a narrow browser window).
+
 ## Run it
 
 Developed with Node 24 and pnpm 10.
@@ -20,6 +22,7 @@ Open the address it prints. On a computer, narrow the window or use the browser'
 ```sh
 pnpm test        # game rules
 pnpm test:e2e    # plays every level in Chrome
+pnpm test:e2e:safari  # the same in WebKit (run `pnpm exec playwright install webkit` once)
 pnpm build       # typecheck and production build
 ```
 
