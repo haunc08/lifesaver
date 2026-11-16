@@ -14,7 +14,8 @@
     "format": "prettier --write src e2e",
     "deploy:pages": "node scripts/deploy-pages.mjs",
     "test:e2e": "playwright test --project=chrome",
-    "test:e2e:safari": "playwright test --project=safari"
+    "test:e2e:safari": "playwright test --project=safari",
+    "demo:sheet": "DEMO=1 playwright test --project=chrome demo-shots && node scripts/demo-sheet.mjs"
   },
   "dependencies": {
     "@fontsource-variable/baloo-2": "^5.3.0",

@@ -11,6 +11,7 @@ Lifesaver is a Vietnamese-language web game for phone screens that teaches first
 | `docs/art-and-audio.md` | Art direction, how art and sound are produced, budget |
 | `docs/status.md` | Handoff: current state, next steps, what is waiting on the owner |
 | `docs/credits.md` | Source and licence of every outside asset |
+| `docs/demo/lifesaver-screens.jpg` | One picture of the main screens with captions, for product documents. Made by `pnpm demo:sheet`; rebuild it when a screen it shows changes |
 
 Keep these current as you work, in the same change as the work: the owner reviews plans in the docs, and the next session depends on `docs/status.md`. Record new decisions in `docs/plan.md`, not only in chat.
 
@@ -26,6 +27,7 @@ pnpm lint         # oxlint
 pnpm format       # prettier on src and e2e
 pnpm build        # typecheck + production build
 pnpm deploy:pages # build and publish to GitHub Pages (at the end of each round, after the checks pass)
+pnpm demo:sheet   # retake the demo screenshots and rebuild docs/demo/lifesaver-screens.jpg
 ```
 
 `SHOTS=1 pnpm test:e2e` saves screenshots to `e2e/.results/shots/`; `node scripts/contact-sheet.mjs <out.jpg> <image>…` tiles several into one image for review. Use them to check visual changes. Run unit tests, typecheck, lint and the e2e test before calling a change done.
@@ -53,8 +55,10 @@ src/
   app/         Router and the phone-sized shell
 art/           manifest.json (every picture's prompt), spend.json; raw/ is not in git
 scripts/       gen-art.mjs (Kie image generation), scene-grid.mjs, contact-sheet.mjs,
-               import-audio.mjs (downloads -> MP3), deploy-pages.mjs (publish to GitHub Pages)
-e2e/           Playwright tests; helpers.ts holds the shared steps
+               import-audio.mjs (downloads -> MP3), deploy-pages.mjs (publish to GitHub Pages),
+               demo-sheet.mjs (tiles the demo screenshots into one captioned picture)
+e2e/           Playwright tests; helpers.ts holds the shared steps. demo-shots.spec.ts takes the
+               demo sheet's screenshots and runs only with DEMO=1 (`pnpm demo:sheet`)
 ```
 
 The level flow: `LevelScreen` runs `step(level, state, event)` from `levelMachine.ts` in a reducer; phase components dispatch events; at the end `summarize` then `score` produce the result, and `save.recordResult` stores it.

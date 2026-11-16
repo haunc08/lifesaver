@@ -9,6 +9,8 @@ const PORT = 5183
  */
 export default defineConfig({
   testDir: 'e2e',
+  // The pictures for the demo sheet are taken only on request (`pnpm demo:sheet`).
+  testIgnore: process.env.DEMO ? [] : ['**/demo-shots.spec.ts'],
   outputDir: 'e2e/.results',
   reporter: 'list',
   use: {
