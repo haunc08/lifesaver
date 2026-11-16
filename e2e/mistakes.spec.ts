@@ -3,6 +3,7 @@ import {
   button,
   holdPoint,
   openLevel,
+  planRow,
   playMinigame,
   playToAct,
   scenePoints,
@@ -10,7 +11,47 @@ import {
   turnDial,
 } from './helpers'
 
-/** What happens when the player gets a mini-game wrong. */
+/** What happens when the player gets the order or a mini-game wrong. */
+
+test('a wrong order is explained and put right, and the level can still be passed', async ({
+  page,
+}) => {
+  const level = await openLevel(page, 'school-01')
+  const { options, order } = level.choose
+  for (let i = 1; i < level.intro.length; i++) await button(page, 'Tiếp tục').click()
+  await button(page, 'Quan sát hiện trường').click()
+  for (const clue of level.observe.clues.filter((c) => c.essential)) {
+    await button(page, clue.label).click()
+  }
+  await button(page, 'Mình đã rõ rồi').click()
+  await button(page, level.assess.options.find((o) => o.correct)!.text).click()
+  for (const o of options.filter((x) => x.kind === 'correct')) await button(page, o.text).click()
+
+  // Carried out as listed, which is never the right order.
+  const listed = options.filter((o) => o.kind === 'correct').map((o) => o.id)
+  for (const [i, id] of listed.entries()) {
+    await expect(planRow(page, id)).toHaveAttribute('data-index', String(i))
+  }
+  await button(page, 'Thực hiện').click()
+
+  // The steps are shown in the right order, and each one that was elsewhere says so.
+  await expect(page.getByRole('status')).toContainText('Thứ tự chưa hợp lý')
+  for (const [i, id] of order.entries()) {
+    await expect(planRow(page, id)).toHaveAttribute('data-index', String(i))
+    const marked = planRow(page, id).getByText(/^Bạn xếp việc này thứ \d\.$/)
+    await expect(marked).toHaveCount(listed[i] === id ? 0 : 1)
+  }
+  await page.waitForTimeout(500) // let the rows settle
+  await shot(page, 'mistake-order')
+
+  // The action still follows, and the level is passed with the order noted in the result.
+  await button(page, 'Tiếp tục').click()
+  const steps = level.act.type === 'sequence' ? level.act.steps : [level.act]
+  for (const step of steps) await playMinigame(page, step)
+  await button(page, 'Xem kết quả').click()
+  await expect(page.getByText('Thứ tự bạn xếp chưa hợp lý')).toBeVisible()
+  await expect(page.getByLabel(/^[1-3] trên 3 sao$/)).toBeVisible()
+})
 
 test('answering the quick-decision cards wrong ends the level without a pass', async ({ page }) => {
   const level = await openLevel(page, 'food-district-01')

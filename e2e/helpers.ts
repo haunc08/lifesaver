@@ -69,11 +69,56 @@ export async function playToAct(page: Page, level: LevelDef) {
   }
   await button(page, 'Mình đã rõ rồi').click()
   await button(page, level.assess.options.find((o) => o.correct)!.text).click()
-  for (const stepId of level.choose.order) {
-    await button(page, level.choose.options.find((o) => o.id === stepId)!.text).click()
+  await choosePlan(page, level)
+}
+
+/** A row of the list in which the chosen steps are put in order. */
+export const planRow = (page: Page, id: string) => page.locator(`[data-row="${id}"]`)
+
+/** Move the rows into this order with the arrow keys. */
+export async function arrangePlan(page: Page, order: string[]) {
+  for (const [place, id] of order.entries()) {
+    const row = planRow(page, id)
+    const from = Number(await row.getAttribute('data-index'))
+    await row.focus()
+    for (let i = from; i > place; i--) await page.keyboard.press('ArrowUp')
+    await expect(row).toHaveAttribute('data-index', String(place))
   }
-  // The action starts by itself a moment after the last right step is picked.
-  await expect(page.getByText(/^Đã chọn/)).toHaveCount(0)
+}
+
+/** Move the rows into this order by dragging each one up to its place with the mouse. */
+export async function dragPlan(page: Page, order: string[]) {
+  for (const [place, id] of order.entries()) {
+    const row = planRow(page, id)
+    if ((await row.getAttribute('data-index')) === String(place)) continue
+    const from = await row.boundingBox()
+    const to = await page.locator(`[data-index="${place}"]`).boundingBox()
+    if (!from || !to) throw new Error('plan row not found')
+    const x = from.x + from.width / 2
+    const start = from.y + from.height / 2
+    // Just past the middle of the row now in that place, in small steps as a finger would.
+    const end = to.y + to.height / 2 - 6
+    await page.mouse.move(x, start)
+    await page.mouse.down()
+    const steps = Math.ceil((start - end) / 8)
+    for (let k = 1; k <= steps; k++) await page.mouse.move(x, start + ((end - start) * k) / steps)
+    await page.mouse.up()
+    await expect(row).toHaveAttribute('data-index', String(place))
+  }
+}
+
+/** Pick every right step, put them in the right order, carry them out and read the review. */
+export async function choosePlan(page: Page, level: LevelDef) {
+  // Picked in the order they are listed, which is never the right order.
+  for (const o of level.choose.options.filter((x) => x.kind === 'correct')) {
+    await button(page, o.text).click()
+  }
+  // Ordering starts by itself once every right step is picked.
+  await expect(page.getByRole('heading', { name: 'Việc nào làm trước?' })).toBeVisible()
+  await arrangePlan(page, level.choose.order)
+  await button(page, 'Thực hiện').click()
+  await expect(page.getByRole('status')).toContainText('Đúng thứ tự rồi')
+  await button(page, 'Tiếp tục').click()
 }
 
 /** Where to press for a hold mini-game. */

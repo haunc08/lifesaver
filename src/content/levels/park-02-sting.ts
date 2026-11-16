@@ -113,7 +113,7 @@ const level: LevelDef = {
   },
 
   choose: {
-    prompt: 'Bạn sẽ làm gì? Chọn các việc theo đúng thứ tự.',
+    prompt: 'Bạn sẽ làm gì?',
     order: ['safe', 'stinger', 'call', 'care'],
     options: [
       {

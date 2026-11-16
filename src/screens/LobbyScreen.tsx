@@ -162,9 +162,7 @@ export function LobbyScreen() {
           >
             <span className="min-w-0">
               <span className="block text-2xl">Chơi</span>
-              <span className="block truncate font-sans text-sm font-bold">
-                {nextArea.name} · {next.title}
-              </span>
+              <span className="block truncate font-sans text-sm font-bold">{next.title}</span>
             </span>
           </Button>
         ) : (

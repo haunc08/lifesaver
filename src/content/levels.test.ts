@@ -194,6 +194,7 @@ function perfectRun(level: LevelDef, seconds: number) {
     { type: 'assess-answer', id: level.assess.options.find((o) => o.correct)!.id },
     { type: 'tick', ms: seconds * 1000 },
     ...level.choose.order.map((id): LevelEvent => ({ type: 'pick', id })),
+    { type: 'confirm-order', order: level.choose.order },
     { type: 'start-act' },
     { type: 'act-done', result: { completed: true, accuracy: 1 } },
   ]

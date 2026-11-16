@@ -227,6 +227,12 @@
       "prompt": "One object: a curved kitchen sink tap in soft grey-blue with a steady stream of light blue running water pouring straight down from it and a few small droplets."
     },
     {
+      "id": "closeup-school-03",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "Extreme close-up side view of a teenage boy's bare lower leg and bare foot on a school football pitch. The lower leg lies horizontally across the middle of the image, coming in from the left edge, with the calf resting on a mint-green school backpack so that the leg is raised. On the right side of the image the bare foot points straight up, toes at the top, heel at the bottom. The ankle, in the centre-right of the image, is slightly swollen and a little pinker than the rest of the skin, with no wound and no blood. The leg and foot are very large and thick, filling the middle band of the image. Background: flat soft green grass with one white pitch line, pale dusty-blue sky above. Only the lower leg and foot are shown: no face, no body, no shoe, no sock, no ball, no other objects."
+    },
+    {
       "id": "closeup-dormitory-01",
       "style": "scene",
       "aspect": "4:3",

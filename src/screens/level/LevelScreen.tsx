@@ -5,6 +5,7 @@ import { sfx } from '@/audio'
 import { LEVELS } from '@/content/levels'
 import {
   initialState,
+  inOrder,
   isClockRunning,
   isTimedPhase,
   step,
@@ -21,14 +22,8 @@ import { useUnlocks } from '@/state/unlocks'
 import { Button } from '@/ui/Button'
 import { Dialog } from '@/ui/Dialog'
 import { Hud } from './Hud'
-import {
-  ActPhase,
-  AssessPhase,
-  ChoosePhase,
-  IntroPhase,
-  ObservePhase,
-  OutcomePhase,
-} from './phases'
+import { ChoosePhase } from './ChoosePhase'
+import { ActPhase, AssessPhase, IntroPhase, ObservePhase, OutcomePhase } from './phases'
 import { ResultView } from './ResultView'
 
 const TICK_MS = 100
@@ -173,7 +168,9 @@ function useLevelSounds(level: LevelDef, state: LevelState) {
       const unsafe = level.choose.options.find((o) => o.id === id)?.kind === 'unsafe'
       sfx(unsafe ? 'warn' : 'wrong')
     }
-    if (state.solutionConfirmed && !before.solutionConfirmed) sfx('right')
+    if (state.solutionConfirmed && !before.solutionConfirmed) {
+      sfx(inOrder(level, state.picks) ? 'right' : 'warn')
+    }
 
     // The last seconds of the current round's clock.
     const left = (s: LevelState) => Math.ceil((s.roundLimitMs - s.roundMs) / 1000)

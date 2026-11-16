@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* Screens tall enough to spare room: speech boxes get larger type and padding. */
+@custom-variant tall (@media (min-height: 700px));
+
 /*
  * Design tokens. The palette is muted pastel, named after what is in a first-aid
  * kit: cotton surfaces on a gauze-blue mist, with plaster coral, mint and butter.

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { button, LEVEL_IDS, openLevel, playMinigame, playToAct, shot } from './helpers'
+import { button, choosePlan, LEVEL_IDS, openLevel, playMinigame, playToAct, shot } from './helpers'
 
 /**
  * Plays every level through the real interface with the right answers, so each
@@ -24,11 +24,7 @@ for (const id of LEVEL_IDS) {
 
     // Assess and choose.
     await button(page, level.assess.options.find((o) => o.correct)!.text).click()
-    for (const stepId of level.choose.order) {
-      await button(page, level.choose.options.find((o) => o.id === stepId)!.text).click()
-    }
-    // The round ends by itself once the plan is complete; there is nothing to confirm.
-    await expect(page.getByText(/^Đã chọn/)).toHaveCount(0)
+    await choosePlan(page, level)
 
     // Act.
     await shot(page, `${id}-act`)

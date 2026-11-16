@@ -62,7 +62,7 @@ function review(level: LevelDef, state: LevelState): ReviewItem[] {
     if (places.some((place, i) => i > 0 && place < places[i - 1])) {
       items.push({
         ok: false,
-        text: 'Thứ tự bạn chọn chưa hợp lý',
+        text: 'Thứ tự bạn xếp chưa hợp lý',
         why: 'Thứ tự nên làm là thứ tự được đánh số dưới đây.',
       })
     }

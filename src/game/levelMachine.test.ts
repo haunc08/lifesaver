@@ -9,6 +9,8 @@ import {
   initialState,
   MINIGAME_TIME_SEC,
   minigameTimeSec,
+  ORDER_TIME_SEC,
+  chooseStage,
   step,
   summarize,
   type LevelEvent,
@@ -28,13 +30,16 @@ const toAssess: LevelEvent[] = [
 ]
 const toChoose: LevelEvent[] = [...toAssess, { type: 'assess-answer', id: 'faint' }]
 const pick = (...ids: string[]): LevelEvent[] => ids.map((id) => ({ type: 'pick', id }))
+const confirm = (...order: string[]): LevelEvent => ({ type: 'confirm-order', order })
+const RIGHT = ['safe', 'check', 'call', 'lay']
 const finishAct: LevelEvent = { type: 'act-done', result: { completed: true, accuracy: 1 } }
 
 describe('level machine', () => {
   it('walks a perfect run through all six phases to a 3-star success', () => {
     const end = play([
       ...toChoose,
-      ...pick('safe', 'check', 'call', 'lay'),
+      ...pick('lay', 'call', 'check', 'safe'),
+      confirm(...RIGHT),
       { type: 'start-act' },
       finishAct,
     ])
@@ -79,23 +84,40 @@ describe('level machine', () => {
     expect(score(summarize(level, s))).toMatchObject({ outcome: 'unsafe-failure', passed: false })
   })
 
-  it('ends the choosing round by itself once every right step is picked, with no undo', () => {
+  it('moves from picking to ordering by itself once every right step is picked', () => {
     const partway = play([...toChoose, ...pick('safe', 'check', 'call')])
-    expect(partway).toMatchObject({ phase: 'choose', solutionConfirmed: false })
-    // Nothing can start the action before the plan is complete.
+    expect(chooseStage(level, partway)).toBe('pick')
+    // Nothing can be confirmed or started before every right step is picked.
+    expect(step(level, partway, confirm('safe', 'check', 'call'))).toEqual(partway)
     expect(step(level, partway, { type: 'start-act' })).toEqual(partway)
 
-    const complete = step(level, partway, { type: 'pick', id: 'lay' })
-    expect(complete).toMatchObject({ phase: 'choose', solutionConfirmed: true, feedback: null })
-    // Further picks are ignored, and the action starts on request.
-    expect(step(level, complete, { type: 'pick', id: 'video' })).toEqual(complete)
-    expect(step(level, complete, { type: 'start-act' }).phase).toBe('act')
+    const picked = step(level, partway, { type: 'pick', id: 'lay' })
+    expect(picked).toMatchObject({ phase: 'choose', solutionConfirmed: false, feedback: null })
+    expect(chooseStage(level, picked)).toBe('order')
+    // Picking is over: further picks are ignored, and the action cannot start yet.
+    expect(step(level, picked, { type: 'pick', id: 'video' })).toEqual(picked)
+    expect(step(level, picked, { type: 'start-act' })).toEqual(picked)
   })
 
-  it('notices steps done in the wrong order and still lets the run pass', () => {
-    const s = play([...toChoose, ...pick('lay', 'safe', 'check', 'call')])
-    // No alert at this point; the result screen explains the order.
-    expect(s.feedback).toBeNull()
+  it('takes the order the player arranged, whatever order the steps were picked in', () => {
+    const picked = play([...toChoose, ...pick('lay', 'call', 'check', 'safe')])
+    const confirmed = step(level, picked, confirm(...RIGHT))
+    expect(confirmed).toMatchObject({ phase: 'choose', solutionConfirmed: true, picks: RIGHT })
+    expect(chooseStage(level, confirmed)).toBe('review')
+    // The order is final once confirmed, and the action starts on request.
+    expect(step(level, confirmed, confirm('lay', 'safe', 'check', 'call'))).toEqual(confirmed)
+    expect(step(level, confirmed, { type: 'start-act' }).phase).toBe('act')
+  })
+
+  it('accepts only a rearrangement of the chosen steps', () => {
+    const picked = play([...toChoose, ...pick(...RIGHT)])
+    expect(step(level, picked, confirm('safe', 'check', 'call'))).toEqual(picked)
+    expect(step(level, picked, confirm('safe', 'check', 'call', 'sugar'))).toEqual(picked)
+    expect(step(level, picked, confirm('safe', 'safe', 'call', 'lay'))).toEqual(picked)
+  })
+
+  it('notices steps arranged in the wrong order and still lets the run pass', () => {
+    const s = play([...toChoose, ...pick(...RIGHT), confirm('lay', 'safe', 'check', 'call')])
     const end = play([{ type: 'start-act' }, finishAct], s)
     const summary = summarize(level, end)
     expect(summary.orderCorrect).toBe(false)
@@ -123,18 +145,32 @@ describe('level machine', () => {
     expect(inChoose).toMatchObject({ phase: 'choose', roundMs: 0 })
     expect(inChoose.roundLimitMs).toBe(CHOOSE_TIME_SEC * 1000)
 
-    const inAct = play([...pick('safe', 'check', 'call', 'lay'), { type: 'start-act' }], inChoose)
+    // Ordering the steps is a round of its own.
+    const used: LevelEvent = { type: 'tick', ms: 30_000 }
+    const inOrder = play([used, ...pick(...RIGHT)], inChoose)
+    expect(inOrder).toMatchObject({ phase: 'choose', roundMs: 0 })
+    expect(inOrder.roundLimitMs).toBe(ORDER_TIME_SEC * 1000)
+
+    const inAct = play([confirm(...RIGHT), { type: 'start-act' }], inOrder)
     expect(inAct).toMatchObject({ phase: 'act', roundMs: 0 })
     expect(inAct.roundLimitMs).toBe(MINIGAME_TIME_SEC * 1000)
     // The time score compares all time used with the sum of the rounds' limits.
     expect(summarize(level, inAct).timeLimitMs).toBe(
-      (ASSESS_TIME_SEC + CHOOSE_TIME_SEC + MINIGAME_TIME_SEC) * 1000,
+      (ASSESS_TIME_SEC + CHOOSE_TIME_SEC + ORDER_TIME_SEC + MINIGAME_TIME_SEC) * 1000,
     )
   })
 
-  it('stops the clock while a completed plan is on show', () => {
-    const complete = play([...toChoose, ...pick('safe', 'check', 'call', 'lay')])
-    expect(step(level, complete, { type: 'tick', ms: 5000 }).elapsedMs).toBe(complete.elapsedMs)
+  it('runs the clock while ordering and stops it once the order is confirmed', () => {
+    const tick: LevelEvent = { type: 'tick', ms: 5000 }
+    const ordering = play([...toChoose, ...pick(...RIGHT)])
+    expect(step(level, ordering, tick).roundMs).toBe(5000)
+    const confirmed = step(level, ordering, confirm(...RIGHT))
+    expect(step(level, confirmed, tick).elapsedMs).toBe(confirmed.elapsedMs)
+  })
+
+  it('times out when ordering takes too long', () => {
+    const s = play([...toChoose, ...pick(...RIGHT), { type: 'tick', ms: ORDER_TIME_SEC * 1000 }])
+    expect(s).toMatchObject({ phase: 'outcome', endReason: 'timeout' })
   })
 
   it('times out when the clock of the current round runs down', () => {
@@ -173,6 +209,7 @@ describe('time allowed for a mini-game', () => {
       { type: 'observe-done' },
       { type: 'assess-answer', id: gasLeak.assess.options.find((o) => o.correct)!.id },
       ...gasLeak.choose.order.map((id): LevelEvent => ({ type: 'pick', id })),
+      { type: 'confirm-order', order: gasLeak.choose.order },
       { type: 'start-act' },
     ]
     let state = toAct.reduce((s, e) => step(gasLeak, s, e), initialState())

@@ -98,6 +98,7 @@ const PATHS = {
       <path d="m12 9.5 5 5M17 9.5l-5 5" />
     </>
   ),
+  grip: <path d="M5 9h14M5 15h14" strokeWidth="2.6" />,
   soon: (
     <>
       <circle cx="12" cy="12" r="8.5" />

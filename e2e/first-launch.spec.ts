@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { dragPlan } from './helpers'
 
 /** Set SHOTS=1 to save a screenshot of each screen into e2e/.results/shots. */
 async function shot(page: Page, name: string) {
@@ -67,19 +68,30 @@ test('a new player can create a character, clear the first level and keep their 
   // Each round has its own clock, which starts afresh.
   await expect(page.getByRole('timer')).toHaveText('2:00')
 
-  // Choose: an unsafe option is blocked, then the right steps in order.
+  // Choose, step one: an unsafe option is blocked, and the right steps are picked in any order.
   await button(page, 'Đổ nước đường').click()
   await expect(page.getByRole('status')).toContainText('Không an toàn')
   for (const step of ['Nhìn quanh', 'Gọi tên', 'Nhờ bạn báo thầy cô']) {
     await button(page, new RegExp(step)).click()
   }
-  // Picks are final: there is no undo and no confirm button.
+  // Picks are final: there is no undo, and nothing to confirm at this step.
   await expect(page.getByText('Đã chọn 3/4 việc')).toBeVisible()
   await expect(button(page, 'Thực hiện')).toHaveCount(0)
   await expect(button(page, 'Bỏ bước cuối')).toHaveCount(0)
   await shot(page, '08-choose')
-  // The last right step completes the plan and the action starts by itself, with a fresh clock.
+  // The last right step opens step two by itself, with a fresh clock.
   await button(page, /kê chân cao/).click()
+  await expect(page.getByRole('heading', { name: 'Việc nào làm trước?' })).toBeVisible()
+  await expect(page.getByRole('timer')).toHaveText('1:00')
+  await shot(page, '08b-order')
+
+  // Step two: drag the steps into order, then carry them out.
+  await dragPlan(page, ['safe', 'check', 'call', 'lay'])
+  await button(page, 'Thực hiện').click()
+  await expect(page.getByRole('status')).toContainText('Đúng thứ tự rồi')
+  await shot(page, '08c-review')
+  // The action starts when the player moves on, with a fresh clock.
+  await button(page, 'Tiếp tục').click()
   await expect(page.getByRole('timer')).toHaveText('1:30')
 
   // Act: the hint is available and the mini-game completes.
@@ -119,7 +131,7 @@ test('a new player can create a character, clear the first level and keep their 
   await expect(button(page, 'Chơi: Giờ tự học ở thư viện')).toBeVisible()
   await shot(page, '13-home')
   await button(page, 'Trường học, đã qua 1 trên 3 màn').click()
-  await expect(page.getByText('Đang khoá · chạm để mở')).toHaveCount(1)
+  await expect(page.getByText('Đang khoá', { exact: true })).toHaveCount(1)
   await shot(page, '14-area')
 })
 
@@ -138,11 +150,11 @@ test('locked areas and levels can be opened by hand', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Công viên' })).toBeVisible()
 
   // Inside, only the first level is open; a locked one opens the same way.
-  await expect(page.getByText('Đang khoá · chạm để mở')).toHaveCount(2)
+  await expect(page.getByText('Đang khoá', { exact: true })).toHaveCount(2)
   await button(page, /Buổi dã ngoại cuối tuần/).click()
   await shot(page, '21-unlock-level')
   await button(page, 'Mở khoá ngay').click()
-  await expect(page.getByText('Đang khoá · chạm để mở')).toHaveCount(1)
+  await expect(page.getByText('Đang khoá', { exact: true })).toHaveCount(1)
   await button(page, /Buổi dã ngoại cuối tuần/).click()
   await expect(page).toHaveURL(/\/level\/park-03$/)
 

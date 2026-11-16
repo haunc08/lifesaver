@@ -81,10 +81,12 @@ The level flow: `LevelScreen` runs `step(level, state, event)` from `levelMachin
 - **Locked things can be opened by hand, one at a time** (`UnlockDialog`), for demos. Do not add an "unlock everything" control.
 - **Wrong answers come from the lesson.** Every unsafe or irrelevant option, mini-game decoy and "should not" card must match a line in that level's `lesson.donts`; add the line if it is missing. Never add an option that is a weaker or reworded twin of a right one (the content test rejects answers that share more than half their words).
 - **Clues are essential or not** (`Clue.essential`). The observe phase ends when all essential clues are opened; never go back to counting clues. All pins look the same.
-- **Choosing has no undo and no confirm.** A pick is final and the round ends by itself when every right step is picked. Show no message at that moment (the owner found it was never read); the result screen explains the order.
+- **Choosing is two steps** (`screens/level/ChoosePhase.tsx`, stages from `chooseStage` in the machine). Pick: every right step, in any order; a pick is final, with no undo and no confirm, and the step ends by itself. Order: the picked steps are dragged into order and confirmed with "Thực hiện"; the review then shows the right order, marks the steps the player had elsewhere, and waits for "Tiếp tục". A wrong order costs points but never blocks the action. Do not show the two steps as tabs or chips, and keep the message for a right order to "Đúng thứ tự rồi!" (owner, 2026-11-16). The list takes the pointer, not the row, because a row that changes place in the page loses the pointer.
 - **Leave room at the bottom.** Level phases use `min-h-full`, not `h-full`, so the page's bottom padding comes after the last control; bottom padding adds the phone's safe area on top (`calc(… + env(safe-area-inset-bottom))`).
 - **After an area's last level, "next" opens the new area**, not its first level.
-- **Every round has its own clock** (constants at the top of `game/levelMachine.ts`). Keep them generous.
+- **Keep labels short.** A locked level says only "Đang khoá", and the home screen's play button names the level without its area (owner, 2026-11-16).
+- **Every round has its own clock** (constants at the top of `game/levelMachine.ts`): assess, picking, ordering, each mini-game. Keep them generous.
+- **Speech boxes grow on tall screens.** The story, clue and outcome boxes use the `tall:` variant (`src/index.css`, screens at least 700 px high) for larger type and padding; on short screens the larger type pushed the main button off the screen.
 - **No zoom on scenes.** It was tried on the clue view and removed at the owner's request.
 - **Things the player drags, holds, rubs with or turns have a picture** (`art` on drag items, `tool` on a hold, trace or rub, `dial` on a rotate), and `tap-targets` needs at least one decoy.
 - **A right answer is never red.** In the hazard scan a found hazard is mint with a tick; coral is for mistakes and refusals only.
@@ -153,3 +155,4 @@ Bump `SAVE_VERSION` in `src/state/save.ts` and add a `migrate` function to the p
 - Screenshots taken by the `shot` helper finish CSS animations first; the result screen's count-up is JavaScript, so wait for it.
 - If an end-to-end run takes many minutes and the hold or card tests time out, the machine was throttling timers (it happened once while the computer sat idle). Run it again before looking for a bug.
 - Gesture tests move the mouse in small steps on purpose: one big jump is further than a tool can follow in one move.
+- In end-to-end tests, `choosePlan` in `e2e/helpers.ts` plays the choose phase (arrow keys to order); `dragPlan` orders with the mouse.

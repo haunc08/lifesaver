@@ -40,15 +40,15 @@ The requirements give the shape of the rules; these are the specifics I chose so
 | Rule | Decision |
 | --- | --- |
 | Player character | One fixed character; creation only asks for a name (your instruction on 2026-11-16; the requirements table still says "a small set of looks") |
-| Clock | Runs only in the assess, choose and act phases, and is not shown anywhere else (your instruction: a clock that stands still confuses). Every round has its own clock, which starts afresh: 60 seconds to assess, 120 to choose, 90 for each mini-game, 24 per card for a quick-decision run, and 30 plus 25 per question for a phone call (your instruction: generous, and reset each round). Opening the hint or pause stops it |
+| Clock | Runs only in the assess, choose and act phases, and is not shown anywhere else (your instruction: a clock that stands still confuses). Every round has its own clock, which starts afresh: 60 seconds to assess, 120 to pick the steps, 60 to put them in order, 90 for each mini-game, 24 per card for a quick-decision run, and 30 plus 25 per question for a phone call (your instruction: generous, and reset each round). Opening the hint or pause stops it |
 | Skipping | Nothing can be skipped: the town intro and each level's story are read line by line, also on a replay (your instruction) |
 | Assessment | Right first time: 20 points. Right second time: 10. Wrong twice: the level ends as a recoverable mistake |
 | Unsafe option | Blocked with an explanation and never carried out; costs 8 of the 15 safety points. A second unsafe choice in the same run ends the level as an unsafe failure |
 | Irrelevant option | Rejected with an explanation; lowers the solution score |
 | Observing | Each clue is marked in the level data as essential or not. All clues look the same on screen; the player can move on once every essential one has been opened, however many others were looked at (your instruction) |
 | Wrong answers | Every unsafe or irrelevant option, decoy and "should not" card matches a line in that lesson's "do not" list, so the result never marks something wrong that the lesson does not warn about. No option is a weaker twin of a right one: the earlier "partial" options are gone (your instruction) |
-| Choosing | The player taps the right steps in order. A pick is final: there is no undo and no confirm button. The round ends by itself when every right step has been picked and the action starts at once, with no message about the order: it would not be read in time (your instructions). Scene safety and calling for help are among the right steps of every level |
-| Order | Doing the right steps in the wrong order costs 5 safety points and makes the result a partial success; the result screen lists the right order |
+| Choosing | Two steps (your instruction of 2026-11-16, which replaces "no confirm, no message"). Step one: the player taps every right step, in any order. A pick is final, there is no undo and nothing to confirm; a wrong option is refused with its reason; the step ends by itself when every right step is picked. Step two: the picked steps appear as a list, starting in the order the options were listed (never the answer), and the player drags them into the order they would do them, then presses "Thực hiện". The game then says whether the order was right. If it was not, the list is rearranged into the right order, and each step the player had elsewhere is marked with where they put it and why it belongs where it is. The action starts when the player presses "Tiếp tục". Scene safety and calling for help are among the right steps of every level |
+| Order | Carrying out the steps in the wrong order costs 5 safety points and makes the result a partial success; it never blocks the action. The review after "Thực hiện" and the result screen both show the right order |
 | Time points | Compares all the time used with the sum of the rounds' limits: full 10 points for using up to half, falling to 0 at the limit |
 | Passing | Requires all mandatory steps, a completed action and no unsafe failure. Stars at 60, 75 and 90 points only count on a pass |
 | Rewards | 50 XP on the first clear and 25 XP the first time 3 stars are reached; replays give nothing more (replay rules are Phase 2). A player level is every 100 XP |
@@ -77,7 +77,7 @@ Twelve levels, 2–3 per area. Titles and themes are proposals. All twelve are b
 | --- | --- | --- | --- | --- |
 | 1 | School | Tiết bốn oi ả | Fainting | Tap the targets |
 | 2 | School | Giờ tự học ở thư viện | Seizure | Drag and place: clear the space, protect the head |
-| 3 | School | Trận bóng chiều thứ sáu | Sprain | Drag and place, then hold |
+| 3 | School | Trận bóng chiều thứ sáu | Sprain | Drag and place, hold, then follow a path: wrap the ankle with an elastic bandage |
 | 4 | Dormitory | Đĩa trái cây đêm khuya | Cut | Hold steady pressure, then follow a path: wrap the finger |
 | 5 | Dormitory | Mùi lạ trong bếp chung | Gas leak | Scan for hazards, turn the gas valve shut, phone call to 114 |
 | 6 | Streets | Ngã tư giờ tan tầm | Scene safety at a traffic accident | Scan for hazards, quick decision, phone call to 115 |
@@ -142,12 +142,14 @@ You asked on 2026-11-16 for mini-games with more involved and more interesting i
 
 | Mechanic | What the player does | Used in |
 | --- | --- | --- |
-| Follow a path | Holds a tool and moves it along a dotted path on a close-up picture | Wrap the cut finger (level 4), wrap the forearm over the gauze (7), slide the ring off a scalded hand, slowly (9), scrape the stinger off sideways with a card (11) |
+| Follow a path | Holds a tool and moves it along a dotted path on a close-up picture | Wrap the sprained ankle with an elastic bandage (level 3, added on your request), wrap the cut finger (4), wrap the forearm over the gauze (7), slide the ring off a scalded hand, slowly (9), scrape the stinger off sideways with a card (11) |
 | Rub | Moves a tool back and forth over marked places | Cool forehead, neck and arms with a wet towel (10), wash the sting with soap and water (11) |
 | Turn | Turns a dial round its centre, in the right direction | Close the gas cylinder valve, clockwise (5) |
 | Phone call | Dials the emergency number, then answers the dispatcher | Call 114 from outside after a gas leak (5), call 115 at a traffic accident (6) |
 
-Seven of the twelve levels changed. The three school levels are unchanged on purpose: they are the first levels a player meets and stay simple. Choking (8) is unchanged too, see below.
+Eight of the twelve levels changed. The first two school levels are unchanged on purpose: they are the first levels a player meets and stay simple. The third school level gained the ankle wrap at your request on 2026-11-16; its lesson already said an elastic bandage may be used. Choking (8) is unchanged too, see below.
+
+No level asks for the same thing twice in an old mini-game and a new one (checked on 2026-11-16 at your request). Where a new mini-game took over a task, the old version of that task had already been removed: the bandage slot in level 7's drag and place, the towel in level 10's, and the "call 115" card in level 6's quick decision.
 
 ### Choices I made
 
@@ -163,4 +165,4 @@ Seven of the twelve levels changed. The three school levels are unchanged on pur
 - Two things at once (the requirements' "advanced" group): keep pressure on a wound with one thumb while answering the dispatcher with the other hand. It needs two fingers on the screen at once, which I could not test here.
 - Recovery position as a series of guided moves. It needs a figure whose limbs can be drawn in several positions, which one generated picture cannot give.
 - Draw a safe way out of a room or across a road, avoiding marked dangers.
-- A gesture for the school levels, once the simple versions have been played by real players.
+- A gesture for the first two school levels, once the simple versions have been played by real players.

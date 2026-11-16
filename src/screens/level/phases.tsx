@@ -1,5 +1,5 @@
-import { useEffect, useState, type Dispatch } from 'react'
-import type { Feedback, LevelEvent, LevelState } from '@/game/levelMachine'
+import { useState, type Dispatch } from 'react'
+import type { LevelEvent, LevelState } from '@/game/levelMachine'
 import type { ScoreResult } from '@/game/scoring'
 import type { LevelDef } from '@/game/types'
 import { Minigame } from '@/minigames'
@@ -8,34 +8,15 @@ import { Card } from '@/ui/Card'
 import { Guide } from '@/ui/Guide'
 import { Pin } from '@/ui/Pin'
 import { GUIDE_NAME } from '@/content/areas'
+import { FeedbackBanner } from './FeedbackBanner'
 import { SceneBox } from './SceneBox'
 
 /** One view per level phase. Each reads the machine state and dispatches events. */
 
-interface PhaseProps {
+export interface PhaseProps {
   level: LevelDef
   state: LevelState
   dispatch: Dispatch<LevelEvent>
-}
-
-const TONE: Record<Feedback['tone'], string> = {
-  good: 'border-mint-edge bg-mint/25 text-mint-ink',
-  warn: 'border-butter-edge bg-butter/30 text-ink',
-  bad: 'border-coral-edge bg-coral/20 text-coral-ink',
-}
-
-function FeedbackBanner({ feedback }: { feedback: Feedback | null }) {
-  if (!feedback) return null
-  return (
-    <p
-      // The key replays the motion each time the message changes.
-      key={feedback.text}
-      role="status"
-      className={`rounded-2xl border-2 px-4 py-3 leading-snug ${feedback.tone === 'good' ? 'animate-pop' : 'animate-shake'} ${TONE[feedback.tone]}`}
-    >
-      {feedback.text}
-    </p>
-  )
 }
 
 /** The story lines, one at a time. There is no skip: every line is read, also on a replay. */
@@ -48,13 +29,17 @@ export function IntroPhase({ level, dispatch }: PhaseProps) {
   return (
     <div className="flex min-h-full flex-col gap-4">
       <SceneBox artId={level.id} scene={level.scene} />
-      <Card className="flex flex-1 items-start gap-3">
+      <Card className="flex flex-1 items-start gap-3 tall:!p-5">
         {line.speaker === GUIDE_NAME && <Guide mood={line.mood} className="size-16 shrink-0" />}
         <div className="min-w-0 flex-1">
           {line.speaker && (
-            <p className="font-display text-sm font-bold text-blue-ink">{line.speaker}</p>
+            <p className="font-display text-sm font-bold text-blue-ink tall:text-base">
+              {line.speaker}
+            </p>
           )}
-          <p className={`mt-1 text-lg leading-snug ${line.speaker ? '' : 'text-ink-soft italic'}`}>
+          <p
+            className={`mt-1 text-lg leading-snug tall:text-xl ${line.speaker ? '' : 'text-ink-soft italic'}`}
+          >
             {line.text}
           </p>
         </div>
@@ -101,14 +86,16 @@ export function ObservePhase({ level, state, dispatch }: PhaseProps) {
           )
         })}
       </SceneBox>
-      <Card className="flex-1">
+      <Card className="flex-1 tall:!p-5">
         {open ? (
           <div key={open.id} className="animate-pop">
-            <p className="font-display text-sm font-bold text-blue-ink">{open.label}</p>
-            <p className="mt-1 text-lg leading-snug">{open.caption}</p>
+            <p className="font-display text-sm font-bold text-blue-ink tall:text-base">
+              {open.label}
+            </p>
+            <p className="mt-1 text-lg leading-snug tall:text-xl">{open.caption}</p>
           </div>
         ) : (
-          <p className="text-lg leading-snug">Chạm vào các dấu “?” để tìm manh mối.</p>
+          <p className="text-lg leading-snug tall:text-xl">Chạm vào các dấu “?” để tìm manh mối.</p>
         )}
       </Card>
       <Button
@@ -146,55 +133,6 @@ export function AssessPhase({ level, state, dispatch }: PhaseProps) {
   )
 }
 
-/** A completed plan stays up just long enough to see the last number land. */
-const PLAN_SHOW_MS = 600
-
-/**
- * Pick the right steps in order. A pick is final, and the round ends by itself
- * when every right step has been picked: there is nothing to undo or confirm.
- */
-export function ChoosePhase({ level, state, dispatch }: PhaseProps) {
-  const complete = state.solutionConfirmed
-  const waiting = complete && !state.paused
-  useEffect(() => {
-    if (!waiting) return
-    const timer = setTimeout(() => dispatch({ type: 'start-act' }), PLAN_SHOW_MS)
-    return () => clearTimeout(timer)
-  }, [waiting, dispatch])
-
-  return (
-    <div className="flex min-h-full flex-col gap-3">
-      <h2 className="text-center font-display text-xl font-bold text-ink">{level.choose.prompt}</h2>
-      <p className="-mt-2 text-center text-sm font-bold text-blue-ink">
-        Đã chọn {state.picks.length}/{level.choose.order.length} việc
-      </p>
-      <FeedbackBanner feedback={state.feedback} />
-      <div className="flex-1 space-y-2.5">
-        {level.choose.options.map((o) => {
-          const position = state.picks.indexOf(o.id) + 1
-          const blocked = state.rejected.includes(o.id)
-          return (
-            <button
-              key={o.id}
-              type="button"
-              disabled={position > 0 || blocked || complete}
-              onClick={() => dispatch({ type: 'pick', id: o.id })}
-              className={`flex w-full items-center gap-3 rounded-2xl border-2 px-3 py-2.5 text-left leading-snug transition-transform active:translate-y-0.5 ${position > 0 ? 'border-blue-edge bg-blue/25' : blocked ? 'border-mist-deep bg-cotton/50 text-ink-soft line-through' : complete ? 'border-mist-deep bg-cotton/50 text-ink-soft' : 'border-mist-edge bg-cotton shadow-[0_3px_0_var(--color-mist-edge)]'}`}
-            >
-              <span
-                className={`flex size-8 shrink-0 items-center justify-center rounded-full font-display font-bold ${position > 0 ? 'bg-blue text-ink' : 'bg-mist text-ink-soft'}`}
-              >
-                {position > 0 ? position : blocked ? '✕' : ''}
-              </span>
-              {o.text}
-            </button>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
 export function ActPhase({ level, state, dispatch }: PhaseProps) {
   return (
     // Mini-games make their own sounds, so their buttons skip the general tap sound.
@@ -221,9 +159,11 @@ export function OutcomePhase({
     <div className="flex min-h-full flex-col gap-4">
       <SceneBox artId={level.id} scene={level.scene} />
       <FeedbackBanner feedback={state.feedback} />
-      <Card className="flex flex-1 items-start gap-3">
+      <Card className="flex flex-1 items-start gap-3 tall:!p-5">
         <Guide mood={result.passed ? 'relieved' : 'worried'} className="size-16 shrink-0" />
-        <p className="min-w-0 flex-1 text-lg leading-snug">{level.outcomes[result.outcome]}</p>
+        <p className="min-w-0 flex-1 text-lg leading-snug tall:text-xl">
+          {level.outcomes[result.outcome]}
+        </p>
       </Card>
       <Button icon="next" onClick={onContinue}>
         Xem kết quả

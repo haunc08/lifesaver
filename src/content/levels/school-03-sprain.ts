@@ -111,7 +111,7 @@ const level: LevelDef = {
   },
 
   choose: {
-    prompt: 'Bạn sẽ làm gì? Chọn các việc theo đúng thứ tự.',
+    prompt: 'Bạn sẽ làm gì?',
     order: ['safe', 'rest', 'call', 'cold'],
     options: [
       {
@@ -214,12 +214,35 @@ const level: LevelDef = {
         realityNote:
           'Ngoài đời, mỗi lần chườm lạnh khoảng 15–20 phút, luôn bọc túi lạnh trong khăn, rồi nghỉ trước khi chườm lại.',
       },
+      {
+        type: 'trace',
+        instruction:
+          'Chườm xong rồi. Giờ quấn băng thun để đỡ cổ chân: kéo cuộn băng từ bàn chân, vòng qua cổ chân rồi lên cẳng chân.',
+        art: 'closeup-school-03',
+        tool: { art: 'item-bandage', label: 'Cuộn băng thun', size: 15 },
+        path: [
+          { x: 69, y: 27 },
+          { x: 83, y: 33 },
+          { x: 64, y: 40 },
+          { x: 74, y: 62 },
+          { x: 55, y: 40 },
+          { x: 50, y: 60 },
+          { x: 44, y: 39 },
+          { x: 39, y: 60 },
+        ],
+        trail: 'band',
+        slipNote:
+          'Băng bị tuột khỏi chân Huy rồi. Cầm lại cuộn băng, quấn đều tay theo đường chấm.',
+        doneNote: 'Băng đã ôm đều cổ chân. Huy vẫn cử động được các ngón chân.',
+        realityNote:
+          'Ngoài đời, quấn băng thun từ bàn chân lên qua cổ chân, vừa đủ để đỡ khớp. Nếu ngón chân tê, lạnh hoặc tím thì nới băng ra ngay.',
+      },
     ],
   },
 
   outcomes: {
     success:
-      'Cổ chân Huy được chườm lạnh và kê cao, đỡ đau hẳn. Thầy thể dục và cô y tế đến kiểm tra, rồi dìu Huy về phòng y tế. Huy cười: “Tuần sau tớ làm cổ động viên vậy!”',
+      'Cổ chân Huy được chườm lạnh, quấn băng thun và kê cao, đỡ đau hẳn. Thầy thể dục và cô y tế đến kiểm tra, rồi dìu Huy về phòng y tế. Huy cười: “Tuần sau tớ làm cổ động viên vậy!”',
     'partial-success':
       'Huy được cô y tế đưa về phòng y tế nghỉ ngơi. Bạn đã giúp được Huy, dù vẫn còn vài chỗ có thể làm tốt hơn.',
     'recoverable-mistake':
@@ -238,7 +261,7 @@ const level: LevelDef = {
       'Huy lật cổ chân khi tiếp đất, cổ chân đau và sưng nhưng không biến dạng: hãy chọn “Nghi ngờ Huy bị bong gân cổ chân”.',
     choose:
       'Thứ tự đúng: tạm dừng trận đấu → để Huy ngồi yên → nhờ báo thầy thể dục và phòng y tế → chườm túi lạnh bọc khăn rồi kê chân cao.',
-    act: 'Đưa túi chườm lạnh bọc khăn vào “Cổ chân đau” và ba lô vào “Dưới bắp chân”; dầu nóng và túi chườm nóng thì để yên. Sau đó nhấn giữ nút cho đến khi thanh đầy, đừng thả tay giữa chừng.',
+    act: 'Đưa túi chườm lạnh bọc khăn vào “Cổ chân đau” và ba lô vào “Dưới bắp chân”; dầu nóng và túi chườm nóng thì để yên. Sau đó nhấn giữ nút cho đến khi thanh đầy, đừng thả tay giữa chừng. Cuối cùng, giữ cuộn băng thun và kéo chậm theo đường chấm đến vòng tròn.',
     outcome: 'Bấm “Xem kết quả” để biết điểm và lời giải thích.',
   },
 
@@ -256,7 +279,7 @@ const level: LevelDef = {
       'Dừng chơi ngay và để phần bị thương được nghỉ',
       'Chườm lạnh mỗi lần khoảng 15–20 phút, luôn bọc túi lạnh trong khăn',
       'Đỡ và kê cao phần bị thương ở tư thế thoải mái',
-      'Có thể quấn băng thun vừa phải để đỡ khớp, không quấn quá chặt',
+      'Có thể quấn băng thun vừa phải để đỡ khớp; nếu ngón chân tê, lạnh hoặc tím thì nới băng ra ngay',
       'Báo cho thầy cô hoặc nhân viên y tế để được kiểm tra',
       'Nếu không chắc là bong gân hay gãy xương, hãy giữ yên và xử trí như gãy xương',
     ],

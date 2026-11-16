@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { button, openLevel, playMinigame, playToAct, shot } from './helpers'
+import { arrangePlan, button, openLevel, playMinigame, playToAct, shot } from './helpers'
 
 /** The layout must hold on the smallest phones still in common use. */
 
@@ -49,10 +49,17 @@ for (const size of SIZES) {
     await button(page, level.assess.options.find((o) => o.correct)!.text).click()
     await shot(page, `small-${tag}-choose`)
     await expectNoSidewaysScroll(page)
-    for (const stepId of level.choose.order) {
-      await button(page, level.choose.options.find((o) => o.id === stepId)!.text).click()
+    for (const o of level.choose.options.filter((x) => x.kind === 'correct')) {
+      await button(page, o.text).click()
     }
-    await expect(page.getByText(/^Đã chọn/)).toHaveCount(0)
+    // Ordering: the list and its button fit without sideways scrolling.
+    await shot(page, `small-${tag}-order`)
+    await expectNoSidewaysScroll(page)
+    await arrangePlan(page, level.choose.order)
+    await button(page, 'Thực hiện').click()
+    await shot(page, `small-${tag}-review`)
+    await expectNoSidewaysScroll(page)
+    await button(page, 'Tiếp tục').click()
     await shot(page, `small-${tag}-act`)
     await expectNoSidewaysScroll(page)
     // Scrolled to the end, the last control keeps clear of the bottom edge.

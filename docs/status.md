@@ -1,10 +1,10 @@
 # Lifesaver — status
 
-Last updated: 2026-11-16, after the round that added four richer mini-games, a background sound per area, and the recoloured hazard scan.
+Last updated: 2026-11-16, after the round that split choosing into two steps (pick, then order and confirm), added the ankle wrap to the third school level, and made three small interface changes.
 
 ## Where things stand
 
-Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: all twelve levels are playable from start to finish with illustrated scenes, sound and saved progress, and a demo build is published. M8, richer mini-games, is built too: seven levels now use a gesture or a phone call (plan.md, section 8). What remains before a release to real players is M6, which needs people: a qualified reviewer for the first-aid content, and playtesters. All first-aid content is still unreviewed draft. Milestones are defined in [plan.md](plan.md).
+Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: all twelve levels are playable from start to finish with illustrated scenes, sound and saved progress, and a demo build is published. M8, richer mini-games, is built too: eight levels now use a gesture or a phone call (plan.md, section 8). What remains before a release to real players is M6, which needs people: a qualified reviewer for the first-aid content, and playtesters. All first-aid content is still unreviewed draft. Milestones are defined in [plan.md](plan.md).
 
 - Code: https://github.com/haunc08/lifesaver (public since 2026-11-16, because GitHub Pages on a free plan requires it).
 - Demo: https://haunc08.github.io/lifesaver/ — published by running `pnpm deploy:pages`. It does not update by itself: GitHub refused to run a deploy Action with the message "your account is locked due to a billing issue", so publishing is a manual command.
@@ -16,36 +16,37 @@ Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: 
 - Locked areas and levels: tapping one explains how it opens and offers to open it at once. The choice is saved.
 - Twelve levels across five areas, each with all six phases, a progress bar, and hint and pause in every phase. The clock is shown only in the phases where it runs, and every round (assess, choose, each mini-game) has its own clock that starts afresh.
 - Observing: the player can move on once every clue marked essential in the data has been opened. There is no zoom.
-- Choosing: picks are final, and the round ends by itself when every right step is picked. No undo, no confirm button, no message about the order, no near-duplicate answers.
+- Choosing, in two steps. First the player picks every right step, in any order: picks are final, with no undo and nothing to confirm, and the step ends by itself. Then the picked steps are dragged into order (arrow keys also work) and carried out with "Thực hiện". The game says whether the order was right; if not, the steps slide into the right order, and each one the player had elsewhere says where they put it and why it belongs there. "Tiếp tục" starts the action. No near-duplicate answers.
 - Nothing can be skipped: the town intro and each level's story are read line by line.
-- Nine mini-game mechanics. From the MVP: tap the targets (with things that must not be done mixed in), scan for hazards (a hazard that was found turns mint with a tick, not red), hold (the held thing is pictured on the scene), drag and place (the item's picture follows the finger and lands in the nearest slot; tapping an item, then a slot, also works), quick decision. New: follow a path with a tool on a close-up picture (wrap a bandage, scrape a stinger off, slide a ring off slowly), rub a tool over marked places (wet towel, soap), turn a dial the right way (gas valve), and a phone call (dial 114 or 115 yourself, then answer the dispatcher). Nine levels chain two or three mechanics.
+- Nine mini-game mechanics. From the MVP: tap the targets (with things that must not be done mixed in), scan for hazards (a hazard that was found turns mint with a tick, not red), hold (the held thing is pictured on the scene), drag and place (the item's picture follows the finger and lands in the nearest slot; tapping an item, then a slot, also works), quick decision. New: follow a path with a tool on a close-up picture (wrap a bandage, scrape a stinger off, slide a ring off slowly), rub a tool over marked places (wet towel, soap), turn a dial the right way (gas valve), and a phone call (dial 114 or 115 yourself, then answer the dispatcher). Nine levels chain two or three mechanics. The third school level now ends with wrapping the ankle in an elastic bandage.
 - Result screen: the score counts up, stars land one by one, then score by component, XP reward, what was right and wrong with reasons, when to call for help, links to the lesson, replay and next level.
 - Knowledge library: one core lesson open from the start and one lesson per level played; all are labelled as unreviewed drafts.
 - Sound: ten effects, the town tune, and one background recording per area (classroom, quiet room, street, restaurant, garden birds) that plays in the area's level list and levels. All CC0 or public domain. The two switches in Settings control them.
 - Settings: a switch for music and background sound, a switch for effects, and a reset of saved data.
-- Art: twelve level scenes, five close-ups for the gesture mini-games, the town, five area pictures, 26 item pictures, the call operator, the player and the guide with six expressions, all generated with Seedream 5.5 through Kie. Icons are line drawings in code, and every main button carries one.
+- Art: twelve level scenes, six close-ups for the gesture mini-games, the town, five area pictures, 26 item pictures, the call operator, the player and the guide with six expressions, all generated with Seedream 5.5 through Kie. Icons are line drawings in code, and every main button carries one.
 
 ### Checked
 
-- 126 unit tests pass: scoring, the level state machine (essential clues, final picks, a clock per round and per chained step), progression (including opening by hand), the geometry behind the gestures (following a path without cutting across it, turning angles), and the content rules applied to every level (at least two essential clues, no near-duplicate answers, a decoy in every tap-the-targets game, a picture for every tool, paths long enough and inside the picture, one good reply per dispatcher question).
-- 28 end-to-end tests pass in Chrome and in WebKit (the engine behind Safari), at a 390 × 844 phone viewport unless stated:
+- 129 unit tests pass: scoring, the level state machine (essential clues, final picks, ordering and confirming, a clock per round and per chained step), progression (including opening by hand), the geometry behind the gestures (following a path without cutting across it, turning angles), and the content rules applied to every level (at least two essential clues, no near-duplicate answers, a decoy in every tap-the-targets game, a picture for every tool, paths long enough and inside the picture, one good reply per dispatcher question).
+- 29 end-to-end tests pass in Chrome and in WebKit (the engine behind Safari), at a 390 × 844 phone viewport unless stated:
   - the first-launch playthrough with reload, and the guard that blocks levels without a character;
   - opening a locked area and a locked level by hand;
   - a correct playthrough of each of the twelve levels;
   - dragging: the picture travels with the pointer, an item let go a little off-centre lands in the nearest slot, one let go far from every slot goes back, and a decoy is refused;
-  - the first level checks that an optional clue does not unlock the next phase, that each round's clock starts afresh (1:00, 2:00, 1:30), that there is no undo or confirm button, and that a decoy is refused with its reason;
+  - the first level checks that an optional clue does not unlock the next phase, that each round's clock starts afresh (1:00, 2:00, 1:00, 1:30), that picking has no undo or confirm button, that the picked steps can be dragged into order with the mouse and carried out, and that a decoy is refused with its reason;
+  - a wrong order: the steps are carried out as listed, the review shows them in the right order with each misplaced one marked, and the level is still passed with the order noted in the result;
   - mistake paths: a failed quick-decision run, a card that runs out of time, an early release of a hold, a harmless spot in a scan;
   - the new mechanics, played with real pointer movement: each path is followed, each place rubbed, the valve turned, each call dialled and answered. Mistakes: a bandage dragged straight across the arm stays behind and can be picked up again; a ring pulled off fast is refused and comes off slowly; the valve turned the wrong way makes no progress; a wrong emergency number and an unhelpful reply are explained;
   - the home screen and a whole level at 320 × 568 and 360 × 640, with no sideways scrolling and the main buttons on screen; and at 320 × 568 the two levels that between them use every new mechanic (gas leak, sting), played to a pass;
   - the sound engine: silent before the first tap, effects loaded and the town tune playing after it, the switch obeyed, each area's own recording inside that area, the town tune again outside.
 - Typecheck, lint and production build pass, and the build served from a sub-folder (as on GitHub Pages) loads, saves and survives a reload.
-- I looked at screenshots of the home screen (four sizes), pause and unlock dialogs, the level phases, the result and the mistake paths.
+- I looked at screenshots of the home screen (four sizes), pause and unlock dialogs, the level phases (including picking, ordering and both reviews, also at 320 × 568), the result and the mistake paths.
 
 ### Not done or not checked
 
 - **Nobody has listened to the sound.** I cannot hear audio; files were chosen by name, description and measurement. The owner should listen once and name any sound to swap. This matters most for the five area recordings: none was made in Vietnam, and the classroom and restaurant ones contain voices that may be clear enough to sound foreign.
 - Area recordings loop after one minute with a two-second dip, not seamlessly.
-- Not tried on a real phone. WebKit on a computer is close to Safari on iOS but not the same. Dragging and the new gestures are tested with a simulated mouse only: under a real finger the tolerances (how far from the path counts as leaving it, how fast is too fast for the ring, how far to rub) may need tuning, and the finger covers part of what it is doing.
+- Not tried on a real phone. WebKit on a computer is close to Safari on iOS but not the same. Dragging (items, and the steps being put in order) and the new gestures are tested with a simulated mouse only: under a real finger the tolerances (how far from the path counts as leaving it, how fast is too fast for the ring, how far to rub) may need tuning, and the finger covers part of what it is doing.
 - The level-timeout path (letting the whole clock run out) has unit tests but no end-to-end test.
 - Music restarts with a short fade at the loop point; it is not seamless.
 - Side characters have no portraits; they appear only inside their scene.
@@ -57,6 +58,7 @@ Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: 
 - **Choking (food-district-01)** carries the most risk of teaching something wrong.
 - **Gas leak (dormitory-02)**: the level's order is no sparks, close the valve, open doors and windows, get out and call 114. I did not check this order against a Vietnamese fire-service source.
 - **The phone calls (dormitory-02, streets-01)**: what a 114 or 115 dispatcher in Vietnam actually asks, and in what order. I wrote the questions from general practice (where, what happened, how the person is, what to do while waiting), not from a Vietnamese source.
+- **The elastic bandage on a sprained ankle (school-03)**: the last mini-game has the player wrap the ankle from the foot upward. Check that this is right for a student to do, and the wording of when to loosen it.
 - **The gas valve** closes clockwise in the game. That is the usual direction for a cylinder valve, but I did not check it against a Vietnamese supplier's instructions.
 - **Hold mini-games** last 3–8 seconds of game time and state the real duration in text (for example about 10 minutes of pressure, about 20 minutes of cooling). Check each stated duration.
 - Every generated picture, for anything that contradicts its lesson.
@@ -115,3 +117,8 @@ Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: 
 | 2026-11-16 | The MVP is done; next, plan and build mini-games with richer interaction where they fit | Owner. I added follow a path, rub, turn and phone call to seven levels, on close-up pictures; details in plan.md section 8 |
 | 2026-11-16 | Choking stays as decision cards; back blows and abdominal thrusts are not made a gesture | Mine: the requirements forbid reducing a complex technique to a swipe |
 | 2026-11-16 | Hosting on GitHub Pages; the repository became public for it | Owner |
+| 2026-11-16 | Choosing is two steps: pick the right steps with no confirm, then reorder them and confirm with "Thực hiện"; afterwards the game gives feedback and puts the steps in the right order if needed | Owner. This replaces "no confirm button" and "no message about the order". I gave ordering its own 60-second clock, start the list in the order the options were listed, and wait for "Tiếp tục" after the feedback so that it gets read |
+| 2026-11-16 | The two choosing steps are not shown as tabs, and the message for a right order is only "Đúng thứ tự rồi!" | Owner, after seeing the first version |
+| 2026-11-16 | The third school level gets one of the new mini-games | Owner. I added wrapping the ankle with an elastic bandage as a third step, on a new close-up; the lesson already allowed it |
+| 2026-11-16 | A locked level's button says only "Đang khoá"; the home screen's play button drops the area name; speech boxes get larger type and more padding | Owner. The larger type applies on screens at least 700 px high, because on shorter ones it pushed the main button off the screen |
+| 2026-11-16 | Where an old mini-game repeats a new one in the same level, remove the old one | Owner. I checked all nine chained levels and found no such pair, so nothing was removed |

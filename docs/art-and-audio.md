@@ -153,7 +153,7 @@ Total allowed for outside costs: about 10 USD.
 
 | Item | Spent | Notes |
 | --- | --- | --- |
-| Image generation (Kie credits) | 0.59 USD | 33 generations at 3.6 credits (0.018 USD) each. The last nine were for the gesture mini-games: five close-ups (one made twice), the gas valve, a sheet of six items and the call operator. The account held 573.7 credits (about 2.87 USD) at the start and about 455 after |
+| Image generation (Kie credits) | 0.61 USD | 34 generations at 3.6 credits (0.018 USD) each. The latest was the ankle close-up for the third school level. The last nine were for the gesture mini-games: five close-ups (one made twice), the gas valve, a sheet of six items and the call operator. The account held 573.7 credits (about 2.87 USD) at the start and about 455 after |
 | Fonts, sound, music | 0 | Free licences only (CC0 sound, Open Font License fonts) |
 | Hosting on a free tier | 0 | GitHub Pages |
 

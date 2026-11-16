@@ -37,7 +37,7 @@ export function AreaScreen() {
         const built = Boolean(LEVELS[level.id])
         const open = levelOpen(level.id)
         const record = records[level.id]
-        const status = !built ? 'Sắp ra mắt' : !open ? 'Đang khoá · chạm để mở' : level.theme
+        const status = !built ? 'Sắp ra mắt' : !open ? 'Đang khoá' : level.theme
         return (
           <button
             key={level.id}

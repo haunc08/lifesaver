@@ -20,6 +20,8 @@ const TIMED_PHASES: readonly PhaseId[] = ['assess', 'choose', 'act']
  */
 export const ASSESS_TIME_SEC = 60
 export const CHOOSE_TIME_SEC = 120
+/** Putting the chosen steps in order is a round of its own. */
+export const ORDER_TIME_SEC = 60
 export const MINIGAME_TIME_SEC = 90
 /** Quick-decision cards carry their own timers; this is added per card for reading the explanation. */
 export const CARD_READING_SEC = 12
@@ -71,10 +73,14 @@ export interface LevelState {
   /** Ids of the wrong assessment answers given so far. */
   assessWrong: string[]
   assessSolved: boolean
-  /** Accepted solution options, in the order picked. */
+  /**
+   * Accepted solution options: in the order picked while choosing, then in the
+   * order the player arranged them once that order is confirmed.
+   */
   picks: string[]
   /** Unsafe or irrelevant options the player tried; these are never executed. */
   rejected: string[]
+  /** The player has arranged the chosen steps and asked to carry them out. */
   solutionConfirmed: boolean
   act: ActResult | null
   hintsUsed: number
@@ -88,7 +94,9 @@ export type LevelEvent =
   | { type: 'observe-done' }
   | { type: 'assess-answer'; id: string }
   | { type: 'pick'; id: string }
-  /** The plan is complete and has been shown for a moment: move on to the action. */
+  /** The player carries out the chosen steps in this order. */
+  | { type: 'confirm-order'; order: string[] }
+  /** The player has read what was said about the order: move on to the action. */
   | { type: 'start-act' }
   /** A chained level moves on to its next mini-game, which gets a fresh clock. */
   | { type: 'act-step' }
@@ -125,8 +133,19 @@ export function isTimedPhase(phase: PhaseId): boolean {
   return TIMED_PHASES.includes(phase)
 }
 
+/**
+ * The choose phase has three stages: pick the right steps, put them in order,
+ * then read what is said about that order.
+ */
+export type ChooseStage = 'pick' | 'order' | 'review'
+
+export function chooseStage(level: LevelDef, state: LevelState): ChooseStage {
+  if (state.solutionConfirmed) return 'review'
+  return level.choose.order.every((id) => state.picks.includes(id)) ? 'order' : 'pick'
+}
+
 export function isClockRunning(state: LevelState): boolean {
-  // The clock also stops once the plan is complete, while it is shown before the action.
+  // The clock also stops once the order is confirmed, while the review is read.
   const waiting = state.phase === 'choose' && state.solutionConfirmed
   return !state.paused && isTimedPhase(state.phase) && !waiting
 }
@@ -142,8 +161,8 @@ export function observeComplete(level: LevelDef, cluesFound: string[]): boolean 
   return level.observe.clues.every((c) => !c.essential || cluesFound.includes(c.id))
 }
 
-/** Whether the picked steps follow the order the level asks for. */
-function inOrder(level: LevelDef, picks: string[]): boolean {
+/** Whether the steps, as arranged, follow the order the level asks for. */
+export function inOrder(level: LevelDef, picks: string[]): boolean {
   const positions = picks.map((id) => level.choose.order.indexOf(id)).filter((i) => i >= 0)
   return positions.every((p, i) => i === 0 || p >= positions[i - 1])
 }
@@ -226,8 +245,8 @@ export function step(level: LevelDef, state: LevelState, event: LevelEvent): Lev
     }
 
     case 'pick': {
-      // A pick is final: there is no undo, and the round ends by itself.
-      if (state.phase !== 'choose' || state.solutionConfirmed) return state
+      // A pick is final: there is no undo, and picking ends by itself.
+      if (state.phase !== 'choose' || chooseStage(level, state) !== 'pick') return state
       const o = option(level, event.id)
       if (!o || state.picks.includes(o.id) || state.rejected.includes(o.id)) return state
       if (o.kind === 'unsafe') {
@@ -246,13 +265,19 @@ export function step(level: LevelDef, state: LevelState, event: LevelEvent): Lev
         }
       }
       const picks = [...state.picks, o.id]
-      // The plan is complete once every right step is in it; nothing needs confirming.
-      if (!level.choose.order.every((id) => picks.includes(id))) {
-        return { ...state, picks, feedback: null }
-      }
-      // No message here, right order or not: the action starts at once, so it would
-      // not be read. The result screen lists the right order.
-      return { ...state, picks, solutionConfirmed: true, feedback: null }
+      const picked = { ...state, picks, feedback: null }
+      // Once every right step is picked, ordering them starts: a new round.
+      return chooseStage(level, picked) === 'order' ? startRound(picked, ORDER_TIME_SEC) : picked
+    }
+
+    case 'confirm-order': {
+      if (state.phase !== 'choose' || chooseStage(level, state) !== 'order') return state
+      // Only a rearrangement of the chosen steps is accepted.
+      const same =
+        event.order.length === state.picks.length &&
+        state.picks.every((id) => event.order.includes(id))
+      if (!same) return state
+      return { ...state, picks: [...event.order], solutionConfirmed: true, feedback: null }
     }
 
     case 'start-act': {

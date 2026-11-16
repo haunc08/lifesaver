@@ -49,9 +49,13 @@ export function TownIntroScreen() {
             <Guide mood={slide.mood} className="mb-2 h-28" />
           </div>
         </div>
-        <Card className="w-full">
-          <p className="font-display text-sm font-bold text-blue-ink">{GUIDE_NAME}</p>
-          <p className="mt-1 min-h-[5.5rem] text-lg leading-snug">{slide.text}</p>
+        <Card className="w-full tall:!p-5">
+          <p className="font-display text-sm font-bold text-blue-ink tall:text-base">
+            {GUIDE_NAME}
+          </p>
+          <p className="mt-1 min-h-[5.5rem] text-lg leading-snug tall:min-h-[6.5rem] tall:text-xl">
+            {slide.text}
+          </p>
         </Card>
         <div className="flex gap-2" aria-hidden>
           {SLIDES.map((_, i) => (
