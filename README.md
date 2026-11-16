@@ -19,7 +19,7 @@ Open the address it prints. On a computer, narrow the window or use the browser'
 
 ```sh
 pnpm test        # game rules
-pnpm test:e2e    # a full playthrough in Chrome
+pnpm test:e2e    # plays every level in Chrome
 pnpm build       # typecheck and production build
 ```
 

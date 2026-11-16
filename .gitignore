@@ -30,3 +30,6 @@ e2e/.results
 .env
 .env.*
 !.env.example
+
+# Raw generated images (the compressed copies in src/assets/art are tracked)
+art/raw

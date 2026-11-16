@@ -124,7 +124,7 @@ function LevelRun({ level, onReplay }: { level: LevelDef; onReplay: () => void }
         >
           <Card className="w-full space-y-3">
             <h2 className="font-display text-2xl font-bold text-ink">
-              {overlay === 'hint' ? '💡 Gợi ý' : 'Tạm dừng'}
+              {overlay === 'hint' ? 'Gợi ý' : 'Tạm dừng'}
             </h2>
             {overlay === 'hint' ? (
               <>

@@ -3,6 +3,7 @@ import { ALL_LESSONS, CORE_LESSONS } from '@/content/lessons'
 import { useSave } from '@/state/save'
 import { Card } from '@/ui/Card'
 import { Screen } from '@/ui/Screen'
+import { Icon } from '@/ui/Icon'
 import { Sticker } from '@/ui/Sticker'
 
 /** Knowledge library: core lessons plus one lesson for every level played. */
@@ -21,7 +22,9 @@ export function LibraryScreen() {
           className="block w-full text-left transition-transform active:translate-y-0.5"
         >
           <Card className="flex items-center gap-3">
-            <Sticker glyph={lesson.levelId ? '📘' : '⛑️'} />
+            <Sticker>
+              <Icon name={lesson.levelId ? 'book' : 'kit'} />
+            </Sticker>
             <div className="min-w-0 flex-1">
               <p className="font-display text-lg font-bold text-ink">{lesson.title}</p>
               <p className="text-sm text-ink-soft">

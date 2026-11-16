@@ -21,8 +21,8 @@ These are the choices I made where the requirements left room. Tell me which one
 | Game rendering | HTML/CSS with touch events, not a canvas game engine | Levels are fixed viewpoints with tappable spots and simple gestures; an engine such as Phaser would add size and complexity for little gain. Revisit only if a mini-game needs physics or many moving sprites |
 | Styling | Tailwind CSS with one shared palette | One place for the colours; fast to build rounded cards and chunky buttons |
 | Visual style | Muted pastel colours, simple shapes, no gradients; blur allowed | Your instructions on 2026-11-16; this differs from section 9 of the requirements, see art-and-audio.md |
-| Art production | Drawn as SVG in code, starting with a sample for your approval | The flat style suits it, it is free, and every image stays consistent; AI generation is the fallback |
-| Animation | Motion (installed, not used yet) | For clue zooms, screen transitions and result effects |
+| Art production | Generated with the Seedream 5.5 model through the Kie API, from prompts kept in the repository; interface icons are drawn in code | Your instruction on 2026-11-16. One shared style prompt keeps the images consistent; cost is tracked in art-and-audio.md |
+| Animation | CSS transitions so far (the clue zoom); Motion is installed for later polish | Screen transitions and result effects are M5 |
 | Saved progress | Browser localStorage, versioned | Meets "progress still there on the next visit" on the same device and browser |
 | Tests | Vitest for game rules, Playwright for one full playthrough | Rules and scoring are where bugs would hurt most |
 
@@ -33,7 +33,7 @@ These are the choices I made where the requirements left room. Tell me which one
 
 ### Game rules I filled in
 
-The requirements give the shape of the rules; these are the specifics I chose so the engine could be built. All live in [src/game/](../src/game/) and are easy to change.
+The requirements give the shape of the rules; these are the specifics I chose so the engine could be built. Level rules live in [src/game/](../src/game/); the mini-game rules at the end of the table live in [src/minigames/](../src/minigames/). All are easy to change.
 
 | Rule | Decision |
 | --- | --- |
@@ -50,14 +50,18 @@ The requirements give the shape of the rules; these are the specifics I chose so
 | Rewards | 50 XP on the first clear and 25 XP the first time 3 stars are reached; replays give nothing more (replay rules are Phase 2). A player level is every 100 XP |
 | Unlocking | A level opens when the one before it is cleared; an area opens when every level of the area before it is cleared |
 | Library | A lesson is added when its level is finished with any result. One core safety lesson is open from the start |
+| Mini-game accuracy | The first slip in a mini-game is free (a stray tap, a wrong drop, letting go of a hold). After that each slip lowers the action score |
+| Hold | Letting go early loses a quarter of the progress. The hold lasts a few seconds of game time, and the screen states the real-life duration so the short hold teaches nothing wrong |
+| Quick decision | Each card has its own short timer; running out counts as a wrong answer. At least 60% of cards must be right, otherwise the level ends as a recoverable mistake |
+| Chained mini-games | The action score is the average of the steps; failing one step ends the level as a recoverable mistake |
 
 ## 3. Levels
 
-Twelve levels, 2–3 per area. Titles and themes are proposals. Only the first is built.
+Twelve levels, 2–3 per area. Titles and themes are proposals. All twelve are built as drafts and playable.
 
 | # | Area | Title | Theme | Main mechanic |
 | --- | --- | --- | --- | --- |
-| 1 | School | Tiết bốn oi ả | Fainting | Tap the targets (built) |
+| 1 | School | Tiết bốn oi ả | Fainting | Tap the targets |
 | 2 | School | Giờ tự học ở thư viện | Seizure | Drag and place: clear the space, protect the head |
 | 3 | School | Trận bóng chiều thứ sáu | Sprain | Drag and place, then hold |
 | 4 | Dormitory | Đĩa trái cây đêm khuya | Cut | Hold: steady pressure |
@@ -70,7 +74,7 @@ Twelve levels, 2–3 per area. Titles and themes are proposals. Only the first i
 | 11 | Park | Vị khách không mời | Insect sting | Tap the targets, watch for allergy signs |
 | 12 | Park | Buổi dã ngoại cuối tuần | Sports injury | Mixed |
 
-The MVP therefore needs five mini-game mechanics: tap the targets (built), scan the scene, hold, drag and place, and quick decision. Rotate, swipe and multi-tasking are Phase 2.
+All five mini-game mechanics are built: tap the targets, scan the scene, hold, drag and place, and quick decision. A level can also chain two or three of them. Rotate, swipe and multi-tasking are Phase 2.
 
 ### Medical content
 
@@ -81,15 +85,15 @@ I write level and lesson text as drafts from general first-aid knowledge. I am n
 | # | Milestone | Done when | State |
 | --- | --- | --- | --- |
 | M0 | Setup and walking skeleton | Project runs; all MVP screens exist with placeholder art; one level is playable through all six phases; progress saves; tests pass | Done |
-| M1 | Mini-game set and level feel | The four remaining mechanics exist; clues zoom; feedback has motion; each mechanic has guidance, tolerance and retry | Next |
-| M2 | All 12 levels as drafts | Every level is playable with placeholder art; an automated check enforces the content rules (for example exactly one right assessment answer, a mandatory safety step and call-for-help step) | |
-| M3 | Art | A sample (player, guide with six expressions, one scene) is approved; then logo, loading screen, characters, scenes, map and icons replace all placeholders | Sample can start now; the rest waits on your verdict |
+| M1 | Mini-game set and level feel | The four remaining mechanics exist; clues zoom; feedback has motion; each mechanic has guidance, tolerance and retry | Done, except motion on feedback (moved to M5) |
+| M2 | All 12 levels as drafts | Every level is playable with placeholder art; an automated check enforces the content rules (for example exactly one right assessment answer, a mandatory safety step and call-for-help step) | Done; all content is unreviewed draft |
+| M3 | Art | A sample (player, guide with six expressions, one scene) is approved; then logo, loading screen, characters, scenes, map and icons replace all placeholders | Scenes, characters, town map and area pictures are in; the logo is still drawn in code. Waiting on your verdict |
 | M4 | Sound | Sound effects and music play; the two settings switches control them | |
 | M5 | Polish | Screen transitions, result animation, empty and locked states reviewed, works on small phones, loads fast on mobile data | |
 | M6 | Review and playtest | Every lesson has a source, reviewer and date; a few people from the target group have played it; fixes are in | Needs a reviewer |
 | M7 | Release | Deployed to a public address | Needs a hosting choice |
 
-The M3 sample comes first, before M1, because your verdict on it decides how the rest of the art is made. After that, art runs alongside M1 and M2.
+M0 to M3 were built on 2026-11-16. Sound (M4) is next.
 
 ## 5. Questions for you
 
@@ -109,6 +113,6 @@ Everything in the Phase 2 column of the requirements: the other five areas, area
 | Risk | Effect | What I plan to do |
 | --- | --- | --- |
 | Draft medical content reaches players | Players learn something wrong | Lessons stay visibly marked as drafts until reviewed; M6 gates release |
-| Art drawn in code looks too plain | The game feels cheap | Judge a small sample first; fall back to AI-generated images within the budget |
-| The 10 USD budget runs out, if the fallback is used | Missing scenes | Test with three images first; track spend in art-and-audio.md |
+| Generated images drift in style or show something wrong for the lesson | The game looks inconsistent, or a picture contradicts the text | One shared style prompt; I look at every image before using it; the reviewer should check pictures as well as text |
+| The 10 USD budget runs out | Missing scenes | Each image costs about 0.02 USD and the whole set so far cost 0.36 USD; spend is tracked in art/spend.json and art-and-audio.md |
 | A mini-game teaches a wrong habit, for example a wrong rhythm | Breaks a core requirement | No rhythm-based first-aid mini-games in the MVP; reviewer checks each mechanic, not just the text |

@@ -1,4 +1,5 @@
 import { PHASES, type PhaseId } from '@/game/types'
+import { Icon } from '@/ui/Icon'
 
 interface Props {
   phase: PhaseId
@@ -14,7 +15,7 @@ function formatClock(ms: number): string {
 }
 
 const hudButton =
-  'flex size-11 items-center justify-center rounded-2xl bg-cotton text-xl shadow-[0_3px_0_var(--color-mist-deep)] active:translate-y-[3px] active:shadow-none'
+  'flex size-11 items-center justify-center rounded-2xl bg-cotton text-blue-ink shadow-[0_3px_0_var(--color-mist-deep)] active:translate-y-[3px] active:shadow-none'
 
 /** Always-visible level header: clock, phase progress, hint and pause. */
 export function Hud({ phase, remainingMs, clockRunning, onHint, onPause }: Props) {
@@ -45,10 +46,10 @@ export function Hud({ phase, remainingMs, clockRunning, onHint, onPause }: Props
         ))}
       </div>
       <button type="button" aria-label="Gợi ý" onClick={onHint} className={hudButton}>
-        💡
+        <Icon name="bulb" />
       </button>
       <button type="button" aria-label="Tạm dừng" onClick={onPause} className={hudButton}>
-        ⏸️
+        <Icon name="pause" />
       </button>
     </header>
   )

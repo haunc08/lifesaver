@@ -1,14 +1,13 @@
-/**
- * Sticker-style icon: a glyph on a rounded badge. Emoji are placeholders
- * until the real icon set lands (docs/art-and-audio.md).
- */
-export function Sticker({ glyph, className = '' }: { glyph: string; className?: string }) {
+import type { ReactNode } from 'react'
+
+/** Rounded badge holding an icon, a number or a small picture. */
+export function Sticker({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
     <span
       aria-hidden
-      className={`inline-flex size-12 shrink-0 items-center justify-center rounded-2xl bg-mist text-2xl ${className}`}
+      className={`inline-flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-mist font-display text-xl font-bold text-blue-ink ${className}`}
     >
-      {glyph}
+      {children}
     </span>
   )
 }

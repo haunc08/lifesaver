@@ -12,6 +12,13 @@
       "sourceType": "github",
       "skillPath": "skills/disciplines/game-ui-ux/SKILL.md",
       "computedHash": "8bf85f22ef57c78fd2a5b14c086e6cb4a1a0f6b729111abeed29be96cf615610"
+    },
+    "kie-models": {
+      "source": "kie.ai",
+      "sourceUrl": "https://kie.ai",
+      "sourceType": "well-known",
+      "computedHash": "c91f2d8afccf0729ed898f3262dadb9344038fbc99f4fef517b630c863b90659",
+      "wellKnownDigest": "sha256:f6247b734033fad6ba75e0875bc105e2307c9b7e7790317a26c1b68838209f22"
     }
   }
 }

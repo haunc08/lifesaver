@@ -33,7 +33,12 @@ test('a new player can create a character, clear the first level and keep their 
 
   // Observe: the phase only ends once enough clues are seen.
   await expect(button(page, /Đã xem 0\/3/)).toBeDisabled()
-  for (const clue of ['Gương mặt', 'Lồng ngực', 'Tay chân']) await button(page, clue).click()
+  for (const clue of ['Gương mặt', 'Lồng ngực', 'Tay chân']) {
+    await button(page, clue).click()
+    // The view zooms in on the clue; tapping the scene zooms back out.
+    await page.locator('[data-zoomed]').click({ position: { x: 8, y: 8 } })
+    await expect(page.locator('[data-zoomed]')).toHaveCount(0)
+  }
   await shot(page, '06-observe')
   await button(page, 'Mình đã rõ rồi').click()
 
@@ -80,7 +85,7 @@ test('a new player can create a character, clear the first level and keep their 
   await expect(page.getByText('1/3')).toBeVisible()
   await shot(page, '13-map')
   await button(page, /^1\. Trường học/).click()
-  await expect(page.getByText('Sắp ra mắt').first()).toBeVisible()
+  await expect(page.getByText('Hoàn thành màn trước để mở khoá').first()).toBeVisible()
   await shot(page, '14-area')
 })
 

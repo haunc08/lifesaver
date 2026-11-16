@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from 'react-router'
 import { useSave } from '@/state/save'
 import { Button } from '@/ui/Button'
 import { Card } from '@/ui/Card'
+import { Player } from '@/ui/Player'
 
 const MAX_NAME_LENGTH = 16
 
@@ -30,9 +31,7 @@ export function CharacterScreen() {
     >
       <h1 className="text-center font-display text-3xl font-bold text-ink">Bạn tên là gì?</h1>
       <div className="flex flex-1 flex-col items-center justify-center gap-6">
-        <div className="text-9xl" aria-hidden>
-          🧑‍🎓
-        </div>
+        <Player className="h-64" />
         <Card className="w-full">
           <label htmlFor="player-name" className="font-display text-sm font-bold text-blue-ink">
             Tên nhân vật

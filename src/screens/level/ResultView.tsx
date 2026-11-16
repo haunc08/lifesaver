@@ -8,6 +8,8 @@ import type { LevelDef, Outcome } from '@/game/types'
 import { useSave } from '@/state/save'
 import { Button } from '@/ui/Button'
 import { Card } from '@/ui/Card'
+import { Guide } from '@/ui/Guide'
+import { Icon } from '@/ui/Icon'
 import { Stars } from '@/ui/Stars'
 
 const OUTCOME_TITLE: Record<Outcome, string> = {
@@ -91,6 +93,7 @@ export function ResultView({ level, state, result, reward, onReplay }: Props) {
   return (
     <div className="h-full space-y-3 overflow-y-auto px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]">
       <Card className="text-center">
+        <Guide mood={result.passed ? 'cheer' : 'worried'} className="mx-auto h-24" />
         <h1 className="font-display text-3xl font-bold text-ink">
           {OUTCOME_TITLE[result.outcome]}
         </h1>
@@ -150,11 +153,19 @@ export function ResultView({ level, state, result, reward, onReplay }: Props) {
       </Card>
 
       <div className="grid grid-cols-2 gap-3">
-        <Button variant="plain" onClick={() => navigate(`/library/${level.lesson.id}`)}>
-          📘 Bài học
+        <Button
+          variant="plain"
+          className="flex items-center justify-center gap-2"
+          onClick={() => navigate(`/library/${level.lesson.id}`)}
+        >
+          <Icon name="book" /> Bài học
         </Button>
-        <Button variant="plain" onClick={onReplay}>
-          🔁 Chơi lại
+        <Button
+          variant="plain"
+          className="flex items-center justify-center gap-2"
+          onClick={onReplay}
+        >
+          <Icon name="replay" /> Chơi lại
         </Button>
         {canGoNext ? (
           <Button className="col-span-2" onClick={() => navigate(`/level/${following.id}`)}>

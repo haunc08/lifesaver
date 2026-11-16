@@ -12,8 +12,8 @@ import {
 import type { AreaDef, LevelOutline } from './types'
 
 const areas: AreaDef[] = [
-  { id: 'school', name: 'A', tagline: '', emoji: '' },
-  { id: 'dormitory', name: 'B', tagline: '', emoji: '' },
+  { id: 'school', name: 'A', tagline: '' },
+  { id: 'dormitory', name: 'B', tagline: '' },
 ]
 const outline: LevelOutline[] = [
   { id: 's1', areaId: 'school', title: '', theme: '' },

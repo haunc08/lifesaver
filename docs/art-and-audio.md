@@ -1,6 +1,6 @@
 # Lifesaver — art and audio plan
 
-Status: draft for review, 2026-11-16. Nothing here has been bought, downloaded or generated yet. Everything on screen today is placeholder: emoji for characters and icons, plain colour boxes for scenes.
+Status: 2026-11-16. The art is generated and in the game; it needs your verdict. No sound yet. Money spent so far: 0.36 USD of Kie credits.
 
 ## 1. Art direction
 
@@ -41,8 +41,8 @@ Section 9 of the requirements and the earlier style reference image describe a s
 
 | Requirement says | How I will treat it |
 | --- | --- |
-| Logo: "Life" in blue, "saver" in red, 3D bubble lettering, dark-blue shadow, light rays | Same name and layout in the pastel blue and coral, drawn flat: solid letters, pale outline, dark-blue offset |
-| Loading screen: light rays, round white clouds, hospital, ambulance, helicopter, running character | Same elements, drawn as flat shapes |
+| Logo: "Life" in blue, "saver" in red, 3D bubble lettering, dark-blue shadow, light rays | Same name and layout in the pastel blue and coral, set in type: solid letters, pale outline, dark-blue offset |
+| Loading screen: light rays, round white clouds, hospital, ambulance, helicopter, running character | The town picture with clouds, hospital and ambulance. No helicopter, running character or light rays yet |
 | Environments: fresh colours, bright lighting, soft shadows | Pastel fills; soft shadows are fine now that blur is allowed |
 | Chibi characters with big heads and strong expressions | Kept |
 | Sticker icons with a white outline | Kept |
@@ -52,56 +52,48 @@ Please confirm this reading, or say which parts of section 9 should stay as writ
 
 ## 2. Graphics
 
-### What I can and cannot do
+### How the art is made
 
-I can write code, so I can build the interface (cards, buttons, bars, layout, motion) and draw vector art as SVG. I have no image-generation tool in this environment, so painted or richly detailed illustrations would need an outside service or you.
+You chose image generation through Kie on 2026-11-16, with the `seedream/5-5-text-to-image` model. That replaced my earlier proposal to draw everything as SVG in code.
 
-The flat direction changes the picture: simple solid-colour shapes are exactly what can be drawn well in SVG code, so I can now make most of the art myself.
-
-### Recommended approach
-
-| Layer | What it covers | How | Cost |
-| --- | --- | --- | --- |
-| Interface | Cards, buttons, pills, clock, progress bar, star rows | Built in code | Free; in place |
-| Characters | Player, guide, side characters, six expressions each | Drawn as SVG in code: one body shape per character, with swappable eyes, mouths and brows for the expressions | Free |
-| Scenes and map | Level viewpoints, world map, town intro, loading screen | Drawn as SVG in code from flat shapes | Free |
-| Icons and props | First-aid kit, siren, phone, lock, bandage, ice pack and so on | Drawn as SVG in code in the same style, so they match the characters | Free |
-
-Why this fits: every image comes from one hand and one palette, so the set is consistent; files are tiny and stay sharp on any screen; expressions and, later, outfits are just swapped parts; and clue spots line up exactly because scenes and spots are both positioned in code.
-
-The limit: my SVG drawings will be clean and simple, not as charming as a professional illustrator's. That is acceptable for this style only if the characters come out appealing, which is why the first step is a sample.
-
-### First step: a sample for you to judge
-
-Before drawing everything, I will draw one small set and stop for your verdict: the player character, the guide character with all six expressions, and the classroom scene for level 1 with its clues in place. If you like it, I continue through the list below. If not, we switch to the fallback.
-
-### Fallback: AI-generated images
-
-| | Route A: I generate through an API | Route B: you generate from my briefs |
+| Layer | What it covers | How |
 | --- | --- | --- |
-| How | You create an account with an image service and give me an API key; I script the generation and retry misses | I write a prompt for each image; you run them in your own tool and drop the files into the project |
-| Cost | Roughly 4.50–7.50 USD for about 150 generations | Free if your existing tool covers it |
-| Risk | Style drifts between images; flat vector style is among the easier ones to keep consistent | Same, and it takes an hour or two of your time |
+| Scenes | One picture per level, the town, five area pictures | Generated; one prompt each in [art/manifest.json](../art/manifest.json) |
+| Characters | The player, and the guide with six expressions | Generated on a transparent background. The guide is one image with six poses in a grid, cut into six files, so all six match |
+| Interface | Cards, buttons, bars, pins, line icons | Built in code with the palette above |
+| Logo | "Lifesaver" wordmark | Still set in type in code; image models are unreliable at lettering |
 
-The cost figure assumes about 0.03–0.05 USD per standard image, taken from third-party price comparison sites dated mid-2026. Those sites disagree with each other, and reference images add input cost on some models, so I would check the official price page and run a three-image test before spending more.
+Every prompt ends with one shared style description (pastel palette, flat fills, no gradients, chibi people, no text in the picture), which is what keeps the set consistent. Pictures never contain writing, because image models garble Vietnamese text.
 
-### Art list for the MVP
+### Making or changing a picture
 
-| Group | Count |
-| --- | --- |
-| Level scenes (12 levels, some with a second viewpoint) | about 18 |
-| World map, five area pictures, town intro | about 8 |
-| Logo and loading screen | 2 |
-| Player character | 1 |
-| Guide character with six expressions | 1 |
-| Side characters with six expressions each | about 8 |
-| Icons and mini-game props | about 25 |
+1. Add or edit the entry in `art/manifest.json`.
+2. Run `node --env-file=.env scripts/gen-art.mjs <id>` (or `--missing` for every picture not yet made). The API key is read from `KIE_API_KEY` in `.env`, which is not in git.
+3. The script saves the original to `art/raw/` (not in git), a compressed copy to `src/assets/art/<id>.webp` (in git), and the credits used to `art/spend.json`.
+4. Look at the picture. For a level scene, run `node scripts/scene-grid.mjs <level-id>` to get a copy with a 10% grid, and set the clue and mini-game positions in the level file from it.
+
+### What exists
+
+| Picture | Count | Where it shows |
+| --- | --- | --- |
+| Level scenes | 12 | Every phase of a level, and the level list |
+| Town | 1 | Loading screen, town intro, lobby, world map |
+| Area pictures | 5 | Top of each area's level list |
+| Player | 1 | Lobby, character creation, town intro |
+| Guide expressions | 6 | Dialogue, outcome, result, lobby, town intro |
+
+### Known limits
+
+- Side characters appear only inside their scene; they have no separate portraits or expressions. The requirements ask for expressive characters, so say if you want portraits for them.
+- A scene is one fixed picture. It does not change when the player acts (the victim does not visibly move to the shade, for example).
+- Text-to-image cannot keep one person identical across different pictures. The guide avoids this by being one sheet. If the player or a victim must appear in several pictures, Kie's image-to-image model would be needed (about 0.025 USD per picture).
+- I have not read Kie's or the model's terms on ownership and commercial use of generated images. Check them before a public release.
 
 ### What I need from you
 
-1. Confirmation of the art-direction reading in section 1.
-2. The original logo and loading screen as files, if they exist, or confirmation that I should draw flat versions.
-3. Any existing designs for the player and guide characters, including the guide's name (placeholder: "Bông").
+1. Your verdict on the generated art, and on the art-direction reading in section 1.
+2. The original logo and loading screen as files, if they exist.
+3. The guide's real name and look (placeholder: "Bông", drawn as a cotton ball with a first-aid satchel).
 
 ## 3. Sound and music
 
@@ -135,16 +127,15 @@ I will only use CC0 or an equally permissive licence, and will re-check the lice
 
 Total allowed for outside costs: about 10 USD.
 
-| Item | Planned | Spent |
+| Item | Spent | Notes |
 | --- | --- | --- |
-| Art drawn in code, fonts, sound, music | 0 | 0 |
-| Image generation (fallback only) | up to 8 USD | 0 |
-| Hosting on a free tier | 0 | 0 |
+| Image generation (Kie credits) | 0.36 USD | 20 pictures at 3.6 credits (0.018 USD) each. The account held 573.7 credits (about 2.87 USD) before and 501.7 after |
+| Fonts, sound, music | 0 | Free licences only |
+| Hosting on a free tier | 0 | Not set up yet |
 
-A custom domain name is not in this budget; the free hosting address will be used unless you say otherwise. I will ask before each purchase or paid sign-up.
+The credits were already on the Kie account you provided; I have not bought anything. A custom domain name is not in this budget. I will ask before any purchase or paid sign-up.
 
 ## Sources checked
 
-- [Image generation API pricing by model, developersdigest.tech](https://www.developersdigest.tech/models/image-generation)
-- [AI image generation API pricing, buildmvpfast.com](https://www.buildmvpfast.com/api-costs/ai-image)
+- Kie model catalogue and price for `seedream/5-5-text-to-image`, read from the Kie API on 2026-11-16
 - [Kenney Interface Sounds](https://kenney.nl/assets/interface-sounds), [UI Audio](https://kenney.nl/assets/ui-audio), [Digital Audio](https://kenney.nl/assets/digital-audio)

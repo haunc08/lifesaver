@@ -5,7 +5,7 @@ import type { LevelDef } from '@/game/types'
  * DRAFT content. Written to exercise the level engine end to end; the first-aid
  * guidance has not been checked by a qualified reviewer (see lesson.reviewer).
  */
-export const school01Fainting: LevelDef = {
+const level: LevelDef = {
   id: 'school-01',
   areaId: 'school',
   title: 'Tiết bốn oi ả',
@@ -34,29 +34,29 @@ export const school01Fainting: LevelDef = {
         id: 'face',
         label: 'Gương mặt',
         caption: 'Mặt Nam tái nhợt, trán vã mồ hôi.',
-        x: 50,
-        y: 30,
+        x: 64,
+        y: 58,
       },
       {
         id: 'chest',
         label: 'Lồng ngực',
         caption: 'Ngực Nam vẫn phập phồng đều: bạn ấy vẫn đang thở.',
-        x: 46,
-        y: 55,
+        x: 67,
+        y: 74,
       },
       {
         id: 'limbs',
         label: 'Tay chân',
         caption: 'Tay chân Nam mềm, không co cứng hay giật.',
-        x: 74,
-        y: 72,
+        x: 53,
+        y: 84,
       },
       {
         id: 'room',
         label: 'Phòng học',
         caption: 'Cửa sổ đóng kín, phòng rất nóng. Hộp đồ ăn sáng của Nam còn nguyên.',
-        x: 18,
-        y: 20,
+        x: 15,
+        y: 30,
       },
     ],
   },
@@ -155,9 +155,9 @@ export const school01Fainting: LevelDef = {
     type: 'tap-targets',
     instruction: 'Giúp Nam dễ chịu hơn: chạm vào những chỗ cần xử lý.',
     targets: [
-      { id: 'legs', label: 'Kê ba lô dưới chân', x: 76, y: 70 },
-      { id: 'collar', label: 'Nới lỏng cổ áo', x: 46, y: 42 },
-      { id: 'window', label: 'Mở cửa sổ', x: 20, y: 18 },
+      { id: 'legs', label: 'Kê ba lô dưới chân', x: 72, y: 86 },
+      { id: 'collar', label: 'Nới lỏng cổ áo', x: 56, y: 68 },
+      { id: 'window', label: 'Mở cửa sổ', x: 24, y: 28 },
     ],
   },
 
@@ -219,3 +219,5 @@ export const school01Fainting: LevelDef = {
     reviewedOn: null,
   },
 }
+
+export default level

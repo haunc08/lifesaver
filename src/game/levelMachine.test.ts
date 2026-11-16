@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { school01Fainting as level } from '@/content/levels/school-01-fainting'
+import level from '@/content/levels/school-01-fainting'
 import { initialState, step, summarize, type LevelEvent, type LevelState } from './levelMachine'
 import { score } from './scoring'
 

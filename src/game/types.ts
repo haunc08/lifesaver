@@ -6,8 +6,6 @@ export interface AreaDef {
   id: AreaId
   name: string
   tagline: string
-  /** Placeholder art until the area illustration exists. */
-  emoji: string
 }
 
 /** The six phases of a level, in play order. */
@@ -62,8 +60,81 @@ export interface TapTargetsConfig {
   targets: { id: string; label: string; x: number; y: number }[]
 }
 
+/** Find every hazard among labelled spots; tapping a harmless spot costs accuracy. */
+export interface ScanConfig {
+  type: 'scan'
+  instruction: string
+  spots: {
+    id: string
+    label: string
+    x: number
+    y: number
+    hazard: boolean
+    /** Shown when the spot is tapped: why it is, or is not, a danger. */
+    note: string
+  }[]
+}
+
+/** Press and hold without letting go, e.g. steady pressure on a wound. */
+export interface HoldConfig {
+  type: 'hold'
+  instruction: string
+  /** Label on the hold button, e.g. "Ép chặt miếng gạc". */
+  action: string
+  /** Gameplay seconds to hold (3–8). Not a real medical duration. */
+  holdSec: number
+  /** Shown while the player is holding. */
+  holdingText: string
+  /** Shown when the player lets go early. */
+  releaseText: string
+  /** What the real duration or rule is, so the short hold teaches nothing wrong. */
+  realityNote: string
+}
+
+/** Move each item to the zone where it belongs; decoy items stay in the tray. */
+export interface DragPlaceConfig {
+  type: 'drag-place'
+  instruction: string
+  zones: { id: string; label: string; x: number; y: number }[]
+  items: {
+    id: string
+    label: string
+    /** Zone this item belongs in; null for a decoy that must not be used. */
+    zoneId: string | null
+    /** Shown when the item is dropped in the wrong place, or a decoy is used. */
+    wrongNote: string
+  }[]
+}
+
+/** A run of short cards, each answered with one of two buttons before its timer ends. */
+export interface QuickDecisionConfig {
+  type: 'quick-decision'
+  instruction: string
+  /** The two answer buttons, e.g. ['Nên làm', 'Không nên']. */
+  answers: [string, string]
+  /** Seconds allowed per card (6–10). */
+  secPerCard: number
+  cards: {
+    id: string
+    text: string
+    /** Index into `answers`. */
+    answer: 0 | 1
+    /** Shown after the card is answered, right or wrong. */
+    why: string
+  }[]
+}
+
+export type SingleMinigameConfig =
+  TapTargetsConfig | ScanConfig | HoldConfig | DragPlaceConfig | QuickDecisionConfig
+
+/** Two or three mechanics played one after another. */
+export interface SequenceConfig {
+  type: 'sequence'
+  steps: SingleMinigameConfig[]
+}
+
 /** Union of all mini-game configs; add a member per new mechanic. */
-export type MinigameConfig = TapTargetsConfig
+export type MinigameConfig = SingleMinigameConfig | SequenceConfig
 
 export type Outcome =
   'success' | 'partial-success' | 'recoverable-mistake' | 'unsafe-failure' | 'timeout'

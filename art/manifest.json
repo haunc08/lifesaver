@@ -1,0 +1,152 @@
+{
+  "styles": {
+    "scene": "Flat vector illustration for a casual mobile game. Muted, soft pastel palette only: dusty sky blue, soft coral pink, mint green, butter yellow, warm off-white, with dark navy blue only for small details like eyes and hair. Solid flat colour fills, no gradients, no shading, no texture, no outlines, no light rays, no lens flare. Simple rounded geometric shapes, minimal detail, clean uncluttered composition. Chibi people with a large round head, small body, dot eyes and a simple expressive mouth. Calm and friendly mood. No text, no letters, no numbers, no signs with writing, no logos, no watermark, no border.",
+    "character": "Flat vector sticker illustration for a casual mobile game. Muted, soft pastel palette only: dusty sky blue, soft coral pink, mint green, butter yellow, warm off-white, with dark navy blue for eyes, hair and a thin clean outline. Solid flat colour fills, no gradients, no shading, no texture. Simple rounded shapes, minimal detail. Chibi proportions: large round head, small body, dot eyes, simple expressive mouth. Isolated on a fully transparent background, nothing else in the image. No text, no letters, no logos, no watermark."
+  },
+  "images": [
+    {
+      "id": "player",
+      "style": "character",
+      "aspect": "3:4",
+      "transparent": true,
+      "width": 480,
+      "prompt": "One full-body chibi character, facing the viewer: a friendly Vietnamese student about sixteen years old with short dark navy hair, wearing a dusty-blue hoodie, off-white trousers and butter-yellow sneakers, with a small mint-green backpack. Standing relaxed with one hand raised in a small wave and a gentle confident smile."
+    },
+    {
+      "id": "guide",
+      "style": "character",
+      "aspect": "3:2",
+      "transparent": true,
+      "width": 360,
+      "slice": {
+        "grid": [
+          3,
+          2
+        ],
+        "names": [
+          "neutral",
+          "happy",
+          "worried",
+          "surprised",
+          "relieved",
+          "cheer"
+        ]
+      },
+      "prompt": "Character expression sheet: the same small mascot drawn six times, arranged in a tidy grid of three columns and two rows with wide empty space between them, all the same size. The mascot is a round fluffy cotton ball creature, warm off-white with a soft blue-grey underside, tiny stubby arms and legs, coral-pink cheeks, and a small mint-green first-aid satchel with a white cross worn across its body. Top row, left to right: calm neutral face; big happy smile with closed eyes; worried face with raised brows and a small frown. Bottom row, left to right: surprised face with wide eyes and round open mouth; relieved face with a soft smile and one sweat drop; cheering with both arms up and a wide open smile."
+    },
+    {
+      "id": "school-01",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "First-person view inside a Vietnamese high-school classroom on a hot day. In the centre of the image a teenage boy in a white school shirt sits slumped on the floor leaning against his desk, eyes closed, face pale with a few sweat drops, arms and legs limp. On the top left wall a large closed window with bright sun outside. On the left desk an unopened lunch box. On the right side, on the floor near the boy's feet, a school backpack. Wooden desks and chairs around, a plain green chalkboard with nothing written on it in the background."
+    },
+    {
+      "id": "town",
+      "style": "scene",
+      "aspect": "3:4",
+      "width": 960,
+      "prompt": "A small friendly Vietnamese town seen from a gentle high angle on a clear day. A school building with a yard at the top left, a four-storey student dormitory at the top right, a street with a pedestrian crossing and a bus stop through the middle, a row of small cafes and a bakery with awnings at the lower left, a green park with round trees and a path at the lower right. A small hospital with a mint-green cross on its roof in the far background, one white ambulance with a mint-green stripe on the street, a few round off-white clouds in a pale blue sky. No people."
+    },
+    {
+      "id": "area-school",
+      "style": "scene",
+      "aspect": "1:1",
+      "width": 320,
+      "prompt": "Front view of a small friendly Vietnamese school building with a yard, a flagpole without a flag, a tree and a gate, pale blue sky, centred, filling the frame. No people."
+    },
+    {
+      "id": "area-dormitory",
+      "style": "scene",
+      "aspect": "1:1",
+      "width": 320,
+      "prompt": "Front view of a small friendly four-storey student dormitory with balconies, a few plants and laundry on the balconies, a bicycle parked in front, pale blue sky, centred, filling the frame. No people."
+    },
+    {
+      "id": "area-streets",
+      "style": "scene",
+      "aspect": "1:1",
+      "width": 320,
+      "prompt": "A calm town street junction with a pedestrian crossing, a traffic light, a bus stop shelter with a bench and one parked motorbike, pale blue sky, centred, filling the frame. No people."
+    },
+    {
+      "id": "area-food-district",
+      "style": "scene",
+      "aspect": "1:1",
+      "width": 320,
+      "prompt": "A cosy street corner with a small cafe and a bakery side by side, striped awnings, a little table with two chairs outside, a potted plant, pale blue sky, centred, filling the frame. No people."
+    },
+    {
+      "id": "area-park",
+      "style": "scene",
+      "aspect": "1:1",
+      "width": 320,
+      "prompt": "A small town park with round trees, a curved jogging path, a bench, a picnic blanket on the grass and a small pond, pale blue sky, centred, filling the frame. No people."
+    },
+    {
+      "id": "school-02",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "First-person view inside a quiet Vietnamese school library with bookshelves along the back wall. A teenage girl in a white school shirt lies on her side on the floor between two rows of wooden tables, her head toward the centre left of the image, eyes closed, arms and legs slightly bent and stiff. A fallen wooden chair and a stack of thick books lie on the floor at the bottom left near her head. A round wall clock with plain tick marks at the top right. A school backpack on the floor at the bottom right. A clear empty patch of floor at the middle right."
+    },
+    {
+      "id": "school-03",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "First-person view of a school football pitch in the late afternoon. A teenage boy in sports kit sits on the grass in the centre, his face in the upper centre, wincing, his right leg stretched out to the right with a slightly swollen ankle at the centre right. In the top left background two other players and a football. A mint-green first-aid bag with a white cross on the sideline at the bottom left. Open empty grass at the bottom right."
+    },
+    {
+      "id": "dormitory-01",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "First-person view of a cosy student dormitory room at night with a warm desk lamp. A teenage girl sits at a small table in the centre facing the viewer, face in the upper centre, wincing slightly and holding up her index finger in the centre of the image; the finger has one tiny coral-red mark. On the table at the lower left a plate of sliced mango and a small fruit knife. A wall shelf with a small mint-green first-aid box with a white cross at the top right. A small sink with a tap at the lower right."
+    },
+    {
+      "id": "dormitory-02",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "First-person view of a dim shared dormitory kitchen in the evening. On the left a kitchen counter with a two-burner gas stove with no flame, a coral-coloured gas cylinder under the counter at the bottom left, and a dish rack on the wall at the top left. A closed window at the top centre. A small lighter on the counter near the centre. A smartphone with a lit screen lying on a small table at the lower centre. A teenage boy stands at the centre right with one hand on his forehead, looking dizzy. On the right wall a light switch beside a closed door at the lower right."
+    },
+    {
+      "id": "streets-01",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "A town road junction at dusk seen from the pavement. Cars and motorbikes moving along a lane across the top left. In the centre a young man wearing a helmet sits on the road, awake, grimacing and holding his right leg, which stretches toward the lower left. His motorbike lies on its side at the centre right. A small puddle of spilled fuel on the road at the lower right below the motorbike. A few pieces of broken mirror glass on the road at the bottom centre. A strip of pavement at the bottom left and a bicycle parked on the kerb at the middle left."
+    },
+    {
+      "id": "streets-02",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "First-person view of a bus stop shelter with a metal bench on a pavement. An older man with grey hair sits on the ground in the centre, his face at the top centre, wincing, holding his left forearm across his body in the centre of the image; his shirt sleeve has a small coral-coloured stain and no wound is visible. The kerb and the edge of the bench at the bottom left. An open backpack on the ground at the lower right with a small mint-green first-aid pouch, a roll of bandage and gauze pads beside it."
+    },
+    {
+      "id": "food-district-01",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "First-person view inside a cosy bakery. A young man stands in the centre with both hands clutching his throat, face flushed, eyes wide, mouth open, unable to speak. A small round table at the lower left with a half-eaten slice of cake on a plate and a fork. A shop owner in an apron stands behind a glass counter of pastries at the right, looking over with concern. Plain empty wall at the upper right."
+    },
+    {
+      "id": "food-district-02",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "First-person view behind the counter of a small cafe. A young woman barista in an apron stands in the centre, her face at the top centre, wincing, holding out her left hand toward the viewer in the centre of the image; the back of the hand is pink-red, and she wears a ring and a wristwatch. On the counter at the upper right a tipped-over kettle with spilled water and a little steam, beside a small stove. A sink with a tap at the middle left."
+    },
+    {
+      "id": "park-01",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "A park jogging track at midday with a bright sun at the top right. A young man in running clothes sits slumped on the edge of the track at the centre right, his face pale and sweaty with sweat drops, eyes half closed, legs stretched toward the bottom right, one hand resting on the ground at his right. A large tree with a wide patch of shade under it at the centre left. An empty water bottle lying on the ground at the bottom left."
+    },
+    {
+      "id": "park-02",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "First-person view of a picnic on the grass in a park. A teenage girl sits in the centre of a picnic blanket, her face at the top centre, wincing a little, holding out her forearm in the centre of the image with one small pink bump on it. Her little sister sits at the left looking worried. A flower bed with two small bees and a cup of orange juice at the top right. A water bottle and a bar of soap at the bottom left. A small cooler box with an ice pack at the bottom right."
+    },
+    {
+      "id": "park-03",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "First-person view of a park lawn after rain. A teenage girl in sportswear sits on the grass in the centre, her face at the top centre, wincing, cradling her swollen right forearm against her body with her left hand, the fingers of the injured hand pointing to the right. A badminton racket and a shuttlecock lie on the wet grass at the bottom left. A badminton net and round trees in the background."
+    }
+  ]
+}

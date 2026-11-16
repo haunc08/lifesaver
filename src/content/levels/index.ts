@@ -1,5 +1,4 @@
 import type { LevelDef, LevelOutline } from '@/game/types'
-import { school01Fainting } from './school-01-fainting'
 
 /**
  * Every MVP level in play order, built or not. The map and the unlock rules read
@@ -40,7 +39,12 @@ export const LEVEL_OUTLINE: LevelOutline[] = [
   },
 ]
 
-/** Levels that are actually playable, by id. */
-export const LEVELS: Record<string, LevelDef | undefined> = {
-  [school01Fainting.id]: school01Fainting,
-}
+/**
+ * Levels that are actually playable, by id. Every level file in this folder
+ * default-exports its LevelDef and is picked up here automatically.
+ */
+const modules = import.meta.glob<LevelDef>('./*-*.ts', { eager: true, import: 'default' })
+
+export const LEVELS: Record<string, LevelDef | undefined> = Object.fromEntries(
+  Object.values(modules).map((level) => [level.id, level]),
+)

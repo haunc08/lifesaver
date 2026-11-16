@@ -1,10 +1,13 @@
-import { useState, type Dispatch } from 'react'
+import { useEffect, useState, type Dispatch } from 'react'
 import type { Feedback, LevelEvent, LevelState } from '@/game/levelMachine'
 import type { ScoreResult } from '@/game/scoring'
 import type { LevelDef } from '@/game/types'
 import { Minigame } from '@/minigames'
 import { Button } from '@/ui/Button'
 import { Card } from '@/ui/Card'
+import { Guide } from '@/ui/Guide'
+import { Pin } from '@/ui/Pin'
+import { GUIDE_NAME } from '@/content/areas'
 import { SceneBox } from './SceneBox'
 
 /** One view per level phase. Each reads the machine state and dispatches events. */
@@ -41,12 +44,17 @@ export function IntroPhase({ level, dispatch, canSkip }: PhaseProps & { canSkip:
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <SceneBox scene={level.scene} />
-      <Card className="flex-1">
-        {line.speaker && (
-          <p className="font-display text-sm font-bold text-blue-ink">{line.speaker}</p>
-        )}
-        <p className="mt-1 text-lg leading-snug">{line.text}</p>
+      <SceneBox artId={level.id} scene={level.scene} />
+      <Card className="flex flex-1 items-start gap-3">
+        {line.speaker === GUIDE_NAME && <Guide mood={line.mood} className="size-16 shrink-0" />}
+        <div className="min-w-0 flex-1">
+          {line.speaker && (
+            <p className="font-display text-sm font-bold text-blue-ink">{line.speaker}</p>
+          )}
+          <p className={`mt-1 text-lg leading-snug ${line.speaker ? '' : 'text-ink-soft italic'}`}>
+            {line.text}
+          </p>
+        </div>
       </Card>
       <div className="flex gap-3">
         {canSkip && !last && (
@@ -62,31 +70,49 @@ export function IntroPhase({ level, dispatch, canSkip }: PhaseProps & { canSkip:
   )
 }
 
+/** How long the view stays zoomed in on a clue before easing back out. */
+const CLUE_ZOOM_MS = 1600
+
 export function ObservePhase({ level, state, dispatch }: PhaseProps) {
   const [openId, setOpenId] = useState<string | null>(null)
+  const [zoomed, setZoomed] = useState(false)
   const open = level.observe.clues.find((c) => c.id === openId)
   const found = state.cluesFound.length
   const { required } = level.observe
 
+  useEffect(() => {
+    if (!zoomed) return
+    const timer = setTimeout(() => setZoomed(false), CLUE_ZOOM_MS)
+    return () => clearTimeout(timer)
+  }, [zoomed, openId])
+
   return (
     <div className="flex h-full flex-col gap-4">
-      <SceneBox scene={level.scene}>
+      <SceneBox
+        artId={level.id}
+        scene={level.scene}
+        focus={zoomed && open ? open : null}
+        onClick={() => setZoomed(false)}
+      >
         {level.observe.clues.map((clue) => {
           const seen = state.cluesFound.includes(clue.id)
           return (
-            <button
+            <Pin
               key={clue.id}
-              type="button"
+              x={clue.x}
+              y={clue.y}
+              tone={seen ? 'done' : 'todo'}
               aria-label={clue.label}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setOpenId(clue.id)
+                setZoomed(true)
                 dispatch({ type: 'clue-found', id: clue.id })
               }}
-              style={{ left: `${clue.x}%`, top: `${clue.y}%` }}
-              className={`absolute flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-cotton text-xl shadow-[0_3px_0_var(--color-mist-deep)] ${seen ? 'bg-mint text-ink' : 'animate-pulse bg-butter'}`}
+              className={zoomed && openId !== clue.id ? 'opacity-0' : ''}
             >
-              {seen ? '✓' : '🔍'}
-            </button>
+              {seen ? '✓' : '?'}
+            </Pin>
           )
         })}
       </SceneBox>
@@ -97,7 +123,7 @@ export function ObservePhase({ level, state, dispatch }: PhaseProps) {
             <p className="mt-1 text-lg leading-snug">{open.caption}</p>
           </>
         ) : (
-          <p className="text-lg leading-snug">Chạm vào các điểm sáng để tìm manh mối.</p>
+          <p className="text-lg leading-snug">Chạm vào các dấu “?” để tìm manh mối.</p>
         )}
       </Card>
       <Button disabled={found < required} onClick={() => dispatch({ type: 'observe-done' })}>
@@ -179,11 +205,13 @@ export function ChoosePhase({ level, state, dispatch }: PhaseProps) {
   )
 }
 
-export function ActPhase({ level, dispatch }: PhaseProps) {
+export function ActPhase({ level, state, dispatch }: PhaseProps) {
   return (
     <Minigame
       config={level.act}
+      artId={level.id}
       scene={level.scene}
+      paused={state.paused}
       onDone={(result) => dispatch({ type: 'act-done', result })}
     />
   )
@@ -197,10 +225,11 @@ export function OutcomePhase({
 }: PhaseProps & { result: ScoreResult; onContinue: () => void }) {
   return (
     <div className="flex h-full flex-col gap-4">
-      <SceneBox scene={level.scene} />
+      <SceneBox artId={level.id} scene={level.scene} />
       <FeedbackBanner feedback={state.feedback} />
-      <Card className="flex-1">
-        <p className="text-lg leading-snug">{level.outcomes[result.outcome]}</p>
+      <Card className="flex flex-1 items-start gap-3">
+        <Guide mood={result.passed ? 'relieved' : 'worried'} className="size-16 shrink-0" />
+        <p className="min-w-0 flex-1 text-lg leading-snug">{level.outcomes[result.outcome]}</p>
       </Card>
       <Button onClick={onContinue}>Xem kết quả</Button>
     </div>

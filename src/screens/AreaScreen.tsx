@@ -6,7 +6,9 @@ import { useSave } from '@/state/save'
 import { Card } from '@/ui/Card'
 import { Screen } from '@/ui/Screen'
 import { Stars } from '@/ui/Stars'
+import { Icon } from '@/ui/Icon'
 import { Sticker } from '@/ui/Sticker'
+import { art } from '@/art'
 
 /** Level select within one area. */
 export function AreaScreen() {
@@ -23,6 +25,11 @@ export function AreaScreen() {
 
   return (
     <Screen title={area.name} back="/map" className="space-y-3">
+      <img
+        src={art(`area-${area.id}`)}
+        alt=""
+        className="aspect-[2/1] w-full rounded-3xl border-4 border-cotton object-cover shadow-[0_5px_0_var(--color-mist-deep)]"
+      />
       {levels.map((level, index) => {
         const built = Boolean(LEVELS[level.id])
         const unlocked = isLevelUnlocked(AREAS, LEVEL_OUTLINE, records, level.id)
@@ -41,10 +48,17 @@ export function AreaScreen() {
             className="block w-full text-left transition-transform active:translate-y-0.5 disabled:opacity-60"
           >
             <Card className="flex items-center gap-3">
-              <Sticker
-                glyph={!built ? '🚧' : unlocked ? String(index + 1) : '🔒'}
-                className="font-display font-bold text-blue-ink"
-              />
+              <Sticker className="!size-14">
+                {!built ? (
+                  <Icon name="soon" />
+                ) : !unlocked ? (
+                  <Icon name="lock" />
+                ) : art(level.id) ? (
+                  <img src={art(level.id)} alt="" className="size-full object-cover" />
+                ) : (
+                  index + 1
+                )}
+              </Sticker>
               <div className="min-w-0 flex-1">
                 <p className="font-display text-lg font-bold text-ink">{level.title}</p>
                 <p className="truncate text-sm text-ink-soft">{status}</p>
