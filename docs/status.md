@@ -11,7 +11,7 @@ Milestones M0 to M5 are built, and the owner called the MVP done on 2026-11-16: 
 
 ### Working now
 
-- First launch: loading screen, three-slide town intro, character creation (name only), home.
+- First launch: loading screen (shown for at least 2.2 seconds, lengthened from 0.9 at the owner's request on 2026-11-16), three-slide town intro, character creation (name only), home.
 - Home is the town map: one marker per area, the player's name, level and XP bar above, the library and "play the next level" below. There is no separate map screen.
 - Locked areas and levels: tapping one explains how it opens and offers to open it at once. The choice is saved.
 - Twelve levels across five areas, each with all six phases, a progress bar, and hint and pause in every phase. The clock is shown only in the phases where it runs, and every round (assess, choose, each mini-game) has its own clock that starts afresh.

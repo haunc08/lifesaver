@@ -35,7 +35,7 @@
 
   /* Entrance animations fill backwards only: once finished they leave no transform
      behind, so they never become the anchor of a position: fixed child. */
-  --animate-fill: fill 0.9s ease-out forwards;
+  --animate-fill: fill 2.2s ease-out forwards;
   --animate-screen-in: screen-in 0.22s ease-out backwards;
   --animate-pop: pop 0.32s cubic-bezier(0.3, 1.5, 0.5, 1) backwards;
   --animate-shake: shake 0.36s ease-in-out backwards;

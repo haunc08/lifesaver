@@ -5,7 +5,7 @@ import { useSave } from '@/state/save'
 import { Logo } from '@/ui/Logo'
 
 /** Matches the length of the bar's fill animation (--animate-fill). */
-const MIN_SHOW_MS = 900
+const MIN_SHOW_MS = 2200
 /** Never hold the player on this screen longer than this, even on a slow connection. */
 const MAX_WAIT_MS = 4000
 
