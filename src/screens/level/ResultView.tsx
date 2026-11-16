@@ -1,0 +1,171 @@
+import { useNavigate } from 'react-router'
+import { AREAS } from '@/content/areas'
+import { LEVEL_OUTLINE, LEVELS } from '@/content/levels'
+import type { LevelState } from '@/game/levelMachine'
+import { isLevelUnlocked, type Reward } from '@/game/progression'
+import { MAX_POINTS, type ScoreBreakdown, type ScoreResult } from '@/game/scoring'
+import type { LevelDef, Outcome } from '@/game/types'
+import { useSave } from '@/state/save'
+import { Button } from '@/ui/Button'
+import { Card } from '@/ui/Card'
+import { Stars } from '@/ui/Stars'
+
+const OUTCOME_TITLE: Record<Outcome, string> = {
+  success: 'Tuyệt vời!',
+  'partial-success': 'Làm tốt lắm!',
+  'recoverable-mistake': 'Suýt nữa thì được',
+  'unsafe-failure': 'Chưa an toàn',
+  timeout: 'Hết giờ rồi',
+}
+
+const SCORE_ROWS: { key: keyof ScoreBreakdown; label: string }[] = [
+  { key: 'action', label: 'Thao tác' },
+  { key: 'solution', label: 'Chọn cách xử trí' },
+  { key: 'assessment', label: 'Nhận định' },
+  { key: 'safety', label: 'An toàn và thứ tự' },
+  { key: 'time', label: 'Thời gian' },
+]
+
+interface ReviewItem {
+  ok: boolean
+  text: string
+  why?: string
+}
+
+/** What the player got right and wrong, with the reason for each. */
+function review(level: LevelDef, state: LevelState): ReviewItem[] {
+  const items: ReviewItem[] = []
+  const right = level.assess.options.find((o) => o.correct)
+
+  for (const id of state.assessWrong) {
+    const o = level.assess.options.find((x) => x.id === id)
+    if (o) items.push({ ok: false, text: `Nhận định: ${o.text}`, why: o.feedback })
+  }
+  if (right) {
+    items.push(
+      state.assessSolved
+        ? { ok: true, text: `Nhận định: ${right.text}` }
+        : { ok: false, text: 'Chưa nhận định đúng tình huống', why: `Đáp án: ${right.text}.` },
+    )
+  }
+
+  if (state.assessSolved) {
+    for (const id of state.rejected) {
+      const o = level.choose.options.find((x) => x.id === id)
+      if (o) items.push({ ok: false, text: o.text, why: o.feedback })
+    }
+    for (const stepId of level.choose.order) {
+      const step = level.choose.options.find((x) => x.id === stepId)
+      if (!step) continue
+      const weaker = level.choose.options.find(
+        (x) => x.substitutes === stepId && state.picks.includes(x.id),
+      )
+      if (state.picks.includes(stepId))
+        items.push({ ok: true, text: step.text, why: step.feedback })
+      else if (weaker) items.push({ ok: false, text: weaker.text, why: weaker.feedback })
+      else items.push({ ok: false, text: `Bỏ sót: ${step.text}`, why: step.feedback })
+    }
+  }
+  return items
+}
+
+interface Props {
+  level: LevelDef
+  state: LevelState
+  result: ScoreResult
+  reward: Reward
+  onReplay: () => void
+}
+
+export function ResultView({ level, state, result, reward, onReplay }: Props) {
+  const navigate = useNavigate()
+  const records = useSave((s) => s.records)
+
+  const index = LEVEL_OUTLINE.findIndex((l) => l.id === level.id)
+  const following = LEVEL_OUTLINE[index + 1]
+  const canGoNext =
+    following !== undefined &&
+    LEVELS[following.id] !== undefined &&
+    isLevelUnlocked(AREAS, LEVEL_OUTLINE, records, following.id)
+
+  return (
+    <div className="h-full space-y-3 overflow-y-auto px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+      <Card className="text-center">
+        <h1 className="font-display text-3xl font-bold text-ink">
+          {OUTCOME_TITLE[result.outcome]}
+        </h1>
+        <Stars count={result.stars} className="text-5xl" />
+        <p className="font-display text-4xl font-extrabold text-blue-ink">
+          {result.total}
+          <span className="text-xl text-ink-soft"> / 100</span>
+        </p>
+        <p className="mt-1 text-ink-soft">
+          {reward.xp > 0
+            ? `+${reward.xp} kinh nghiệm${reward.threeStarBonus ? ' (có thưởng 3 sao)' : ''}`
+            : result.passed
+              ? 'Bạn đã nhận thưởng của màn này rồi.'
+              : 'Vượt qua màn để nhận kinh nghiệm.'}
+        </p>
+      </Card>
+
+      <Card>
+        <h2 className="font-display text-lg font-bold text-ink">Điểm số</h2>
+        <dl className="mt-1 space-y-1">
+          {SCORE_ROWS.map(({ key, label }) => (
+            <div key={key} className="flex justify-between">
+              <dt>{label}</dt>
+              <dd className="font-bold tabular-nums">
+                {result.breakdown[key]} / {MAX_POINTS[key]}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </Card>
+
+      <Card>
+        <h2 className="font-display text-lg font-bold text-ink">Bạn đã làm gì</h2>
+        <ul className="mt-1 space-y-2">
+          {review(level, state).map((item) => (
+            <li key={item.text} className="flex gap-2 leading-snug">
+              <span aria-hidden className={item.ok ? 'text-mint-ink' : 'text-coral-ink'}>
+                {item.ok ? '✓' : '✕'}
+              </span>
+              <span>
+                <span className="sr-only">{item.ok ? 'Đúng: ' : 'Chưa đúng: '}</span>
+                {item.text}
+                {item.why && <span className="block text-sm text-ink-soft">{item.why}</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Card>
+
+      <Card>
+        <h2 className="font-display text-lg font-bold text-coral-ink">Khi nào cần gọi trợ giúp</h2>
+        <ul className="mt-1 list-disc space-y-1 pl-5 leading-snug">
+          {level.lesson.callForHelp.map((sign) => (
+            <li key={sign}>{sign}</li>
+          ))}
+        </ul>
+      </Card>
+
+      <div className="grid grid-cols-2 gap-3">
+        <Button variant="plain" onClick={() => navigate(`/library/${level.lesson.id}`)}>
+          📘 Bài học
+        </Button>
+        <Button variant="plain" onClick={onReplay}>
+          🔁 Chơi lại
+        </Button>
+        {canGoNext ? (
+          <Button className="col-span-2" onClick={() => navigate(`/level/${following.id}`)}>
+            Màn tiếp theo
+          </Button>
+        ) : (
+          <Button className="col-span-2" onClick={() => navigate(`/area/${level.areaId}`)}>
+            Về danh sách màn
+          </Button>
+        )}
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,83 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens. The palette is muted pastel, named after what is in a first-aid
+ * kit: cotton surfaces on a gauze-blue mist, with plaster coral, mint and butter.
+ * Each hue has three roles: the face (fills), -edge (offset under a shape, borders)
+ * and -ink (text in that hue on a light surface). Text on a pastel face is always
+ * ink, never white. See docs/art-and-audio.md.
+ */
+@theme {
+  --font-display: 'Baloo 2 Variable', 'Nunito Variable', system-ui, sans-serif;
+  --font-sans: 'Nunito Variable', system-ui, sans-serif;
+
+  --color-mist: #dde9f1;
+  --color-mist-deep: #c0d3e2;
+  --color-cotton: #fffcf7;
+  --color-ink: #2f3e57;
+  --color-ink-soft: #55637b;
+
+  --color-blue: #a9c8ec;
+  --color-blue-edge: #7fa6d6;
+  --color-blue-ink: #3a5f94;
+  --color-coral: #f4aaa1;
+  --color-coral-edge: #db857b;
+  --color-coral-ink: #a03f36;
+  --color-mint: #a9dbc3;
+  --color-mint-edge: #7dbd9f;
+  --color-mint-ink: #256b4e;
+  --color-butter: #f7dc93;
+  --color-butter-edge: #e2bb58;
+
+  --animate-fill: fill 0.9s ease-out forwards;
+
+  @keyframes fill {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-mist-deep);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+input {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Bubble lettering for the logo: white outline, dark-blue drop shadow. */
+.bubble-text {
+  -webkit-text-stroke: 0.14em var(--color-cotton);
+  paint-order: stroke fill;
+  filter: drop-shadow(0 0.07em 0 var(--color-blue-ink));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
