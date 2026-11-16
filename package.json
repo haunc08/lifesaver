@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write src e2e",
+    "deploy:pages": "node scripts/deploy-pages.mjs",
     "test:e2e": "playwright test --project=chrome",
     "test:e2e:safari": "playwright test --project=safari"
   },

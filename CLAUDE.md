@@ -25,6 +25,7 @@ pnpm typecheck    # tsc
 pnpm lint         # oxlint
 pnpm format       # prettier on src and e2e
 pnpm build        # typecheck + production build
+pnpm deploy:pages # build and publish to GitHub Pages (only when the owner asks)
 ```
 
 `SHOTS=1 pnpm test:e2e` saves screenshots to `e2e/.results/shots/`; `node scripts/contact-sheet.mjs <out.jpg> <image>…` tiles several into one image for review. Use them to check visual changes. Run unit tests, typecheck, lint and the e2e test before calling a change done.
@@ -49,9 +50,8 @@ src/
   app/         Router and the phone-sized shell
 art/           manifest.json (every picture's prompt), spend.json; raw/ is not in git
 scripts/       gen-art.mjs (Kie image generation), scene-grid.mjs, contact-sheet.mjs,
-               import-audio.mjs (downloads -> MP3)
+               import-audio.mjs (downloads -> MP3), deploy-pages.mjs (publish to GitHub Pages)
 e2e/           Playwright tests; helpers.ts holds the shared steps
-.github/workflows/deploy.yml  Builds and publishes to GitHub Pages on every push to main
 ```
 
 The level flow: `LevelScreen` runs `step(level, state, event)` from `levelMachine.ts` in a reducer; phase components dispatch events; at the end `summarize` then `score` produce the result, and `save.recordResult` stores it.
@@ -118,7 +118,9 @@ Files are `src/assets/audio/sfx-<name>.mp3` and `music-<name>.mp3`; names are th
 
 ## Deploying
 
-Pushing to `main` runs `.github/workflows/deploy.yml`: unit tests, a build with `BASE_PATH=/lifesaver/`, and a publish to https://haunc08.github.io/lifesaver/. The site lives in a sub-folder there, so never hard-code a path that starts with `/`: use imports for assets and the router for links. `BASE_PATH=/lifesaver/ pnpm build && BASE_PATH=/lifesaver/ pnpm exec vite preview` serves the same build locally.
+`pnpm deploy:pages` builds with `BASE_PATH=/lifesaver/` and force-pushes the result to the `gh-pages` branch, which GitHub Pages serves at https://haunc08.github.io/lifesaver/ about a minute later. It publishes the working folder as it is, so run the checks and commit first, and deploy only when the owner asks. There is no automatic deploy: a GitHub Action was tried on 2026-11-16 and GitHub refused to start it ("account is locked due to a billing issue"); do not add one back unless the owner says that is resolved.
+
+The site lives in a sub-folder, so never hard-code a path that starts with `/`: use imports for assets and the router for links. `BASE_PATH=/lifesaver/ pnpm build && BASE_PATH=/lifesaver/ pnpm exec vite preview` serves the same build locally.
 
 ## Changing the save format
 

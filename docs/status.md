@@ -7,7 +7,7 @@ Last updated: 2026-11-16, after the home-screen rework, sound, polish and the fi
 Milestones M0 to M5 are built: all twelve MVP levels are playable from start to finish with illustrated scenes, sound and saved progress, and a demo build is published. What remains before a release to real players is M6, which needs people: a qualified reviewer for the first-aid content, and playtesters. All first-aid content is still unreviewed draft. Milestones are defined in [plan.md](plan.md).
 
 - Code: https://github.com/haunc08/lifesaver (public since 2026-11-16, because GitHub Pages on a free plan requires it).
-- Demo: https://haunc08.github.io/lifesaver/ — rebuilt and published by `.github/workflows/deploy.yml` on every push to `main`.
+- Demo: https://haunc08.github.io/lifesaver/ — published by running `pnpm deploy:pages`. It does not update by itself: GitHub refused to run a deploy Action with the message "your account is locked due to a billing issue", so publishing is a manual command.
 
 ### Working now
 
@@ -55,6 +55,7 @@ Milestones M0 to M5 are built: all twelve MVP levels are playable from start to 
 
 ## Waiting on the owner
 
+0. Optional: GitHub reports a billing lock on the account, which stops GitHub Actions. Automatic deploys on push are only possible once that is cleared in GitHub's billing settings.
 1. Listen to the sound effects and both music tracks; say which to swap.
 2. Verdict on the generated art and the pastel palette.
 3. Who reviews the medical content, and which reference lessons should cite.

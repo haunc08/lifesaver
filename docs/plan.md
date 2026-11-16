@@ -24,7 +24,7 @@ These are the choices I made where the requirements left room. Tell me which one
 | Art production | Generated with the Seedream 5.5 model through the Kie API, from prompts kept in the repository; interface icons are drawn in code | Your instruction on 2026-11-16. One shared style prompt keeps the images consistent; cost is tracked in art-and-audio.md |
 | Animation | CSS only: screens and level phases ease in, feedback pops or shakes, the result counts up and its stars land one by one | Small, and it respects the "reduce motion" setting. Nothing loops or wiggles on its own (your instruction) |
 | Sound | Web Audio for effects, one audio element for music, MP3 files | Works on phone browsers, which only allow sound after the first tap |
-| Hosting | GitHub Pages, built and published by a GitHub Action on every push to `main` | Your choice on 2026-11-16; it is free and needs no other account. It required making the repository public |
+| Hosting | GitHub Pages, published by running `pnpm deploy:pages`, which pushes the built site to the `gh-pages` branch | Your choice on 2026-11-16; it is free and needs no other account. It required making the repository public. Publishing is a manual command because GitHub would not run an Action on the account (billing lock) |
 | Saved progress | Browser localStorage, versioned | Meets "progress still there on the next visit" on the same device and browser |
 | Tests | Vitest for game rules and content rules; Playwright plays every level, the mistake paths, small screens and the sound engine | Rules and scoring are where bugs would hurt most |
 
