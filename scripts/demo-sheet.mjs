@@ -14,7 +14,7 @@ const OUT = resolve(process.argv[2] ?? 'docs/demo/lifesaver-screens.jpg')
 const TILE = 300
 const SCALE = 1.5
 
-/** Rows of the sheet. `fresh` marks a mini-game added after the MVP. */
+/** Rows of the sheet: each tile is a screenshot's file name, its name and a one-line note. */
 const ROWS = [
   {
     title: 'Vào game',
@@ -40,14 +40,14 @@ const ROWS = [
     ],
   },
   {
-    title: 'Mini-game mới',
+    title: 'Mini-game',
     tiles: [
-      ['trace-bandage', 'Quấn băng', 'Kéo cuộn băng theo đường chấm', true],
-      ['trace-stinger', 'Gạt ngòi ong', 'Gạt cạnh thẻ ngang qua vết đốt', true],
-      ['rub', 'Chà khăn ướt', 'Chà qua lại lên từng chỗ cần làm mát', true],
-      ['rotate', 'Khoá van gas', 'Xoay tròn quanh tâm, đúng chiều', true],
-      ['dial', 'Bấm số khẩn cấp', 'Người chơi phải tự nhớ số', true],
-      ['call', 'Trả lời tổng đài', 'Câu trả lời chưa tốt được giải thích', true],
+      ['trace-bandage', 'Quấn băng', 'Kéo cuộn băng theo đường chấm'],
+      ['trace-stinger', 'Gạt ngòi ong', 'Gạt cạnh thẻ ngang qua vết đốt'],
+      ['rub', 'Chà khăn ướt', 'Chà qua lại lên từng chỗ cần làm mát'],
+      ['rotate', 'Khoá van gas', 'Xoay tròn quanh tâm, đúng chiều'],
+      ['dial', 'Bấm số khẩn cấp', 'Người chơi phải tự nhớ số'],
+      ['call', 'Trả lời tổng đài', 'Câu trả lời chưa tốt được giải thích'],
     ],
   },
   {
@@ -66,13 +66,12 @@ const ROWS = [
 const fontCss = (pack) =>
   `<link rel="stylesheet" href="${pathToFileURL(resolve(`node_modules/@fontsource-variable/${pack}/wght.css`)).href}">`
 
-const tile = ([file, name, note, fresh], index, numbered) => {
+const tile = ([file, name, note], index, numbered) => {
   statSync(resolve(SHOTS, `${file}.png`)) // fail early when a picture is missing
   return `
     <figure>
       <div class="phone">
         <img src="${pathToFileURL(resolve(SHOTS, `${file}.png`)).href}" alt="">
-        ${fresh ? '<span class="fresh">Mới</span>' : ''}
       </div>
       <figcaption>
         <strong>${numbered ? `${index + 1}. ` : ''}${name}</strong>
@@ -100,22 +99,17 @@ ${fontCss('nunito')}
   h2 { font: 700 30px/1.1 'Baloo 2 Variable', sans-serif; margin: 44px 0 18px; }
   .row { display: grid; grid-template-columns: repeat(6, ${TILE}px); gap: 30px; }
   .phone {
-    position: relative; border: 5px solid #fffcf7; border-radius: 26px;
+    border: 5px solid #fffcf7; border-radius: 26px;
     background: #fffcf7; box-shadow: 0 6px 0 #c0d3e2;
   }
   .phone img { display: block; width: 100%; border-radius: 21px; }
-  .fresh {
-    position: absolute; top: -14px; right: -12px; padding: 3px 14px 1px;
-    border: 3px solid #fffcf7; border-radius: 999px; background: #f7dc93;
-    box-shadow: 0 4px 0 #e2bb58; font: 800 19px/1.3 'Baloo 2 Variable', sans-serif;
-  }
   figcaption { padding: 16px 4px 0; }
   figcaption strong { display: block; font: 700 22px/1.15 'Baloo 2 Variable', sans-serif; }
   figcaption span { display: block; margin-top: 3px; color: #55637b; }
 </style>
 <header>
   <h1>Lifesaver</h1>
-  <p>Trò chơi học sơ cứu trên điện thoại. Các màn hình chính của bản demo.</p>
+  <p>Trò chơi học sơ cứu trên điện thoại. Các màn hình chính.</p>
 </header>
 ${ROWS.map(
   (row) => `

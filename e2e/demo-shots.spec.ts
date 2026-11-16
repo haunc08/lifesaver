@@ -28,7 +28,7 @@ const stepsOf = (level: Awaited<ReturnType<typeof openLevel>>) =>
 function seedProgress(page: Page) {
   const save = {
     state: {
-      profile: { name: 'Minh' },
+      profile: { name: 'Nhi' },
       introSeen: true,
       xp: 190,
       records: {
@@ -75,7 +75,7 @@ test('first launch', async ({ page }) => {
   await expect(button(page, 'Bắt đầu')).toBeVisible()
   await snap(page, 'town-intro')
   await button(page, 'Bắt đầu').click()
-  await page.getByLabel('Tên nhân vật').fill('Minh')
+  await page.getByLabel('Tên nhân vật').fill('Nhi')
   await snap(page, 'character')
 })
 
