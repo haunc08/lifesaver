@@ -10,7 +10,6 @@ const level: LevelDef = {
   areaId: 'dormitory',
   title: 'Mùi lạ trong bếp chung',
   scene: 'Bếp chung',
-  timeLimitSec: 100,
 
   intro: [
     {
@@ -33,7 +32,6 @@ const level: LevelDef = {
   ],
 
   observe: {
-    required: 3,
     clues: [
       {
         id: 'stove',
@@ -41,6 +39,7 @@ const level: LevelDef = {
         caption: 'Một núm vặn của bếp đang mở nhưng không có lửa. Tiếng xì xì phát ra từ đây.',
         x: 22,
         y: 45,
+        essential: true,
       },
       {
         id: 'cylinder',
@@ -48,6 +47,7 @@ const level: LevelDef = {
         caption: 'Bình gas đặt dưới gầm bếp. Van khóa nằm ngay trên đầu bình, dễ với tới.',
         x: 7,
         y: 80,
+        essential: false,
       },
       {
         id: 'window',
@@ -55,6 +55,7 @@ const level: LevelDef = {
         caption: 'Cửa sổ và cửa ra vào đều đóng kín. Mùi nồng quẩn lại trong phòng.',
         x: 40,
         y: 14,
+        essential: true,
       },
       {
         id: 'khoa',
@@ -62,6 +63,7 @@ const level: LevelDef = {
         caption: 'Khoa chóng mặt, buồn nôn nhưng vẫn tỉnh và tự đi lại được.',
         x: 65,
         y: 40,
+        essential: true,
       },
       {
         id: 'switch',
@@ -70,6 +72,7 @@ const level: LevelDef = {
           'Công tắc đèn nằm ngay cạnh cửa. Một tia lửa điện nhỏ cũng đủ gây cháy nổ khi có gas.',
         x: 80,
         y: 61,
+        essential: false,
       },
     ],
   },
@@ -140,13 +143,6 @@ const level: LevelDef = {
         kind: 'correct',
         mandatory: true,
         feedback: 'Khi có mùi gas, việc đầu tiên là không để phát sinh tia lửa.',
-      },
-      {
-        id: 'crack',
-        text: 'Hé cửa sổ một chút cho bớt mùi',
-        kind: 'partial',
-        substitutes: 'vent',
-        feedback: 'Mở cửa là đúng, nhưng phải mở toang tất cả các cửa thì khí gas mới thoát nhanh.',
       },
       {
         id: 'lighter',
@@ -241,7 +237,8 @@ const level: LevelDef = {
 
   hints: {
     intro: 'Đọc hết đoạn hội thoại để biết chuyện gì vừa xảy ra.',
-    observe: 'Chạm vào các điểm sáng trên hình. Cần xem ít nhất 3 manh mối trước khi kết luận.',
+    observe:
+      'Chạm vào từng dấu “?” trên hình. Khi đã xem hết những điểm quan trọng, bạn mới kết luận được.',
     assess:
       'Mùi nồng lạ, tiếng xì xì, núm bếp mở mà không có lửa, Khoa chóng mặt: hãy chọn “Nghi ngờ bếp bị rò rỉ khí gas”.',
     choose:
@@ -274,6 +271,7 @@ const level: LevelDef = {
       'Không dùng bật lửa, diêm hay nến để soi tìm chỗ rò',
       'Không nghe, gọi điện thoại trong khu vực có mùi gas',
       'Không quay lại phòng cho đến khi người có chuyên môn báo an toàn',
+      'Không nán lại lau dọn hay lấy đồ trong phòng có mùi gas',
     ],
     callForHelp: [
       'Báo quản lý ký túc xá hoặc tòa nhà mỗi khi nghi ngờ rò rỉ gas',

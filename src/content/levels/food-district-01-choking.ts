@@ -11,7 +11,6 @@ const level: LevelDef = {
   areaId: 'food-district',
   title: 'Miếng bánh vội vàng',
   scene: 'Tiệm bánh',
-  timeLimitSec: 125,
 
   intro: [
     {
@@ -33,7 +32,6 @@ const level: LevelDef = {
   ],
 
   observe: {
-    required: 3,
     clues: [
       {
         id: 'hands',
@@ -41,6 +39,7 @@ const level: LevelDef = {
         caption: 'Hai tay anh Khoa ôm chặt lấy cổ. Đây là dấu hiệu thường gặp khi bị hóc.',
         x: 40,
         y: 78,
+        essential: true,
       },
       {
         id: 'face',
@@ -48,6 +47,7 @@ const level: LevelDef = {
         caption: 'Mặt anh Khoa đỏ lên rồi tím dần, mắt mở to hoảng hốt.',
         x: 37,
         y: 48,
+        essential: true,
       },
       {
         id: 'sound',
@@ -55,6 +55,7 @@ const level: LevelDef = {
         caption: 'Anh Khoa không nói được, không ho ra tiếng, cũng không nghe thấy tiếng thở.',
         x: 56,
         y: 62,
+        essential: true,
       },
       {
         id: 'table',
@@ -62,6 +63,7 @@ const level: LevelDef = {
         caption: 'Miếng bánh ăn dở còn trên đĩa. Anh Khoa vừa cắn một miếng to.',
         x: 11,
         y: 76,
+        essential: false,
       },
       {
         id: 'owner',
@@ -69,6 +71,7 @@ const level: LevelDef = {
         caption: 'Cô chủ tiệm đang đứng sau quầy, có thể nhờ cô gọi cấp cứu.',
         x: 81,
         y: 40,
+        essential: false,
       },
     ],
   },
@@ -135,14 +138,6 @@ const level: LevelDef = {
         feedback: 'Bàn để sau dọn cũng được. Anh Khoa đang cần được giúp từng giây.',
       },
       {
-        id: 'soft-pat',
-        text: 'Vỗ nhè nhẹ vào lưng khi anh Khoa đang đứng thẳng',
-        kind: 'partial',
-        substitutes: 'blows',
-        feedback:
-          'Vỗ lưng là đúng hướng, nhưng cần cho anh cúi ra trước và vỗ dứt khoát vào giữa hai xương bả vai.',
-      },
-      {
         id: 'safe',
         text: 'Nhìn nhanh xung quanh, đẩy ghế và ly tách ra xa để có chỗ đứng vững',
         kind: 'correct',
@@ -168,7 +163,7 @@ const level: LevelDef = {
     type: 'quick-decision',
     instruction: 'Phải quyết định thật nhanh! Việc nào nên làm, việc nào không?',
     answers: ['Nên làm', 'Không nên'],
-    secPerCard: 10,
+    secPerCard: 12,
     cards: [
       {
         id: 'encourage-cough',
@@ -230,7 +225,8 @@ const level: LevelDef = {
 
   hints: {
     intro: 'Đọc hết đoạn hội thoại để biết chuyện gì vừa xảy ra ở tiệm bánh.',
-    observe: 'Chạm vào các điểm sáng trên hình. Cần xem ít nhất 3 manh mối trước khi kết luận.',
+    observe:
+      'Chạm vào từng dấu “?” trên hình. Khi đã xem hết những điểm quan trọng, bạn mới kết luận được.',
     assess:
       'Anh Khoa đang ăn thì ôm cổ, không nói, không ho, không thở được: hãy chọn “Nghi ngờ anh Khoa bị hóc dị vật, đường thở tắc nặng”.',
     choose:
@@ -263,6 +259,7 @@ const level: LevelDef = {
       'Không thò tay móc khi không nhìn thấy dị vật',
       'Không vỗ lưng khi nạn nhân đang đứng thẳng và còn ho tốt',
       'Không để nạn nhân một mình đi vào nhà vệ sinh hay ra chỗ vắng',
+      'Không mất thời gian vào việc khác: người hóc nặng cần được giúp ngay',
     ],
     callForHelp: [
       'Nạn nhân không nói, không ho, không thở được',

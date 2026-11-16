@@ -10,7 +10,6 @@ const level: LevelDef = {
   areaId: 'school',
   title: 'Trận bóng chiều thứ sáu',
   scene: 'Sân bóng',
-  timeLimitSec: 120,
 
   intro: [
     {
@@ -34,7 +33,6 @@ const level: LevelDef = {
   ],
 
   observe: {
-    required: 3,
     clues: [
       {
         id: 'ankle',
@@ -42,6 +40,7 @@ const level: LevelDef = {
         caption: 'Cổ chân phải của Huy bắt đầu sưng lên, chạm nhẹ vào là đau.',
         x: 63,
         y: 66,
+        essential: true,
       },
       {
         id: 'foot',
@@ -50,6 +49,7 @@ const level: LevelDef = {
           'Bàn chân và cổ chân không lệch hay biến dạng. Huy vẫn cử động được các ngón chân.',
         x: 81,
         y: 73,
+        essential: true,
       },
       {
         id: 'face',
@@ -57,6 +57,7 @@ const level: LevelDef = {
         caption: 'Huy nhăn mặt vì đau nhưng vẫn tỉnh táo, nói chuyện bình thường.',
         x: 50,
         y: 36,
+        essential: true,
       },
       {
         id: 'field',
@@ -64,6 +65,7 @@ const level: LevelDef = {
         caption: 'Trận đấu vẫn tiếp tục. Bóng và các bạn đang chạy ngay gần chỗ Huy ngồi.',
         x: 18,
         y: 36,
+        essential: false,
       },
       {
         id: 'kit',
@@ -71,6 +73,7 @@ const level: LevelDef = {
         caption: 'Bên đường biên có túi y tế của lớp: túi chườm lạnh, khăn và băng thun.',
         x: 19,
         y: 80,
+        essential: false,
       },
     ],
   },
@@ -143,13 +146,6 @@ const level: LevelDef = {
         feedback: 'Cho cổ chân nghỉ ngay giúp chấn thương không nặng thêm.',
       },
       {
-        id: 'cold-only',
-        text: 'Chườm túi lạnh bọc trong khăn lên cổ chân',
-        kind: 'partial',
-        substitutes: 'cold',
-        feedback: 'Chườm lạnh là đúng, nhưng kê cao chân nữa thì đỡ sưng hơn.',
-      },
-      {
         id: 'walk',
         text: 'Dìu Huy đứng dậy chạy thử vài bước xem sao',
         kind: 'unsafe',
@@ -174,30 +170,34 @@ const level: LevelDef = {
           'Chăm sóc cổ chân cho Huy: đưa từng món đồ đến đúng chỗ. Món không nên dùng thì để yên.',
         zones: [
           { id: 'ankle', label: 'Cổ chân đau', x: 61, y: 62 },
-          { id: 'under', label: 'Dưới bắp chân', x: 77, y: 84 },
+          { id: 'under', label: 'Dưới bắp chân, để kê chân cao', x: 77, y: 84 },
         ],
         items: [
           {
             id: 'oil',
             label: 'Chai dầu nóng',
+            art: 'item-oil-bottle',
             zoneId: null,
             wrongNote: 'Dầu nóng làm cổ chân sưng hơn trong những ngày đầu.',
           },
           {
             id: 'coldpack',
             label: 'Túi chườm lạnh bọc khăn',
+            art: 'item-cold-pack',
             zoneId: 'ankle',
             wrongNote: 'Túi chườm lạnh cần đặt lên cổ chân đang đau.',
           },
           {
             id: 'hotpack',
             label: 'Túi chườm nóng',
+            art: 'item-hot-pack',
             zoneId: null,
             wrongNote: 'Chườm nóng sớm làm sưng nhiều hơn. Lúc này cần chườm lạnh.',
           },
           {
             id: 'backpack',
-            label: 'Ba lô',
+            label: 'Ba lô để kê chân',
+            art: 'item-backpack',
             zoneId: 'under',
             wrongNote: 'Ba lô dùng để kê dưới bắp chân, nâng chân Huy lên cao.',
           },
@@ -208,6 +208,7 @@ const level: LevelDef = {
         instruction: 'Giữ túi chườm lạnh áp đều lên cổ chân Huy.',
         action: 'Giữ túi chườm lạnh',
         holdSec: 5,
+        tool: { art: 'item-cold-pack', x: 62, y: 64 },
         holdingText: 'Giữ yên tay… Huy thấy dễ chịu hơn rồi.',
         releaseText: 'Túi chườm bị tuột mất rồi. Áp lại và giữ đều tay nhé.',
         realityNote:
@@ -231,7 +232,8 @@ const level: LevelDef = {
 
   hints: {
     intro: 'Đọc hết đoạn hội thoại để biết chuyện gì vừa xảy ra.',
-    observe: 'Chạm vào các điểm sáng trên hình. Cần xem ít nhất 3 manh mối trước khi kết luận.',
+    observe:
+      'Chạm vào từng dấu “?” trên hình. Khi đã xem hết những điểm quan trọng, bạn mới kết luận được.',
     assess:
       'Huy lật cổ chân khi tiếp đất, cổ chân đau và sưng nhưng không biến dạng: hãy chọn “Nghi ngờ Huy bị bong gân cổ chân”.',
     choose:
@@ -262,6 +264,7 @@ const level: LevelDef = {
       'Không xoa dầu nóng, chườm nóng hay nắn bóp trong những ngày đầu',
       'Không cố đi lại, chạy nhảy trên chân đang đau',
       'Không áp đá lạnh trực tiếp lên da',
+      'Không mải tranh cãi ai đúng ai sai khi bạn mình đang đau',
     ],
     callForHelp: [
       'Khớp hoặc xương trông biến dạng, lệch khác thường',

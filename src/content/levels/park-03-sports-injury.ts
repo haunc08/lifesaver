@@ -10,7 +10,6 @@ const level: LevelDef = {
   areaId: 'park',
   title: 'Buổi dã ngoại cuối tuần',
   scene: 'Bãi cỏ công viên',
-  timeLimitSec: 150,
 
   intro: [
     {
@@ -32,7 +31,6 @@ const level: LevelDef = {
   ],
 
   observe: {
-    required: 3,
     clues: [
       {
         id: 'arm',
@@ -41,6 +39,7 @@ const level: LevelDef = {
           'Cẳng tay phải của Linh sưng lên nhanh và bắt đầu bầm tím. Da vẫn lành, không có vết thương hở.',
         x: 55,
         y: 60,
+        essential: true,
       },
       {
         id: 'posture',
@@ -48,6 +47,7 @@ const level: LevelDef = {
         caption: 'Linh dùng tay trái ôm chặt tay phải vào người và không chịu cử động nó.',
         x: 50,
         y: 79,
+        essential: true,
       },
       {
         id: 'fingers',
@@ -55,6 +55,7 @@ const level: LevelDef = {
         caption: 'Các ngón tay của Linh vẫn hồng, ấm, còn cảm giác và nhúc nhích nhẹ được.',
         x: 40,
         y: 65,
+        essential: false,
       },
       {
         id: 'face',
@@ -62,6 +63,7 @@ const level: LevelDef = {
         caption: 'Linh nhăn mặt vì đau nhưng vẫn tỉnh táo. Bạn ấy nói mình không bị đập đầu.',
         x: 47,
         y: 42,
+        essential: true,
       },
       {
         id: 'grass',
@@ -69,6 +71,7 @@ const level: LevelDef = {
         caption: 'Cỏ còn ướt sau cơn mưa sáng nên rất trơn. Vợt và cầu rơi ngay cạnh chỗ Linh ngã.',
         x: 20,
         y: 82,
+        essential: false,
       },
     ],
   },
@@ -142,14 +145,6 @@ const level: LevelDef = {
         feedback: 'Dọn chỗ an toàn trước để không ai trượt ngã thêm hay va vào Linh.',
       },
       {
-        id: 'self-hold',
-        text: 'Bảo Linh ngồi yên, tự ôm tay chờ người đến',
-        kind: 'partial',
-        substitutes: 'still',
-        feedback:
-          'Giữ yên là đúng, nhưng có người đỡ và có dây treo tay thì Linh đỡ đau và vững hơn.',
-      },
-      {
         id: 'still',
         text: 'Giữ nguyên tay Linh ở tư thế bạn ấy đang giữ, đỡ bằng áo khoác gấp làm dây treo',
         kind: 'correct',
@@ -172,7 +167,7 @@ const level: LevelDef = {
         type: 'quick-decision',
         instruction: 'Trong lúc chờ người lớn đến: việc nào nên làm, việc nào không?',
         answers: ['Nên làm', 'Không nên'],
-        secPerCard: 8,
+        secPerCard: 12,
         cards: [
           {
             id: 'keep',
@@ -218,6 +213,7 @@ const level: LevelDef = {
           'Đỡ cánh tay Linh thật vững, phía trên và phía dưới chỗ đau, cho đến khi người lớn đến.',
         action: 'Đỡ yên cánh tay',
         holdSec: 6,
+        tool: { art: 'item-hands', x: 55, y: 60 },
         holdingText: 'Giữ thật yên, đừng buông tay…',
         releaseText: 'Tay Linh bị xê dịch và đau hơn. Đỡ lại thật vững nhé!',
         realityNote:
@@ -241,7 +237,8 @@ const level: LevelDef = {
 
   hints: {
     intro: 'Đọc hết đoạn hội thoại để biết chuyện gì vừa xảy ra.',
-    observe: 'Chạm vào các điểm sáng trên hình. Cần xem ít nhất 3 manh mối trước khi kết luận.',
+    observe:
+      'Chạm vào từng dấu “?” trên hình. Khi đã xem hết những điểm quan trọng, bạn mới kết luận được.',
     assess:
       'Ngã chống tay, đau nhiều, sưng bầm nhanh và không dám cử động: hãy chọn “Nghi ngờ Linh bị gãy xương cẳng tay”.',
     choose:
@@ -272,6 +269,7 @@ const level: LevelDef = {
       'Không xoa dầu nóng, bóp hay đắp lá lên chỗ sưng',
       'Không bảo nạn nhân thử cử động xem còn đau không',
       'Không cho ăn uống trong lúc chờ, vì nạn nhân có thể cần phẫu thuật',
+      'Không tiếp tục cuộc chơi ngay cạnh người đang bị thương',
     ],
     callForHelp: [
       'Có vết thương hở hoặc nhìn thấy đầu xương',

@@ -48,31 +48,39 @@ test('a new player can create a character, clear the first level and keep their 
   await button(page, 'Quan sát hiện trường').click()
 
   // Observe: the phase only ends once enough clues are seen.
-  await expect(button(page, /Đã xem 0\/3/)).toBeDisabled()
+  await expect(button(page, 'Còn 3 điểm quan trọng chưa xem')).toBeDisabled()
+  // An optional clue does not count towards moving on, however many are opened.
+  await button(page, 'Phòng học').click()
+  await expect(button(page, 'Còn 3 điểm quan trọng chưa xem')).toBeDisabled()
   for (const clue of ['Gương mặt', 'Lồng ngực', 'Tay chân']) {
     await button(page, clue).click()
-    // The view zooms in on the clue; tapping the scene zooms back out.
-    await page.locator('[data-zoomed]').click({ position: { x: 8, y: 8 } })
-    await expect(page.locator('[data-zoomed]')).toHaveCount(0)
   }
   await shot(page, '06-observe')
   await button(page, 'Mình đã rõ rồi').click()
 
   // Assess: the clock appears now that it runs. One wrong answer, then the right one.
-  await expect(page.getByRole('timer')).toBeVisible()
+  await expect(page.getByRole('timer')).toHaveText('1:00')
   await button(page, 'Nam bị hóc dị vật').click()
   await expect(page.getByRole('status')).toContainText('vẫn thở đều')
   await shot(page, '07-assess')
   await button(page, 'Nghi ngờ Nam bị ngất xỉu').click()
+  // Each round has its own clock, which starts afresh.
+  await expect(page.getByRole('timer')).toHaveText('2:00')
 
   // Choose: an unsafe option is blocked, then the right steps in order.
   await button(page, 'Đổ nước đường').click()
   await expect(page.getByRole('status')).toContainText('Không an toàn')
-  for (const step of ['Nhìn quanh', 'Gọi tên', 'Nhờ bạn báo thầy cô', 'kê chân cao']) {
+  for (const step of ['Nhìn quanh', 'Gọi tên', 'Nhờ bạn báo thầy cô']) {
     await button(page, new RegExp(step)).click()
   }
+  // Picks are final: there is no undo and no confirm button.
+  await expect(page.getByText('Đã chọn 3/4 việc')).toBeVisible()
+  await expect(button(page, 'Thực hiện')).toHaveCount(0)
+  await expect(button(page, 'Bỏ bước cuối')).toHaveCount(0)
   await shot(page, '08-choose')
-  await button(page, 'Thực hiện').click()
+  // The last right step completes the plan and the action starts by itself, with a fresh clock.
+  await button(page, /kê chân cao/).click()
+  await expect(page.getByRole('timer')).toHaveText('1:30')
 
   // Act: the hint is available and the mini-game completes.
   await button(page, 'Gợi ý').click()
@@ -83,6 +91,10 @@ test('a new player can create a character, clear the first level and keep their 
   await expect(button(page, 'Thoát màn')).toBeVisible()
   await shot(page, '09b-pause')
   await button(page, 'Chơi tiếp').click()
+  // One of the numbered things must not be done; tapping it is refused and explained.
+  await button(page, 'Xốc Nam ngồi dậy').tap()
+  await expect(page.getByRole('status')).toContainText('Không xốc dậy')
+  await shot(page, '09c-decoy')
   for (const target of ['Kê ba lô dưới chân', 'Nới lỏng cổ áo', 'Mở cửa sổ']) {
     await button(page, target).tap()
   }

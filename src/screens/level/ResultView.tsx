@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { duckMusic, sfx } from '@/audio'
+import { AREAS } from '@/content/areas'
 import { LEVEL_OUTLINE, LEVELS } from '@/content/levels'
 import type { LevelState } from '@/game/levelMachine'
 import type { Reward } from '@/game/progression'
@@ -56,17 +57,26 @@ function review(level: LevelDef, state: LevelState): ReviewItem[] {
       const o = level.choose.options.find((x) => x.id === id)
       if (o) items.push({ ok: false, text: o.text, why: o.feedback })
     }
-    for (const stepId of level.choose.order) {
-      const step = level.choose.options.find((x) => x.id === stepId)
-      if (!step) continue
-      const weaker = level.choose.options.find(
-        (x) => x.substitutes === stepId && state.picks.includes(x.id),
-      )
-      if (state.picks.includes(stepId))
-        items.push({ ok: true, text: step.text, why: step.feedback })
-      else if (weaker) items.push({ ok: false, text: weaker.text, why: weaker.feedback })
-      else items.push({ ok: false, text: `Bỏ sót: ${step.text}`, why: step.feedback })
+    const { order } = level.choose
+    const places = state.picks.map((id) => order.indexOf(id))
+    if (places.some((place, i) => i > 0 && place < places[i - 1])) {
+      items.push({
+        ok: false,
+        text: 'Thứ tự bạn chọn chưa hợp lý',
+        why: 'Thứ tự nên làm là thứ tự được đánh số dưới đây.',
+      })
     }
+    // The right steps, in the order they should be done.
+    order.forEach((stepId, i) => {
+      const step = level.choose.options.find((x) => x.id === stepId)
+      if (!step) return
+      const picked = state.picks.includes(stepId)
+      items.push({
+        ok: picked,
+        text: `${picked ? '' : 'Chưa làm: '}${i + 1}. ${step.text}`,
+        why: step.feedback,
+      })
+    })
   }
   return items
 }
@@ -119,11 +129,17 @@ export function ResultView({ level, state, result, reward, onReplay }: Props) {
 
   const index = LEVEL_OUTLINE.findIndex((l) => l.id === level.id)
   const following = LEVEL_OUTLINE[index + 1]
-  const canGoNext =
+  const nextOpen =
     following !== undefined && LEVELS[following.id] !== undefined && levelOpen(following.id)
+  // The next level in the same area starts straight away. The first level of a new
+  // area does not: the player is taken to that area first.
+  const nextArea =
+    nextOpen && following.areaId !== level.areaId
+      ? AREAS.find((a) => a.id === following.areaId)
+      : undefined
 
   return (
-    <div className="h-full space-y-3 overflow-y-auto px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+    <div className="h-full space-y-3 overflow-y-auto px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
       <Card className="text-center">
         <Guide mood={result.passed ? 'cheer' : 'worried'} className="mx-auto h-24 animate-pop" />
         <h1 className="font-display text-3xl font-bold text-ink">
@@ -191,7 +207,15 @@ export function ResultView({ level, state, result, reward, onReplay }: Props) {
         <Button variant="plain" icon="replay" onClick={onReplay}>
           Chơi lại
         </Button>
-        {canGoNext ? (
+        {nextArea ? (
+          <Button
+            className="col-span-2"
+            icon="map"
+            onClick={() => navigate(`/area/${nextArea.id}`)}
+          >
+            Đến khu mới: {nextArea.name}
+          </Button>
+        ) : nextOpen ? (
           <Button
             className="col-span-2"
             icon="next"

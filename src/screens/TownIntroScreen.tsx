@@ -40,7 +40,7 @@ export function TownIntroScreen() {
   }
 
   return (
-    <div className="flex h-full flex-col px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+    <div className="flex h-full flex-col px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
       <div className="flex flex-1 flex-col items-center justify-center gap-5">
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border-4 border-cotton shadow-[0_5px_0_var(--color-mist-deep)]">
           <img src={art('town')} alt="" className="absolute inset-0 size-full object-cover" />

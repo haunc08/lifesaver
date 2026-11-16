@@ -57,7 +57,7 @@ export function QuickDecision({ config, paused, onDone }: MinigameProps<QuickDec
   }
 
   return (
-    <div className="flex h-full flex-col gap-3">
+    <div className="flex flex-1 flex-col gap-3">
       <p className="text-center text-lg leading-snug">{config.instruction}</p>
       <div className="h-3 overflow-hidden rounded-full bg-cotton" aria-hidden>
         <div

@@ -10,7 +10,6 @@ const level: LevelDef = {
   areaId: 'dormitory',
   title: 'Đĩa trái cây đêm khuya',
   scene: 'Phòng ký túc xá',
-  timeLimitSec: 90,
 
   intro: [
     {
@@ -28,7 +27,6 @@ const level: LevelDef = {
   ],
 
   observe: {
-    required: 3,
     clues: [
       {
         id: 'finger',
@@ -36,6 +34,7 @@ const level: LevelDef = {
         caption: 'Một vết cắt nhỏ và nông ở ngón trỏ. Máu rỉ ra chậm, không chảy thành dòng.',
         x: 43,
         y: 49,
+        essential: true,
       },
       {
         id: 'face',
@@ -43,6 +42,7 @@ const level: LevelDef = {
         caption: 'Mai hơi sợ nhưng vẫn tỉnh táo, không choáng váng.',
         x: 57,
         y: 43,
+        essential: true,
       },
       {
         id: 'knife',
@@ -50,6 +50,7 @@ const level: LevelDef = {
         caption: 'Con dao gọt trái cây còn nằm ở mép bàn, lưỡi chĩa ra ngoài.',
         x: 48,
         y: 71,
+        essential: true,
       },
       {
         id: 'kit',
@@ -57,6 +58,7 @@ const level: LevelDef = {
         caption: 'Trên kệ có hộp y tế của phòng: gạc sạch, băng cá nhân và nước muối sinh lý.',
         x: 84,
         y: 14,
+        essential: false,
       },
       {
         id: 'sink',
@@ -64,6 +66,7 @@ const level: LevelDef = {
         caption: 'Bồn rửa có vòi nước sạch và xà phòng để rửa tay.',
         x: 88,
         y: 80,
+        essential: false,
       },
     ],
   },
@@ -122,14 +125,6 @@ const level: LevelDef = {
         feedback: 'Rửa sạch và che kín giúp vết cắt không bị nhiễm bẩn.',
       },
       {
-        id: 'tissue',
-        text: 'Lấy khăn giấy ép lên vết cắt',
-        kind: 'partial',
-        substitutes: 'press',
-        feedback:
-          'Ép lên vết cắt là đúng, nhưng gạc sạch tốt hơn khăn giấy vì không để lại vụn giấy trong vết thương.',
-      },
-      {
         id: 'safe',
         text: 'Cất con dao vào chỗ an toàn và rửa sạch tay mình',
         kind: 'correct',
@@ -163,6 +158,7 @@ const level: LevelDef = {
     instruction: 'Cầm máu cho Mai: ép miếng gạc sạch lên vết cắt và giữ đều tay.',
     action: 'Ép chặt miếng gạc',
     holdSec: 6,
+    tool: { art: 'item-gauze', x: 43, y: 49 },
     holdingText: 'Giữ đều tay, đừng nhấc gạc lên xem…',
     releaseText: 'Nhấc gạc lên sớm thì máu lại rỉ ra. Ép lại và giữ yên nhé.',
     realityNote:
@@ -184,7 +180,8 @@ const level: LevelDef = {
 
   hints: {
     intro: 'Đọc hết đoạn hội thoại để biết chuyện gì vừa xảy ra.',
-    observe: 'Chạm vào các điểm sáng trên hình. Cần xem ít nhất 3 manh mối trước khi kết luận.',
+    observe:
+      'Chạm vào từng dấu “?” trên hình. Khi đã xem hết những điểm quan trọng, bạn mới kết luận được.',
     assess:
       'Vết cắt nhỏ, nông, máu rỉ chậm và Mai vẫn tỉnh táo: hãy chọn “Nghi ngờ Mai bị đứt tay nhẹ, vết cắt nông”.',
     choose:
@@ -215,6 +212,7 @@ const level: LevelDef = {
       'Không bôi kem đánh răng, bột cà phê, thuốc lào hay lá cây lên vết thương',
       'Không nhấc gạc lên liên tục để xem máu đã cầm chưa',
       'Không ngậm hay mút vết thương',
+      'Không trì hoãn sơ cứu để làm nốt việc đang dở',
     ],
     callForHelp: [
       'Máu phun thành tia hoặc chảy ồ ạt: gọi 115 ngay',

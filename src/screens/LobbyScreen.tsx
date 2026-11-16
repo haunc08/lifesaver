@@ -40,7 +40,7 @@ export function LobbyScreen() {
   const nextArea = next && AREAS.find((a) => a.id === next.areaId)
 
   return (
-    <div className="relative flex h-full flex-col gap-3 px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+    <div className="relative flex h-full flex-col gap-3 px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
       <Card className="flex items-center gap-3 !p-3">
         <PlayerAvatar />
         <div className="min-w-0 flex-1">

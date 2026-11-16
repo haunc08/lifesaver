@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import level from '@/content/levels/school-01-fainting'
-import { initialState, step, summarize, type LevelEvent, type LevelState } from './levelMachine'
+import {
+  ASSESS_TIME_SEC,
+  CHOOSE_TIME_SEC,
+  initialState,
+  MINIGAME_TIME_SEC,
+  step,
+  summarize,
+  type LevelEvent,
+  type LevelState,
+} from './levelMachine'
 import { score } from './scoring'
 
 const play = (events: LevelEvent[], from: LevelState = initialState()) =>
@@ -22,20 +31,26 @@ describe('level machine', () => {
     const end = play([
       ...toChoose,
       ...pick('safe', 'check', 'call', 'lay'),
-      { type: 'confirm-solution' },
+      { type: 'start-act' },
       finishAct,
     ])
     expect(end).toMatchObject({ phase: 'outcome', endReason: 'completed' })
     expect(score(summarize(level, end))).toMatchObject({ total: 100, stars: 3, outcome: 'success' })
   })
 
-  it('does not leave the observe phase before enough clues are found', () => {
-    const s = play([
+  it('leaves the observe phase only when every essential clue has been seen', () => {
+    // Two essential clues and the optional one are not enough: it is not a matter of counting.
+    const some = play([
       { type: 'intro-done' },
       { type: 'clue-found', id: 'face' },
+      { type: 'clue-found', id: 'chest' },
+      { type: 'clue-found', id: 'room' },
       { type: 'observe-done' },
     ])
-    expect(s.phase).toBe('observe')
+    expect(some.phase).toBe('observe')
+
+    // The essential ones alone are enough; the optional clue can be left.
+    expect(play(toAssess).phase).toBe('assess')
   })
 
   it('allows a second assessment attempt, then fails the branch', () => {
@@ -60,36 +75,33 @@ describe('level machine', () => {
     expect(score(summarize(level, s))).toMatchObject({ outcome: 'unsafe-failure', passed: false })
   })
 
-  it('skips the action and fails when a mandatory step is missing', () => {
-    const s = play([...toChoose, ...pick('safe', 'lay'), { type: 'confirm-solution' }])
-    expect(s).toMatchObject({ phase: 'outcome', endReason: 'missing-mandatory' })
-    expect(score(summarize(level, s)).passed).toBe(false)
+  it('ends the choosing round by itself once every right step is picked, with no undo', () => {
+    const partway = play([...toChoose, ...pick('safe', 'check', 'call')])
+    expect(partway).toMatchObject({ phase: 'choose', solutionConfirmed: false })
+    // Nothing can start the action before the plan is complete.
+    expect(step(level, partway, { type: 'start-act' })).toEqual(partway)
+
+    const complete = step(level, partway, { type: 'pick', id: 'lay' })
+    expect(complete).toMatchObject({ phase: 'choose', solutionConfirmed: true, feedback: null })
+    // Further picks are ignored, and the action starts on request.
+    expect(step(level, complete, { type: 'pick', id: 'video' })).toEqual(complete)
+    expect(step(level, complete, { type: 'start-act' }).phase).toBe('act')
   })
 
-  it('gives half credit for a partial option and marks the run a partial success', () => {
-    const s = play([
-      ...toChoose,
-      ...pick('safe', 'check', 'call', 'lay-flat'),
-      { type: 'confirm-solution' },
-      finishAct,
-    ])
-    const summary = summarize(level, s)
-    expect(summary.solutionQuality).toBeCloseTo(0.875)
+  it('notices steps done in the wrong order and still lets the run pass', () => {
+    const s = play([...toChoose, ...pick('lay', 'safe', 'check', 'call')])
+    // No alert at this point; the result screen explains the order.
+    expect(s.feedback).toBeNull()
+    const end = play([{ type: 'start-act' }, finishAct], s)
+    const summary = summarize(level, end)
+    expect(summary.orderCorrect).toBe(false)
     expect(score(summary)).toMatchObject({ outcome: 'partial-success', passed: true })
   })
 
-  it('notices steps done in the wrong order', () => {
-    const s = play([
-      ...toChoose,
-      ...pick('lay', 'safe', 'check', 'call'),
-      { type: 'confirm-solution' },
-    ])
-    expect(summarize(level, s).orderCorrect).toBe(false)
-  })
-
-  it('undoes the last pick', () => {
-    const s = play([...toChoose, ...pick('safe', 'lay'), { type: 'undo-pick' }])
-    expect(s.picks).toEqual(['safe'])
+  it('lowers the solution score for an irrelevant pick', () => {
+    const s = play([...toChoose, ...pick('video', 'safe', 'check', 'call', 'lay')])
+    expect(s.rejected).toEqual(['video'])
+    expect(summarize(level, s).solutionQuality).toBeCloseTo(0.8)
   })
 
   it('runs the clock only in timed phases and only when not paused', () => {
@@ -100,8 +112,29 @@ describe('level machine', () => {
     expect(play([...toAssess, { type: 'pause' }, { type: 'resume' }, tick]).elapsedMs).toBe(1000)
   })
 
-  it('times out when the clock runs down', () => {
-    const s = play([...toAssess, { type: 'tick', ms: level.timeLimitSec * 1000 }])
+  it('gives every round its own clock, which starts afresh', () => {
+    const nearlyOut: LevelEvent = { type: 'tick', ms: (ASSESS_TIME_SEC - 1) * 1000 }
+    const inChoose = play([...toAssess, nearlyOut, { type: 'assess-answer', id: 'faint' }])
+    // Almost all of the assess round was used, yet the choose round starts from zero.
+    expect(inChoose).toMatchObject({ phase: 'choose', roundMs: 0 })
+    expect(inChoose.roundLimitMs).toBe(CHOOSE_TIME_SEC * 1000)
+
+    const inAct = play([...pick('safe', 'check', 'call', 'lay'), { type: 'start-act' }], inChoose)
+    expect(inAct).toMatchObject({ phase: 'act', roundMs: 0 })
+    expect(inAct.roundLimitMs).toBe(MINIGAME_TIME_SEC * 1000)
+    // The time score compares all time used with the sum of the rounds' limits.
+    expect(summarize(level, inAct).timeLimitMs).toBe(
+      (ASSESS_TIME_SEC + CHOOSE_TIME_SEC + MINIGAME_TIME_SEC) * 1000,
+    )
+  })
+
+  it('stops the clock while a completed plan is on show', () => {
+    const complete = play([...toChoose, ...pick('safe', 'check', 'call', 'lay')])
+    expect(step(level, complete, { type: 'tick', ms: 5000 }).elapsedMs).toBe(complete.elapsedMs)
+  })
+
+  it('times out when the clock of the current round runs down', () => {
+    const s = play([...toAssess, { type: 'tick', ms: ASSESS_TIME_SEC * 1000 }])
     expect(s).toMatchObject({ phase: 'outcome', endReason: 'timeout' })
     expect(score(summarize(level, s)).outcome).toBe('timeout')
   })

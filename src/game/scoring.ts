@@ -3,9 +3,9 @@ import type { Outcome } from './types'
 /** What happened in one playthrough, reduced to the facts scoring needs. */
 export interface RunSummary {
   assessment: 'first-try' | 'second-try' | 'failed'
-  /** Whether the player got as far as confirming a solution. */
+  /** Whether the player completed a plan (every right step chosen). */
   solutionConfirmed: boolean
-  /** 0..1: share of the required steps chosen (a partial option counts half). */
+  /** 0..1: share of the required steps chosen, less a part for each irrelevant pick. */
   solutionQuality: number
   orderCorrect: boolean
   mandatoryDone: boolean

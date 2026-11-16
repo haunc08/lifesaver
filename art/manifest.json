@@ -1,7 +1,8 @@
 {
   "styles": {
     "scene": "Flat vector illustration for a casual mobile game. Muted, soft pastel palette only: dusty sky blue, soft coral pink, mint green, butter yellow, warm off-white, with dark navy blue only for small details like eyes and hair. Solid flat colour fills, no gradients, no shading, no texture, no outlines, no light rays, no lens flare. Simple rounded geometric shapes, minimal detail, clean uncluttered composition. Chibi people with a large round head, small body, dot eyes and a simple expressive mouth. Calm and friendly mood. No text, no letters, no numbers, no signs with writing, no logos, no watermark, no border.",
-    "character": "Flat vector sticker illustration for a casual mobile game. Muted, soft pastel palette only: dusty sky blue, soft coral pink, mint green, butter yellow, warm off-white, with dark navy blue for eyes, hair and a thin clean outline. Solid flat colour fills, no gradients, no shading, no texture. Simple rounded shapes, minimal detail. Chibi proportions: large round head, small body, dot eyes, simple expressive mouth. Isolated on a fully transparent background, nothing else in the image. No text, no letters, no logos, no watermark."
+    "character": "Flat vector sticker illustration for a casual mobile game. Muted, soft pastel palette only: dusty sky blue, soft coral pink, mint green, butter yellow, warm off-white, with dark navy blue for eyes, hair and a thin clean outline. Solid flat colour fills, no gradients, no shading, no texture. Simple rounded shapes, minimal detail. Chibi proportions: large round head, small body, dot eyes, simple expressive mouth. Isolated on a fully transparent background, nothing else in the image. No text, no letters, no logos, no watermark.",
+    "item": "Flat vector sticker illustration of everyday objects for a casual mobile game. Muted, soft pastel palette only: dusty sky blue, soft coral pink, mint green, butter yellow, warm off-white, with dark navy blue for a thin clean outline. Solid flat colour fills, no gradients, no shading, no texture. Simple rounded shapes, minimal detail, each object clearly recognisable at a small size. Isolated on a fully transparent background, nothing else in the image. No people and no faces unless stated. No text, no letters, no labels, no logos, no watermark."
   },
   "images": [
     {
@@ -147,6 +148,83 @@
       "style": "scene",
       "aspect": "4:3",
       "prompt": "First-person view of a park lawn after rain. A teenage girl in sportswear sits on the grass in the centre, her face at the top centre, wincing, cradling her swollen right forearm against her body with her left hand, the fingers of the injured hand pointing to the right. A badminton racket and a shuttlecock lie on the wet grass at the bottom left. A badminton net and round trees in the background."
+    },
+    {
+      "id": "items-1",
+      "out": "item",
+      "style": "item",
+      "aspect": "3:2",
+      "transparent": true,
+      "width": 240,
+      "slice": {
+        "grid": [
+          3,
+          2
+        ],
+        "names": [
+          "towel",
+          "iced-coffee",
+          "thick-jacket",
+          "water-bottle",
+          "hands",
+          "backpack"
+        ]
+      },
+      "prompt": "Object sheet: six separate objects arranged in a tidy grid of three columns and two rows, each object centred in its own cell with wide empty space around it, all drawn at a similar size and never touching or overlapping. Top row, left to right: a folded damp white towel with a few blue water drops; a takeaway cup of iced coffee with ice cubes and a straw; a thick puffy winter jacket in coral pink. Bottom row, left to right: a clear plastic bottle of drinking water with a blue cap; a pair of open cupped human hands seen from above, palms up, ready to support something; a mint-green school backpack."
+    },
+    {
+      "id": "items-2",
+      "out": "item",
+      "style": "item",
+      "aspect": "3:2",
+      "transparent": true,
+      "width": 240,
+      "slice": {
+        "grid": [
+          3,
+          2
+        ],
+        "names": [
+          "chair",
+          "spoon",
+          "soft-jacket",
+          "books",
+          "oil-bottle",
+          "hot-pack"
+        ]
+      },
+      "prompt": "Object sheet: six separate objects arranged in a tidy grid of three columns and two rows, each object centred in its own cell with wide empty space around it, all drawn at a similar size and never touching or overlapping. Top row, left to right: a simple wooden school chair; a metal spoon; a soft dusty-blue hooded jacket neatly folded into a cushion-like square. Bottom row, left to right: a stack of four thick hardcover books; a small green glass bottle of medicated oil with a red cap; a coral-pink rubber hot-water bottle with small wavy steam lines above it."
+    },
+    {
+      "id": "items-3",
+      "out": "item",
+      "style": "item",
+      "aspect": "3:2",
+      "transparent": true,
+      "width": 240,
+      "slice": {
+        "grid": [
+          3,
+          2
+        ],
+        "names": [
+          "cold-pack",
+          "gauze",
+          "cotton",
+          "bandage",
+          "coffee-jar",
+          "tobacco"
+        ]
+      },
+      "prompt": "Object sheet: six separate objects arranged in a tidy grid of three columns and two rows, each object centred in its own cell with wide empty space around it, all drawn at a similar size and never touching or overlapping. Top row, left to right: a blue gel ice pack wrapped in a white towel with a small snowflake symbol; a square white sterile gauze pad; three fluffy white cotton balls. Bottom row, left to right: a roll of off-white elastic bandage, partly unrolled; an open glass jar of dark brown ground coffee with a small scoop; a small open paper pouch of brown shredded tobacco leaves."
+    },
+    {
+      "id": "item-tap",
+      "style": "item",
+      "aspect": "1:1",
+      "transparent": true,
+      "width": 240,
+      "prompt": "One object: a curved kitchen sink tap in soft grey-blue with a steady stream of light blue running water pouring straight down from it and a few small droplets."
     }
   ]
 }

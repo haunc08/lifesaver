@@ -25,7 +25,7 @@ const flags = new Set(args.filter((a) => a.startsWith('--')))
 const ids = args.filter((a) => !a.startsWith('--'))
 
 const outputsOf = (image) =>
-  image.slice ? image.slice.names.map((n) => `${image.id}-${n}`) : [image.id]
+  image.slice ? image.slice.names.map((n) => `${image.out ?? image.id}-${n}`) : [image.id]
 const isDone = (image) => outputsOf(image).every((n) => existsSync(join(OUT, `${n}.webp`)))
 
 const wanted = flags.has('--missing')
@@ -101,7 +101,8 @@ async function process_(image) {
   const h = Math.floor(height / rows)
   for (const [i, name] of image.slice.names.entries()) {
     const region = { left: (i % cols) * w, top: Math.floor(i / cols) * h, width: w, height: h }
-    await write(sharp(raw).extract(region), `${image.id}-${name}`)
+    // `out` lets several sheets write into one family of names, e.g. item-<name>.
+    await write(sharp(raw).extract(region), `${image.out ?? image.id}-${name}`)
   }
 }
 

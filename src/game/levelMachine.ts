@@ -1,5 +1,5 @@
 import type { RunSummary } from './scoring'
-import type { LevelDef, PhaseId, SolutionOption } from './types'
+import type { LevelDef, PhaseId, SingleMinigameConfig, SolutionOption } from './types'
 
 /**
  * The level state machine: a pure reducer that walks a playthrough through the
@@ -13,8 +13,30 @@ export const MAX_UNSAFE_ATTEMPTS = 2
 /** The clock only runs in these phases; intro and observe give time to read. */
 const TIMED_PHASES: readonly PhaseId[] = ['assess', 'choose', 'act']
 
-export type EndReason =
-  'completed' | 'assess-failed' | 'missing-mandatory' | 'act-failed' | 'unsafe' | 'timeout'
+/**
+ * Every timed round has its own clock, which starts afresh when the round
+ * begins. A round is the assess phase, the choose phase, or one mini-game.
+ * These are gameplay limits, set generously, not real medical times.
+ */
+export const ASSESS_TIME_SEC = 60
+export const CHOOSE_TIME_SEC = 120
+export const MINIGAME_TIME_SEC = 90
+/** Quick-decision cards carry their own timers; this is added per card for reading the explanation. */
+export const CARD_READING_SEC = 12
+
+/** Seconds allowed for one mini-game. */
+export function minigameTimeSec(config: SingleMinigameConfig): number {
+  if (config.type === 'quick-decision') {
+    return config.cards.length * (config.secPerCard + CARD_READING_SEC)
+  }
+  return MINIGAME_TIME_SEC
+}
+
+function actSteps(level: LevelDef): SingleMinigameConfig[] {
+  return level.act.type === 'sequence' ? level.act.steps : [level.act]
+}
+
+export type EndReason = 'completed' | 'assess-failed' | 'act-failed' | 'unsafe' | 'timeout'
 
 export interface Feedback {
   tone: 'good' | 'warn' | 'bad'
@@ -30,8 +52,16 @@ export interface ActResult {
 export interface LevelState {
   phase: PhaseId
   paused: boolean
-  /** Time spent in timed phases. */
+  /** Time spent in all timed rounds so far. */
   elapsedMs: number
+  /** Time spent in the current round; back to zero when a new round starts. */
+  roundMs: number
+  /** Limit of the current round, or 0 outside timed phases. */
+  roundLimitMs: number
+  /** Sum of the limits of every round begun, for the time score. */
+  allowedMs: number
+  /** Which mini-game of the act phase is being played (0 unless the level chains several). */
+  actStep: number
   cluesFound: string[]
   /** Ids of the wrong assessment answers given so far. */
   assessWrong: string[]
@@ -53,8 +83,10 @@ export type LevelEvent =
   | { type: 'observe-done' }
   | { type: 'assess-answer'; id: string }
   | { type: 'pick'; id: string }
-  | { type: 'undo-pick' }
-  | { type: 'confirm-solution' }
+  /** The plan is complete and has been shown for a moment: move on to the action. */
+  | { type: 'start-act' }
+  /** A chained level moves on to its next mini-game, which gets a fresh clock. */
+  | { type: 'act-step' }
   | { type: 'act-done'; result: ActResult }
   | { type: 'tick'; ms: number }
   | { type: 'pause' }
@@ -66,6 +98,10 @@ export function initialState(): LevelState {
     phase: 'intro',
     paused: false,
     elapsedMs: 0,
+    roundMs: 0,
+    roundLimitMs: 0,
+    allowedMs: 0,
+    actStep: 0,
     cluesFound: [],
     assessWrong: [],
     assessSolved: false,
@@ -85,7 +121,26 @@ export function isTimedPhase(phase: PhaseId): boolean {
 }
 
 export function isClockRunning(state: LevelState): boolean {
-  return !state.paused && isTimedPhase(state.phase)
+  // The clock also stops once the plan is complete, while it is shown before the action.
+  const waiting = state.phase === 'choose' && state.solutionConfirmed
+  return !state.paused && isTimedPhase(state.phase) && !waiting
+}
+
+/** Start a new timed round: a fresh clock with the given limit. */
+function startRound(state: LevelState, limitSec: number): LevelState {
+  const roundLimitMs = limitSec * 1000
+  return { ...state, roundMs: 0, roundLimitMs, allowedMs: state.allowedMs + roundLimitMs }
+}
+
+/** Every essential clue has been inspected. */
+export function observeComplete(level: LevelDef, cluesFound: string[]): boolean {
+  return level.observe.clues.every((c) => !c.essential || cluesFound.includes(c.id))
+}
+
+/** Whether the picked steps follow the order the level asks for. */
+function inOrder(level: LevelDef, picks: string[]): boolean {
+  const positions = picks.map((id) => level.choose.order.indexOf(id)).filter((i) => i >= 0)
+  return positions.every((p, i) => i === 0 || p >= positions[i - 1])
 }
 
 function option(level: LevelDef, id: string): SolutionOption | undefined {
@@ -96,16 +151,8 @@ function countKind(level: LevelDef, ids: string[], kind: SolutionOption['kind'])
   return ids.filter((id) => option(level, id)?.kind === kind).length
 }
 
-/** The required step a pick stands for: itself, or the step a partial option replaces. */
-function stepOf(level: LevelDef, pickId: string): string | undefined {
-  const o = option(level, pickId)
-  if (!o) return undefined
-  return o.kind === 'partial' ? o.substitutes : o.id
-}
-
 function mandatoryDone(level: LevelDef, picks: string[]): boolean {
-  const covered = new Set(picks.map((id) => stepOf(level, id)))
-  return level.choose.options.filter((o) => o.mandatory).every((o) => covered.has(o.id))
+  return level.choose.options.filter((o) => o.mandatory).every((o) => picks.includes(o.id))
 }
 
 function end(
@@ -127,10 +174,13 @@ export function step(level: LevelDef, state: LevelState, event: LevelEvent): Lev
 
     case 'tick': {
       if (!isClockRunning(state)) return state
-      const elapsedMs = state.elapsedMs + event.ms
-      const limit = level.timeLimitSec * 1000
-      if (elapsedMs >= limit) return end({ ...state, elapsedMs: limit }, 'timeout')
-      return { ...state, elapsedMs }
+      const ms = Math.min(event.ms, state.roundLimitMs - state.roundMs)
+      const ticked = {
+        ...state,
+        elapsedMs: state.elapsedMs + ms,
+        roundMs: state.roundMs + ms,
+      }
+      return ticked.roundMs >= state.roundLimitMs ? end(ticked, 'timeout') : ticked
     }
 
     case 'intro-done':
@@ -143,9 +193,8 @@ export function step(level: LevelDef, state: LevelState, event: LevelEvent): Lev
     }
 
     case 'observe-done': {
-      if (state.phase !== 'observe' || state.cluesFound.length < level.observe.required)
-        return state
-      return { ...state, phase: 'assess', feedback: null }
+      if (state.phase !== 'observe' || !observeComplete(level, state.cluesFound)) return state
+      return startRound({ ...state, phase: 'assess', feedback: null }, ASSESS_TIME_SEC)
     }
 
     case 'assess-answer': {
@@ -153,12 +202,15 @@ export function step(level: LevelDef, state: LevelState, event: LevelEvent): Lev
       const answer = level.assess.options.find((o) => o.id === event.id)
       if (!answer) return state
       if (answer.correct) {
-        return {
-          ...state,
-          phase: 'choose',
-          assessSolved: true,
-          feedback: { tone: 'good', text: answer.feedback },
-        }
+        return startRound(
+          {
+            ...state,
+            phase: 'choose',
+            assessSolved: true,
+            feedback: { tone: 'good', text: answer.feedback },
+          },
+          CHOOSE_TIME_SEC,
+        )
       }
       const assessWrong = [...state.assessWrong, answer.id]
       const feedback: Feedback = { tone: 'bad', text: answer.feedback }
@@ -169,7 +221,8 @@ export function step(level: LevelDef, state: LevelState, event: LevelEvent): Lev
     }
 
     case 'pick': {
-      if (state.phase !== 'choose') return state
+      // A pick is final: there is no undo, and the round ends by itself.
+      if (state.phase !== 'choose' || state.solutionConfirmed) return state
       const o = option(level, event.id)
       if (!o || state.picks.includes(o.id) || state.rejected.includes(o.id)) return state
       if (o.kind === 'unsafe') {
@@ -187,19 +240,28 @@ export function step(level: LevelDef, state: LevelState, event: LevelEvent): Lev
           feedback: { tone: 'warn', text: o.feedback },
         }
       }
-      return { ...state, picks: [...state.picks, o.id], feedback: null }
+      const picks = [...state.picks, o.id]
+      // The plan is complete once every right step is in it; nothing needs confirming.
+      if (!level.choose.order.every((id) => picks.includes(id))) {
+        return { ...state, picks, feedback: null }
+      }
+      // No message here, right order or not: the action starts at once, so it would
+      // not be read. The result screen lists the right order.
+      return { ...state, picks, solutionConfirmed: true, feedback: null }
     }
 
-    case 'undo-pick': {
-      if (state.phase !== 'choose' || state.picks.length === 0) return state
-      return { ...state, picks: state.picks.slice(0, -1), feedback: null }
+    case 'start-act': {
+      if (state.phase !== 'choose' || !state.solutionConfirmed) return state
+      return startRound(
+        { ...state, phase: 'act', feedback: null },
+        minigameTimeSec(actSteps(level)[0]),
+      )
     }
 
-    case 'confirm-solution': {
-      if (state.phase !== 'choose' || state.picks.length === 0) return state
-      const confirmed = { ...state, solutionConfirmed: true, feedback: null }
-      if (!mandatoryDone(level, state.picks)) return end(confirmed, 'missing-mandatory')
-      return { ...confirmed, phase: 'act' }
+    case 'act-step': {
+      const next = actSteps(level)[state.actStep + 1]
+      if (state.phase !== 'act' || !next) return state
+      return startRound({ ...state, actStep: state.actStep + 1 }, minigameTimeSec(next))
     }
 
     case 'act-done': {
@@ -213,22 +275,10 @@ export function step(level: LevelDef, state: LevelState, event: LevelEvent): Lev
 /** Reduce a playthrough to the facts scoring needs. */
 export function summarize(level: LevelDef, state: LevelState): RunSummary {
   const { order } = level.choose
-  const steps = state.picks.map((id) => stepOf(level, id))
-
-  const credit = order.map((stepId) => {
-    if (state.picks.includes(stepId)) return 1
-    return steps.includes(stepId) ? 0.5 : 0
-  })
+  const chosen = order.filter((id) => state.picks.includes(id)).length
   const irrelevant = countKind(level, state.rejected, 'irrelevant')
   const solutionQuality =
-    order.length === 0
-      ? 0
-      : Math.max(0, credit.reduce<number>((a, b) => a + b, 0) / order.length - 0.2 * irrelevant)
-
-  const positions = steps
-    .map((s) => (s === undefined ? -1 : order.indexOf(s)))
-    .filter((i) => i >= 0)
-  const orderCorrect = positions.every((p, i) => i === 0 || p >= positions[i - 1])
+    order.length === 0 ? 0 : Math.max(0, chosen / order.length - 0.2 * irrelevant)
 
   return {
     assessment: !state.assessSolved
@@ -238,14 +288,14 @@ export function summarize(level: LevelDef, state: LevelState): RunSummary {
         : 'second-try',
     solutionConfirmed: state.solutionConfirmed,
     solutionQuality,
-    orderCorrect,
+    orderCorrect: inOrder(level, state.picks),
     mandatoryDone: mandatoryDone(level, state.picks),
     unsafeAttempts: countKind(level, state.rejected, 'unsafe'),
     criticalSafetyMistake: state.endReason === 'unsafe',
     actionCompleted: state.act?.completed ?? false,
     actionAccuracy: state.act?.accuracy ?? 0,
     timeUsedMs: state.elapsedMs,
-    timeLimitMs: level.timeLimitSec * 1000,
+    timeLimitMs: state.allowedMs,
     timedOut: state.endReason === 'timeout',
   }
 }

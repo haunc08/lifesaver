@@ -19,3 +19,11 @@ const byId: Record<string, string | undefined> = Object.fromEntries(
 export function art(id: string): string | undefined {
   return byId[id]
 }
+
+/** Start loading these pictures now, so they are ready by the time they are shown. */
+export function preloadArt(ids: string[]) {
+  for (const id of new Set(ids)) {
+    const src = byId[id]
+    if (src) new Image().src = src
+  }
+}

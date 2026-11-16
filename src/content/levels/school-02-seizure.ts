@@ -10,7 +10,6 @@ const level: LevelDef = {
   areaId: 'school',
   title: 'Giờ tự học ở thư viện',
   scene: 'Thư viện',
-  timeLimitSec: 100,
 
   intro: [
     {
@@ -30,7 +29,6 @@ const level: LevelDef = {
   ],
 
   observe: {
-    required: 3,
     clues: [
       {
         id: 'limbs',
@@ -38,6 +36,7 @@ const level: LevelDef = {
         caption: 'Tay chân Vy co cứng rồi giật mạnh, không theo ý muốn.',
         x: 56,
         y: 73,
+        essential: true,
       },
       {
         id: 'face',
@@ -45,6 +44,7 @@ const level: LevelDef = {
         caption: 'Mắt Vy trợn lên. Bạn ấy không đáp lại khi được gọi tên.',
         x: 36,
         y: 68,
+        essential: true,
       },
       {
         id: 'around',
@@ -52,6 +52,7 @@ const level: LevelDef = {
         caption: 'Chiếc ghế đổ và chồng sách dày nằm sát đầu Vy, rất dễ va vào.',
         x: 15,
         y: 74,
+        essential: true,
       },
       {
         id: 'clock',
@@ -59,6 +60,7 @@ const level: LevelDef = {
         caption: 'Đồng hồ chỉ 9 giờ 10. Nhớ giờ để biết cơn giật kéo dài bao lâu.',
         x: 87,
         y: 11,
+        essential: false,
       },
       {
         id: 'bag',
@@ -66,6 +68,7 @@ const level: LevelDef = {
         caption: 'Trong ba lô có chiếc áo khoác mềm, có thể dùng để lót đầu.',
         x: 79,
         y: 72,
+        essential: false,
       },
     ],
   },
@@ -125,10 +128,11 @@ const level: LevelDef = {
         feedback: 'Nằm nghiêng giúp đường thở thông thoáng trong lúc Vy dần tỉnh lại.',
       },
       {
-        id: 'tidy',
-        text: 'Xếp lại sách vở trên bàn cho gọn',
+        id: 'crowd',
+        text: 'Gọi cả lớp xúm lại xem Vy bị làm sao',
         kind: 'irrelevant',
-        feedback: 'Việc này không giúp gì cho Vy lúc này.',
+        feedback:
+          'Đám đông vây kín làm Vy thiếu không khí và dễ bị va chạm. Hãy giữ khoảng trống quanh bạn ấy.',
       },
       {
         id: 'safe',
@@ -143,13 +147,6 @@ const level: LevelDef = {
         kind: 'unsafe',
         feedback:
           'Không an toàn! Đưa vật gì vào miệng có thể làm gãy răng hoặc bít đường thở của Vy.',
-      },
-      {
-        id: 'rest-flat',
-        text: 'Khi hết giật, để Vy nằm ngửa nghỉ và ở bên cạnh bạn ấy',
-        kind: 'partial',
-        substitutes: 'recovery',
-        feedback: 'Ở bên Vy là đúng, nhưng nằm nghiêng thì đường thở thông thoáng hơn.',
       },
       {
         id: 'call',
@@ -172,30 +169,35 @@ const level: LevelDef = {
       {
         id: 'chair',
         label: 'Ghế đổ',
+        art: 'item-chair',
         zoneId: 'away',
         wrongNote: 'Ghế cần được dời ra góc xa để Vy không va vào.',
       },
       {
         id: 'spoon',
         label: 'Chiếc thìa',
+        art: 'item-spoon',
         zoneId: null,
         wrongNote: 'Không đưa vật gì vào miệng người đang co giật.',
       },
       {
         id: 'jacket',
         label: 'Áo khoác mềm',
+        art: 'item-soft-jacket',
         zoneId: 'head',
         wrongNote: 'Áo khoác mềm dùng để lót dưới đầu Vy.',
       },
       {
         id: 'water',
         label: 'Chai nước',
+        art: 'item-water-bottle',
         zoneId: null,
         wrongNote: 'Không cho uống nước khi Vy chưa tỉnh hẳn: bạn ấy có thể bị sặc.',
       },
       {
         id: 'books',
         label: 'Chồng sách dày',
+        art: 'item-books',
         zoneId: 'away',
         wrongNote: 'Đồ cứng cần được dời ra góc xa, không để gần Vy.',
       },
@@ -216,7 +218,8 @@ const level: LevelDef = {
 
   hints: {
     intro: 'Đọc hết đoạn hội thoại để biết chuyện gì vừa xảy ra.',
-    observe: 'Chạm vào các điểm sáng trên hình. Cần xem ít nhất 3 manh mối trước khi kết luận.',
+    observe:
+      'Chạm vào từng dấu “?” trên hình. Khi đã xem hết những điểm quan trọng, bạn mới kết luận được.',
     assess:
       'Vy ngã đột ngột, người co cứng, tay chân giật và không đáp lại: hãy chọn “Nghi ngờ Vy đang lên cơn co giật”.',
     choose:

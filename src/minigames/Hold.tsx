@@ -1,3 +1,4 @@
+import { art } from '@/art'
 import { sfx } from '@/audio'
 import { useEffect, useRef, useState } from 'react'
 import type { HoldConfig } from '@/game/types'
@@ -56,7 +57,20 @@ export function Hold({ config, artId, scene, paused, onDone }: MinigameProps<Hol
   return (
     <div className="space-y-3">
       <p className="text-center text-lg leading-snug">{config.instruction}</p>
-      <SceneBox artId={artId} scene={scene} />
+      <SceneBox artId={artId} scene={scene}>
+        {/* The thing being held, shown where it is applied; it presses in while held. */}
+        <span
+          style={{ left: `${config.tool.x}%`, top: `${config.tool.y}%` }}
+          className={`pointer-events-none absolute flex aspect-square w-[24%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[3px] p-1.5 transition-[scale,background-color] duration-200 ${holding || finished ? 'scale-90 border-mint-edge bg-mint' : 'scale-100 border-cotton bg-cotton/85'}`}
+        >
+          <img
+            src={art(config.tool.art)}
+            alt=""
+            draggable={false}
+            className="size-full object-contain select-none"
+          />
+        </span>
+      </SceneBox>
       <div
         className="h-5 overflow-hidden rounded-full border-4 border-cotton bg-cotton"
         role="progressbar"
@@ -82,9 +96,17 @@ export function Hold({ config, artId, scene, paused, onDone }: MinigameProps<Hol
           if (e.key === ' ' || e.key === 'Enter') release()
         }}
         onContextMenu={(e) => e.preventDefault()}
-        className={`w-full touch-none rounded-3xl px-6 py-5 font-display text-xl font-bold text-ink select-none [-webkit-touch-callout:none] ${holding && !finished ? 'translate-y-1 bg-mint shadow-[0_1px_0_var(--color-mint-edge)]' : 'bg-butter shadow-[0_5px_0_var(--color-butter-edge)]'}`}
+        className={`flex w-full touch-none items-center gap-3 rounded-3xl px-4 py-3 text-left font-display text-xl leading-tight font-bold text-ink select-none [-webkit-touch-callout:none] ${holding && !finished ? 'translate-y-1 bg-mint shadow-[0_1px_0_var(--color-mint-edge)]' : 'bg-butter shadow-[0_5px_0_var(--color-butter-edge)]'}`}
       >
-        {finished ? '✓ Xong rồi!' : holding ? config.holdingText : `Nhấn giữ: ${config.action}`}
+        <img
+          src={art(config.tool.art)}
+          alt=""
+          draggable={false}
+          className="size-16 shrink-0 rounded-2xl bg-cotton/70 object-contain p-1"
+        />
+        <span>
+          {finished ? '✓ Xong rồi!' : holding ? config.holdingText : `Nhấn giữ: ${config.action}`}
+        </span>
       </button>
       <Note note={note} idle={config.realityNote} />
     </div>

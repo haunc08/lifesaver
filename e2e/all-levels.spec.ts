@@ -18,8 +18,6 @@ for (const id of LEVEL_IDS) {
     for (const clue of level.observe.clues) {
       await button(page, clue.label).click()
       await expect(page.getByText(clue.caption)).toBeVisible()
-      await page.locator('[data-zoomed]').click({ position: { x: 8, y: 8 } })
-      await expect(page.locator('[data-zoomed]')).toHaveCount(0)
     }
     await shot(page, `${id}-observe`)
     await button(page, 'Mình đã rõ rồi').click()
@@ -29,7 +27,8 @@ for (const id of LEVEL_IDS) {
     for (const stepId of level.choose.order) {
       await button(page, level.choose.options.find((o) => o.id === stepId)!.text).click()
     }
-    await button(page, 'Thực hiện').click()
+    // The round ends by itself once the plan is complete; there is nothing to confirm.
+    await expect(page.getByText(/^Đã chọn/)).toHaveCount(0)
 
     // Act.
     await shot(page, `${id}-act`)
@@ -46,10 +45,25 @@ for (const id of LEVEL_IDS) {
     await expect(page.getByRole('heading', { name: 'Tuyệt vời!' })).toBeVisible()
     await expect(page.getByText(level.lesson.callForHelp[0])).toBeVisible()
     await shot(page, `${id}-result`)
+
+    // Within an area, "next" starts the next level. After an area's last level it
+    // opens the new area instead of dropping the player into its first level.
+    const next = LEVEL_IDS[LEVEL_IDS.indexOf(id) + 1]
+    const areaOf = (levelId: string) => levelId.replace(/-\d\d$/, '')
+    if (next && areaOf(next) !== areaOf(id)) {
+      await page.getByRole('button', { name: /^Đến khu mới/ }).click()
+      await expect(page).toHaveURL(new RegExp(`/area/${areaOf(next)}$`))
+    } else if (next) {
+      await expect(button(page, 'Màn tiếp theo')).toBeVisible()
+    } else {
+      await expect(button(page, 'Về danh sách màn')).toBeVisible()
+    }
   })
 }
 
-test('drag-and-place also works by dragging, and refuses a decoy', async ({ page }) => {
+test('a dragged item follows the pointer, lands in the nearest slot, and a decoy is refused', async ({
+  page,
+}) => {
   const level = await openLevel(page, 'park-01')
   if (level.act.type !== 'drag-place') throw new Error('park-01 should be drag-and-place')
   const { items, zones } = level.act
@@ -60,24 +74,44 @@ test('drag-and-place also works by dragging, and refuses a decoy', async ({ page
     if (!box) throw new Error(`${name} not found`)
     return { x: box.x + box.width / 2, y: box.y + box.height / 2 }
   }
-  const drag = async (itemLabel: string, zoneLabel: string) => {
+  /** Drag an item and let go `miss` pixels to the side of the slot's centre. */
+  const drag = async (itemLabel: string, zoneLabel: string, miss = 0) => {
     const from = await centre(itemLabel)
     const to = await centre(`Vị trí: ${zoneLabel}`)
     await page.mouse.move(from.x, from.y)
     await page.mouse.down()
-    await page.mouse.move(to.x, to.y, { steps: 8 })
+    await page.mouse.move(to.x + miss, to.y, { steps: 8 })
     await page.mouse.up()
   }
+
+  // While it is dragged, the item's picture travels with the pointer.
+  const first = items.find((i) => i.zoneId !== null)!
+  const start = await centre(first.label)
+  await page.mouse.move(start.x, start.y)
+  await page.mouse.down()
+  await page.mouse.move(start.x - 60, start.y - 150, { steps: 6 })
+  const ghost = await page.locator('body > span[aria-hidden] img').boundingBox()
+  expect(ghost).not.toBeNull()
+  expect(Math.abs(ghost!.x + ghost!.width / 2 - (start.x - 60))).toBeLessThan(3)
+  expect(Math.abs(ghost!.y + ghost!.height / 2 - (start.y - 150))).toBeLessThan(3)
+  await shot(page, 'drag-in-progress')
+  // Let go away from every slot: nothing happens and the item is back in the tray.
+  await page.mouse.move(8, start.y - 150)
+  await page.mouse.up()
+  await expect(page.locator('body > span[aria-hidden]')).toHaveCount(0)
+  await expect(button(page, first.label)).toBeVisible()
 
   // A decoy dropped on a zone is refused and explained.
   const decoy = items.find((i) => i.zoneId === null)!
   await drag(decoy.label, zones[0].label)
   await expect(page.getByRole('status')).toContainText(decoy.wrongNote)
-  await expect(button(page, decoy.label)).toBeDisabled()
+  // Once tried, the decoy is gone from the tray.
+  await expect(button(page, decoy.label)).toHaveCount(0)
 
-  // Every real item can be dragged to its zone.
+  // Every real item can be dragged to its zone, also when it is let go a little off-centre:
+  // it lands in the nearest slot.
   for (const item of items.filter((i) => i.zoneId !== null)) {
-    await drag(item.label, zones.find((z) => z.id === item.zoneId)!.label)
+    await drag(item.label, zones.find((z) => z.id === item.zoneId)!.label, 30)
   }
   await button(page, 'Xem kết quả').click()
   await expect(page.getByText(/\/ 100/)).toBeVisible()

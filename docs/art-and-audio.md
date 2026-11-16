@@ -1,6 +1,6 @@
 # Lifesaver — art and audio plan
 
-Status: 2026-11-16. The art is generated and in the game; it needs your verdict. Sound effects and music are in the game; they need your ear, because I cannot listen to audio. Money spent so far: 0.36 USD of Kie credits.
+Status: 2026-11-16. The art is generated and in the game; it needs your verdict. Sound effects and music are in the game; they need your ear, because I cannot listen to audio. Money spent so far: 0.43 USD of Kie credits.
 
 ## 1. Art direction
 
@@ -60,6 +60,7 @@ You chose image generation through Kie on 2026-11-16, with the `seedream/5-5-tex
 | --- | --- | --- |
 | Scenes | One picture per level, the town, five area pictures | Generated; one prompt each in [art/manifest.json](../art/manifest.json) |
 | Characters | The player, and the guide with six expressions | Generated on a transparent background. The guide is one image with six poses in a grid, cut into six files, so all six match |
+| Items | Objects the player drags or holds in a mini-game | Generated six to a sheet on a transparent background and cut apart, like the guide |
 | Interface | Cards, buttons, bars, pins, line icons | Built in code with the palette above |
 | Logo | "Lifesaver" wordmark | Still set in type in code; image models are unreliable at lettering |
 
@@ -80,6 +81,7 @@ Every prompt ends with one shared style description (pastel palette, flat fills,
 | Town | 1 | Loading screen, town intro, home screen (as the map) |
 | Area pictures | 5 | Top of each area's level list |
 | Player | 1 | Character creation, town intro, and cropped to the face as the home screen's profile picture |
+| Item pictures | 19 | Things dragged or held in mini-games: gauze, cold pack, water bottle, backpack and so on |
 | Guide expressions | 6 | Dialogue, outcome, result, home screen, town intro |
 
 ### Known limits
@@ -138,7 +140,7 @@ Total allowed for outside costs: about 10 USD.
 
 | Item | Spent | Notes |
 | --- | --- | --- |
-| Image generation (Kie credits) | 0.36 USD | 20 pictures at 3.6 credits (0.018 USD) each. The account held 573.7 credits (about 2.87 USD) before and 501.7 after |
+| Image generation (Kie credits) | 0.43 USD | 24 generations at 3.6 credits (0.018 USD) each; the last four made the 19 item pictures (three sheets of six and one single picture). The account held 573.7 credits (about 2.87 USD) at the start and about 487 after |
 | Fonts, sound, music | 0 | Free licences only (CC0 sound, Open Font License fonts) |
 | Hosting on a free tier | 0 | GitHub Pages |
 

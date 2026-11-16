@@ -10,7 +10,6 @@ const level: LevelDef = {
   areaId: 'park',
   title: 'Chạy bộ giữa trưa',
   scene: 'Đường chạy bộ',
-  timeLimitSec: 100,
 
   intro: [
     {
@@ -32,7 +31,6 @@ const level: LevelDef = {
   ],
 
   observe: {
-    required: 3,
     clues: [
       {
         id: 'sun',
@@ -40,6 +38,7 @@ const level: LevelDef = {
         caption: 'Đang giữa trưa, nắng rất gắt. Đoạn đường chạy này không có chút bóng râm nào.',
         x: 82,
         y: 15,
+        essential: true,
       },
       {
         id: 'face',
@@ -47,6 +46,7 @@ const level: LevelDef = {
         caption: 'Mặt anh Khoa tái, mồ hôi chảy ròng ròng. Da sờ vào thấy mát và ẩm.',
         x: 68,
         y: 50,
+        essential: true,
       },
       {
         id: 'talk',
@@ -55,6 +55,7 @@ const level: LevelDef = {
           'Anh Khoa trả lời rõ ràng, biết mình đang ở đâu, nhưng kêu chóng mặt, buồn nôn và rất khát.',
         x: 53,
         y: 58,
+        essential: true,
       },
       {
         id: 'legs',
@@ -62,6 +63,7 @@ const level: LevelDef = {
         caption: 'Hai bắp chân anh Khoa căng cứng vì chuột rút. Không thấy sưng hay vết thương.',
         x: 79,
         y: 80,
+        essential: false,
       },
       {
         id: 'bottle',
@@ -69,6 +71,7 @@ const level: LevelDef = {
         caption: 'Bình nước của anh Khoa đã cạn khô từ lâu.',
         x: 23,
         y: 87,
+        essential: false,
       },
     ],
   },
@@ -144,14 +147,6 @@ const level: LevelDef = {
         feedback: 'Có thêm người giúp và sẵn sàng gọi cấp cứu là việc không thể thiếu.',
       },
       {
-        id: 'shade-sit',
-        text: 'Dìu anh Khoa vào bóng râm ngồi nghỉ',
-        kind: 'partial',
-        substitutes: 'shade',
-        feedback:
-          'Vào chỗ mát là đúng, nhưng nằm nghỉ, kê cao chân và nới lỏng quần áo thì tốt hơn.',
-      },
-      {
         id: 'shade',
         text: 'Dìu anh Khoa vào bóng râm, cho nằm nghỉ, kê cao chân và nới lỏng quần áo',
         kind: 'correct',
@@ -181,12 +176,14 @@ const level: LevelDef = {
       {
         id: 'towel',
         label: 'Khăn ướt mát',
+        art: 'item-towel',
         zoneId: 'neck',
         wrongNote: 'Khăn ướt đắp lên cổ và trán mới giúp hạ nhiệt nhanh.',
       },
       {
         id: 'coffee',
         label: 'Cà phê đá',
+        art: 'item-iced-coffee',
         zoneId: null,
         wrongNote:
           'Cà phê và nước tăng lực không giúp bù nước. Hãy chọn nước lọc hoặc nước bù điện giải.',
@@ -194,18 +191,21 @@ const level: LevelDef = {
       {
         id: 'move',
         label: 'Dìu anh Khoa đi',
+        art: 'item-hands',
         zoneId: 'shade',
         wrongNote: 'Anh Khoa cần ra khỏi nắng: hãy dìu anh ấy vào bóng râm gốc cây.',
       },
       {
         id: 'jacket',
         label: 'Áo khoác dày',
+        art: 'item-thick-jacket',
         zoneId: null,
         wrongNote: 'Ủ ấm làm cơ thể nóng thêm. Anh Khoa cần được nới lỏng quần áo và làm mát.',
       },
       {
         id: 'water',
         label: 'Chai nước lọc',
+        art: 'item-water-bottle',
         zoneId: 'hand',
         wrongNote: 'Đưa chai nước vào tay để anh Khoa tự uống từng ngụm nhỏ.',
       },
@@ -227,7 +227,8 @@ const level: LevelDef = {
 
   hints: {
     intro: 'Đọc hết đoạn hội thoại để biết chuyện gì vừa xảy ra.',
-    observe: 'Chạm vào các điểm sáng trên hình. Cần xem ít nhất 3 manh mối trước khi kết luận.',
+    observe:
+      'Chạm vào từng dấu “?” trên hình. Khi đã xem hết những điểm quan trọng, bạn mới kết luận được.',
     assess:
       'Chạy lâu dưới nắng gắt, vã mồ hôi, da tái, chóng mặt, chuột rút nhưng vẫn tỉnh: hãy chọn “Nghi ngờ anh Khoa bị kiệt sức vì nóng”.',
     choose:
@@ -259,6 +260,8 @@ const level: LevelDef = {
       'Không cho uống rượu bia, cà phê hay nước tăng lực',
       'Không tự ý cho uống thuốc hạ sốt',
       'Không cho ăn uống khi nạn nhân lơ mơ hoặc nôn nhiều',
+      'Không ủ ấm hay mặc thêm áo cho người đang quá nóng',
+      'Không mải xem thành tích mà bỏ qua dấu hiệu kiệt sức',
     ],
     callForHelp: [
       'Nạn nhân lơ mơ, nói lẫn, ngất hoặc co giật',

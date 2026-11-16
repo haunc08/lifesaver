@@ -31,7 +31,7 @@ export function Screen({ title, back, children, className = '' }: Props) {
         </header>
       )}
       <main
-        className={`flex-1 overflow-y-auto px-4 pt-2 pb-[max(1.25rem,env(safe-area-inset-bottom))] ${className}`}
+        className={`flex-1 overflow-y-auto px-4 pt-2 pb-[calc(1.25rem+env(safe-area-inset-bottom))] ${className}`}
       >
         {children}
       </main>

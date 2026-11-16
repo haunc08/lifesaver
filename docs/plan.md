@@ -40,21 +40,26 @@ The requirements give the shape of the rules; these are the specifics I chose so
 | Rule | Decision |
 | --- | --- |
 | Player character | One fixed character; creation only asks for a name (your instruction on 2026-11-16; the requirements table still says "a small set of looks") |
-| Clock | Runs only in the assess, choose and act phases. Intro and observe are untimed so there is time to read, and the clock is not shown there at all (your instruction: a clock that stands still confuses). Opening the hint or pause stops it |
+| Clock | Runs only in the assess, choose and act phases, and is not shown anywhere else (your instruction: a clock that stands still confuses). Every round has its own clock, which starts afresh: 60 seconds to assess, 120 to choose, 90 for each mini-game, and 24 per card for a quick-decision run (your instruction: generous, and reset each round). Opening the hint or pause stops it |
 | Skipping | Nothing can be skipped: the town intro and each level's story are read line by line, also on a replay (your instruction) |
 | Assessment | Right first time: 20 points. Right second time: 10. Wrong twice: the level ends as a recoverable mistake |
 | Unsafe option | Blocked with an explanation and never carried out; costs 8 of the 15 safety points. A second unsafe choice in the same run ends the level as an unsafe failure |
 | Irrelevant option | Rejected with an explanation; lowers the solution score |
-| Partial option | Accepted; counts as half of the step it replaces and makes the result a partial success |
-| Mandatory steps | Each level marks some steps as mandatory, always including scene safety and calling for help. Confirming a plan without them ends the level as a recoverable mistake |
-| Order | Doing the right steps in the wrong order costs 5 safety points |
-| Time points | Full 10 points for using up to half the clock, falling to 0 at the limit |
+| Observing | Each clue is marked in the level data as essential or not. All clues look the same on screen; the player can move on once every essential one has been opened, however many others were looked at (your instruction) |
+| Wrong answers | Every unsafe or irrelevant option, decoy and "should not" card matches a line in that lesson's "do not" list, so the result never marks something wrong that the lesson does not warn about. No option is a weaker twin of a right one: the earlier "partial" options are gone (your instruction) |
+| Choosing | The player taps the right steps in order. A pick is final: there is no undo and no confirm button. The round ends by itself when every right step has been picked and the action starts at once, with no message about the order: it would not be read in time (your instructions). Scene safety and calling for help are among the right steps of every level |
+| Order | Doing the right steps in the wrong order costs 5 safety points and makes the result a partial success; the result screen lists the right order |
+| Time points | Compares all the time used with the sum of the rounds' limits: full 10 points for using up to half, falling to 0 at the limit |
 | Passing | Requires all mandatory steps, a completed action and no unsafe failure. Stars at 60, 75 and 90 points only count on a pass |
 | Rewards | 50 XP on the first clear and 25 XP the first time 3 stars are reached; replays give nothing more (replay rules are Phase 2). A player level is every 100 XP |
+| After a level | "Next" starts the next level of the same area. After an area's last level it opens the new area's level list instead of starting its first level (your instruction) |
 | Unlocking | A level opens when the one before it is cleared; an area opens when every level of the area before it is cleared. Tapping a locked area or level explains this and offers to open it straight away, so any level can be shown to someone (your instruction). There is no "unlock everything" switch |
 | Home | The home screen is the town map: a marker per area, the player's name and level above, the library and "play the next level" below. There is no separate map screen (your instruction) |
 | Library | A lesson is added when its level is finished with any result. One core safety lesson is open from the start |
-| Mini-game accuracy | The first slip in a mini-game is free (a stray tap, a wrong drop, letting go of a hold). After that each slip lowers the action score |
+| Mini-game accuracy | The first slip in a mini-game is free (a decoy tapped, a wrong drop, letting go of a hold). After that each slip lowers the action score |
+| Tap the targets | The numbered things include at least one that must not be done; tapping it is refused with the reason (your instruction) |
+| Drag and place | The item's picture follows the finger, riding a little above it so it stays visible; the slot it would land in lights up, and letting go near a slot drops the item into the nearest one. Tapping an item and then a slot also works. An item that was placed, or a decoy that was tried and refused, leaves the tray (your instruction) |
+| Item pictures | Every item that is dragged or held has its own picture (your instruction) |
 | Hold | Letting go early loses a quarter of the progress. The hold lasts a few seconds of game time, and the screen states the real-life duration so the short hold teaches nothing wrong |
 | Quick decision | Each card has its own short timer; running out counts as a wrong answer. At least 60% of cards must be right, otherwise the level ends as a recoverable mistake |
 | Chained mini-games | The action score is the average of the steps; failing one step ends the level as a recoverable mistake |
@@ -89,7 +94,7 @@ I write level and lesson text as drafts from general first-aid knowledge. I am n
 | # | Milestone | Done when | State |
 | --- | --- | --- | --- |
 | M0 | Setup and walking skeleton | Project runs; all MVP screens exist with placeholder art; one level is playable through all six phases; progress saves; tests pass | Done |
-| M1 | Mini-game set and level feel | The four remaining mechanics exist; clues zoom; feedback has motion; each mechanic has guidance, tolerance and retry | Done |
+| M1 | Mini-game set and level feel | The four remaining mechanics exist; feedback has motion; each mechanic has guidance, tolerance and retry | Done |
 | M2 | All 12 levels as drafts | Every level is playable with placeholder art; an automated check enforces the content rules (for example exactly one right assessment answer, a mandatory safety step and call-for-help step) | Done; all content is unreviewed draft |
 | M3 | Art | A sample (player, guide with six expressions, one scene) is approved; then logo, loading screen, characters, scenes, map and icons replace all placeholders | Scenes, characters, town map and area pictures are in; the logo is still drawn in code. Waiting on your verdict |
 | M4 | Sound | Sound effects and music play; the two settings switches control them | Done; nobody has listened to the result yet (see status.md) |

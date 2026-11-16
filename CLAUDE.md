@@ -25,7 +25,7 @@ pnpm typecheck    # tsc
 pnpm lint         # oxlint
 pnpm format       # prettier on src and e2e
 pnpm build        # typecheck + production build
-pnpm deploy:pages # build and publish to GitHub Pages (only when the owner asks)
+pnpm deploy:pages # build and publish to GitHub Pages (at the end of each round, after the checks pass)
 ```
 
 `SHOTS=1 pnpm test:e2e` saves screenshots to `e2e/.results/shots/`; `node scripts/contact-sheet.mjs <out.jpg> <image>…` tiles several into one image for review. Use them to check visual changes. Run unit tests, typecheck, lint and the e2e test before calling a change done.
@@ -76,6 +76,14 @@ The level flow: `LevelScreen` runs `step(level, state, event)` from `levelMachin
 - **The clock is hidden when it is not running** (intro, observe, outcome).
 - **Nothing moves on its own.** Motion answers an action (a screen opening, feedback, the result); no looping or wiggling decorations, such as bobbing map markers.
 - **Locked things can be opened by hand, one at a time** (`UnlockDialog`), for demos. Do not add an "unlock everything" control.
+- **Wrong answers come from the lesson.** Every unsafe or irrelevant option, mini-game decoy and "should not" card must match a line in that level's `lesson.donts`; add the line if it is missing. Never add an option that is a weaker or reworded twin of a right one (the content test rejects answers that share more than half their words).
+- **Clues are essential or not** (`Clue.essential`). The observe phase ends when all essential clues are opened; never go back to counting clues. All pins look the same.
+- **Choosing has no undo and no confirm.** A pick is final and the round ends by itself when every right step is picked. Show no message at that moment (the owner found it was never read); the result screen explains the order.
+- **Leave room at the bottom.** Level phases use `min-h-full`, not `h-full`, so the page's bottom padding comes after the last control; bottom padding adds the phone's safe area on top (`calc(… + env(safe-area-inset-bottom))`).
+- **After an area's last level, "next" opens the new area**, not its first level.
+- **Every round has its own clock** (constants at the top of `game/levelMachine.ts`). Keep them generous.
+- **No zoom on scenes.** It was tried on the clue view and removed at the owner's request.
+- **Things the player drags or holds have a picture** (`art` on drag items, `tool` on a hold), and `tap-targets` needs at least one decoy.
 - **Sound** comes only from CC0 files, mapped in `scripts/import-audio.mjs`. Play effects with `sfx(name)` from `@/audio`. Buttons get the tap sound automatically; wrap an area in `data-sfx="none"` when its buttons make their own sound.
 - **Scenes must stay visible.** Mark places on a scene with `Pin` (small, numbered) and put names in a list under the scene, not label chips on the picture.
 - **No rhythm-based first-aid mini-games**, and a `hold` must state the real-life duration in `realityNote`.
@@ -94,7 +102,7 @@ Agent skills are installed in `.claude/skills/` (tracked by `skills-lock.json`).
 ## Adding a level
 
 1. Copy a level file in `src/content/levels/`, name it `<level-id>-<topic>.ts`, keep the `id` from `LEVEL_OUTLINE` in `levels/index.ts`, and default-export the `LevelDef`. Every file matching `*-*.ts` in that folder is registered automatically.
-2. Fill every field of `LevelDef`: at least as many clues as `observe.required`, 3–4 assessment options with exactly one correct, solution options of all four kinds, `choose.order` listing the correct steps in order, outcome text for all five end states.
+2. Fill every field of `LevelDef`: clues with at least two marked `essential`, 3–4 assessment options with exactly one correct, solution options of all three kinds (correct, unsafe, irrelevant), `choose.order` listing the correct steps in order, outcome text for all five end states.
 3. If the level needs a new mechanic, add its config to `SingleMinigameConfig` in `game/types.ts`, a component in `minigames/`, a case in `minigames/index.tsx`, a check in `levels.test.ts` and a case in `playMinigame` in `e2e/helpers.ts`. A mini-game calls `onDone` once with `{ completed, accuracy }` and must stop its timers while `paused`.
 4. Add the scene to `art/manifest.json` with the level id as its `id`, generate it (below), and place the clue and mini-game coordinates from the grid picture.
 5. Add the level id to `LEVEL_IDS` in `e2e/helpers.ts`.
@@ -110,7 +118,7 @@ node scripts/gen-art.mjs --process <id>…            # redo only the resize and
 node scripts/scene-grid.mjs <level-id>…             # art/raw/_grid-<id>.jpg with a 10% grid
 ```
 
-Prompts describe only the subject; the shared style text in `manifest.styles` is appended. Keep writing out of pictures, show injuries without blood or gore, and use a white cross on mint green for first-aid items, not a red cross. Look at every generated picture before using it. `art(id)` in `src/art.ts` returns the picture's URL, or undefined if it does not exist.
+Small objects are generated six to a sheet (`items-1` … in the manifest, style `item`) and cut into `item-<name>.webp`; a sheet's `out` field sets that shared prefix. Prompts describe only the subject; the shared style text in `manifest.styles` is appended. Keep writing out of pictures, show injuries without blood or gore, and use a white cross on mint green for first-aid items, not a red cross. Look at every generated picture before using it. `art(id)` in `src/art.ts` returns the picture's URL, or undefined if it does not exist.
 
 ## Sound
 
@@ -118,7 +126,7 @@ Files are `src/assets/audio/sfx-<name>.mp3` and `music-<name>.mp3`; names are th
 
 ## Deploying
 
-`pnpm deploy:pages` builds with `BASE_PATH=/lifesaver/` and force-pushes the result to the `gh-pages` branch, which GitHub Pages serves at https://haunc08.github.io/lifesaver/ about a minute later. It publishes the working folder as it is, so run the checks and commit first, and deploy only when the owner asks. There is no automatic deploy: a GitHub Action was tried on 2026-11-16 and GitHub refused to start it ("account is locked due to a billing issue"); do not add one back unless the owner says that is resolved.
+`pnpm deploy:pages` builds with `BASE_PATH=/lifesaver/` and force-pushes the result to the `gh-pages` branch, which GitHub Pages serves at https://haunc08.github.io/lifesaver/ about a minute later. It publishes the working folder as it is, so run the checks and commit first. The owner's standing instruction (2026-11-16): at the end of every round of changes, once unit tests, typecheck, lint and the end-to-end tests pass, commit, push to `main` and run `pnpm deploy:pages`, without asking. There is no automatic deploy: a GitHub Action was tried on 2026-11-16 and GitHub refused to start it ("account is locked due to a billing issue"); do not add one back unless the owner says that is resolved.
 
 The site lives in a sub-folder, so never hard-code a path that starts with `/`: use imports for assets and the router for links. `BASE_PATH=/lifesaver/ pnpm build && BASE_PATH=/lifesaver/ pnpm exec vite preview` serves the same build locally.
 
@@ -131,5 +139,6 @@ Bump `SAVE_VERSION` in `src/state/save.ts` and add a `migrate` function to the p
 - TypeScript has `erasableSyntaxOnly` on: no enums, no constructor parameter properties. Use `import type` for types.
 - Import from `src` with the `@/` alias.
 - The Chrome browser extension was not connected in the setup session; Playwright with `channel: 'chrome'` is the way to look at the app.
+- Entrance animations (`animate-screen-in`, `animate-pop`) fill backwards only. With `both`, a finished animation keeps a transform on the element, which then becomes the anchor of any `position: fixed` child; that broke the dragged item once. Draw such overlays through `createPortal(…, document.body)`.
 - Playwright empties `e2e/.results` at the start of every run, so screenshots from an earlier run are gone; run the specs you want pictures of together.
 - Screenshots taken by the `shot` helper finish CSS animations first; the result screen's count-up is JavaScript, so wait for it.

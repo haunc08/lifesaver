@@ -10,7 +10,6 @@ const level: LevelDef = {
   areaId: 'food-district',
   title: 'Ấm nước sau quầy',
   scene: 'Quán cà phê',
-  timeLimitSec: 100,
 
   intro: [
     {
@@ -28,7 +27,6 @@ const level: LevelDef = {
   ],
 
   observe: {
-    required: 3,
     clues: [
       {
         id: 'hand',
@@ -37,6 +35,7 @@ const level: LevelDef = {
           'Mu bàn tay trái của chị Lan đỏ ửng và rát. Vùng đỏ nhỏ hơn lòng bàn tay chị, chưa thấy phồng rộp.',
         x: 69,
         y: 43,
+        essential: true,
       },
       {
         id: 'face',
@@ -44,6 +43,7 @@ const level: LevelDef = {
         caption: 'Chị Lan tỉnh táo, nhăn mặt vì đau rát.',
         x: 46,
         y: 36,
+        essential: true,
       },
       {
         id: 'ring',
@@ -51,6 +51,7 @@ const level: LevelDef = {
         caption: 'Chị đeo nhẫn và đồng hồ ở đúng bên tay bị bỏng. Tay bỏng có thể sưng lên.',
         x: 57,
         y: 54,
+        essential: false,
       },
       {
         id: 'kettle',
@@ -58,6 +59,7 @@ const level: LevelDef = {
         caption: 'Ấm nước sôi đổ nghiêng trên quầy, nước nóng còn loang ra. Bếp vẫn đang bật.',
         x: 86,
         y: 50,
+        essential: true,
       },
       {
         id: 'sink',
@@ -65,6 +67,7 @@ const level: LevelDef = {
         caption: 'Ngay sau quầy có bồn rửa với vòi nước sạch, mát.',
         x: 13,
         y: 55,
+        essential: false,
       },
     ],
   },
@@ -124,13 +127,6 @@ const level: LevelDef = {
         feedback: 'Có thêm người giúp, chị Lan sẽ được theo dõi và đưa đi khám khi cần.',
       },
       {
-        id: 'dip',
-        text: 'Nhúng tay vào chậu nước mát một lát cho đỡ rát',
-        kind: 'partial',
-        substitutes: 'cool',
-        feedback: 'Làm mát là đúng, nhưng nên để dưới vòi nước chảy và giữ đủ lâu, khoảng 20 phút.',
-      },
-      {
         id: 'safe',
         text: 'Tắt bếp, dời ấm nước sôi ra xa, tránh vũng nước nóng',
         kind: 'correct',
@@ -163,6 +159,7 @@ const level: LevelDef = {
     instruction: 'Giữ bàn tay chị Lan dưới vòi nước mát. Đừng rút tay ra sớm!',
     action: 'Giữ tay dưới vòi nước',
     holdSec: 7,
+    tool: { art: 'item-tap', x: 69, y: 43 },
     holdingText: 'Nước mát đang làm dịu vết bỏng… giữ tiếp nào.',
     releaseText: 'Chưa đủ đâu! Rút tay ra sớm thì hơi nóng vẫn còn làm tổn thương da.',
     realityNote:
@@ -184,7 +181,8 @@ const level: LevelDef = {
 
   hints: {
     intro: 'Đọc hết đoạn hội thoại để biết chuyện gì vừa xảy ra sau quầy.',
-    observe: 'Chạm vào các điểm sáng trên hình. Cần xem ít nhất 3 manh mối trước khi kết luận.',
+    observe:
+      'Chạm vào từng dấu “?” trên hình. Khi đã xem hết những điểm quan trọng, bạn mới kết luận được.',
     assess:
       'Nước sôi đổ lên tay, da đỏ ửng và rát, không chảy máu: hãy chọn “Nghi ngờ chị Lan bị bỏng nước sôi ở bàn tay”.',
     choose:
@@ -215,6 +213,7 @@ const level: LevelDef = {
       'Không bôi kem đánh răng, nước mắm, mỡ, bơ hay bất cứ thứ gì lạ',
       'Không chọc vỡ bóng nước',
       'Không cố gỡ quần áo đã dính vào vết bỏng',
+      'Không trì hoãn làm mát vết bỏng để lo việc khác',
     ],
     callForHelp: [
       'Vết bỏng rộng hơn lòng bàn tay của nạn nhân',

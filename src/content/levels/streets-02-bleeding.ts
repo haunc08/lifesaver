@@ -10,7 +10,6 @@ const level: LevelDef = {
   areaId: 'streets',
   title: 'Cú ngã ở trạm xe buýt',
   scene: 'Trạm xe buýt',
-  timeLimitSec: 140,
 
   intro: [
     {
@@ -32,7 +31,6 @@ const level: LevelDef = {
   ],
 
   observe: {
-    required: 3,
     clues: [
       {
         id: 'arm',
@@ -41,6 +39,7 @@ const level: LevelDef = {
           'Cẳng tay trái của bác có vết rách, máu chảy đều và thấm ướt tay áo. Không thấy vật gì cắm trong vết thương.',
         x: 38,
         y: 53,
+        essential: true,
       },
       {
         id: 'face',
@@ -48,6 +47,7 @@ const level: LevelDef = {
         caption: 'Bác Tư tỉnh táo, nói chuyện rõ, chỉ hơi tái vì sợ.',
         x: 46,
         y: 33,
+        essential: true,
       },
       {
         id: 'body',
@@ -55,6 +55,7 @@ const level: LevelDef = {
         caption: 'Bác không bị đập đầu. Tay phải và hai chân vẫn cử động bình thường.',
         x: 40,
         y: 72,
+        essential: true,
       },
       {
         id: 'ground',
@@ -63,6 +64,7 @@ const level: LevelDef = {
           'Bác ngồi trên vỉa hè, cách xa lòng đường. Mép sắt băng ghế là thứ làm bác bị thương.',
         x: 14,
         y: 78,
+        essential: false,
       },
       {
         id: 'bag',
@@ -70,6 +72,7 @@ const level: LevelDef = {
         caption: 'Trong ba lô có túi sơ cứu nhỏ: gạc sạch, cuộn băng và đôi găng tay ni lông.',
         x: 72,
         y: 70,
+        essential: false,
       },
     ],
   },
@@ -143,13 +146,6 @@ const level: LevelDef = {
         feedback: 'Luôn kiểm tra an toàn xung quanh trước khi lại gần giúp.',
       },
       {
-        id: 'peek',
-        text: 'Ép bằng khăn sạch, thỉnh thoảng nhấc ra xem máu còn chảy không',
-        kind: 'partial',
-        substitutes: 'press',
-        feedback: 'Ép là đúng, nhưng nhấc ra xem sẽ làm máu chảy lại. Hãy giữ tay ép liên tục.',
-      },
-      {
         id: 'band',
         text: 'Lấy dây thun buộc thắt thật chặt cánh tay bác',
         kind: 'unsafe',
@@ -174,6 +170,7 @@ const level: LevelDef = {
           'Ép chặt miếng gạc lên vết thương của bác Tư. Giữ nguyên tay, đừng nhấc lên xem!',
         action: 'Ép chặt miếng gạc',
         holdSec: 6,
+        tool: { art: 'item-gauze', x: 38, y: 53 },
         holdingText: 'Giữ đều tay… máu đang chảy chậm lại.',
         releaseText: 'Đừng nhấc tay! Nhấc gạc lên xem sẽ làm máu chảy lại.',
         realityNote:
@@ -191,36 +188,42 @@ const level: LevelDef = {
           {
             id: 'gauze',
             label: 'Gạc sạch',
+            art: 'item-gauze',
             zoneId: 'wound',
             wrongNote: 'Gạc sạch cần đặt trực tiếp lên vết thương.',
           },
           {
             id: 'cotton',
             label: 'Bông gòn xé nhỏ',
+            art: 'item-cotton',
             zoneId: null,
             wrongNote: 'Bông gòn dễ dính sợi vào vết thương. Hãy dùng gạc sạch.',
           },
           {
             id: 'bandage',
             label: 'Cuộn băng',
+            art: 'item-bandage',
             zoneId: 'wrap',
             wrongNote: 'Cuộn băng dùng để quấn giữ lớp gạc ở ngoài cùng.',
           },
           {
             id: 'coffee',
             label: 'Bột cà phê',
+            art: 'item-coffee-jar',
             zoneId: null,
             wrongNote: 'Bột cà phê không cầm được máu, lại làm bẩn vết thương.',
           },
           {
             id: 'second-pad',
             label: 'Miếng gạc thứ hai',
+            art: 'item-gauze',
             zoneId: 'soaked',
             wrongNote: 'Miếng gạc thứ hai đặt chồng lên chỗ máu thấm ra, không gỡ miếng cũ.',
           },
           {
             id: 'tobacco',
             label: 'Thuốc lào',
+            art: 'item-tobacco',
             zoneId: null,
             wrongNote: 'Thuốc lào không cầm được máu và dễ gây nhiễm trùng.',
           },
@@ -244,7 +247,8 @@ const level: LevelDef = {
 
   hints: {
     intro: 'Đọc hết đoạn hội thoại để biết chuyện gì vừa xảy ra ở trạm xe buýt.',
-    observe: 'Chạm vào các điểm sáng trên hình. Cần xem ít nhất 3 manh mối trước khi kết luận.',
+    observe:
+      'Chạm vào từng dấu “?” trên hình. Khi đã xem hết những điểm quan trọng, bạn mới kết luận được.',
     assess:
       'Bác Tư tỉnh, tay không biến dạng, nhưng máu chảy đều và thấm ướt tay áo: hãy chọn “Nghi ngờ bác có vết thương chảy máu nhiều ở cẳng tay, cần cầm máu ngay”.',
     choose:
@@ -277,6 +281,7 @@ const level: LevelDef = {
       'Không dùng bông gòn xé nhỏ nhét vào vết thương',
       'Không tự buộc dây thun, dây chun thắt chặt tay chân',
       'Không rút vật đang cắm trong vết thương; hãy ép xung quanh và gọi cấp cứu',
+      'Không bỏ đi lo việc khác khi vết thương còn đang chảy máu',
     ],
     callForHelp: [
       'Máu chảy nhiều, phun thành tia hoặc không chậm lại sau khi ép chặt',

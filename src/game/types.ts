@@ -30,6 +30,11 @@ export interface Clue {
   /** Hotspot position inside the scene, in percent. */
   x: number
   y: number
+  /**
+   * Needed to judge the situation. The observe phase can end once every
+   * essential clue has been inspected; the others are optional extras.
+   */
+  essential: boolean
 }
 
 export interface AssessOption {
@@ -40,24 +45,32 @@ export interface AssessOption {
   feedback: string
 }
 
-export type SolutionKind = 'correct' | 'partial' | 'unsafe' | 'irrelevant'
+export type SolutionKind = 'correct' | 'unsafe' | 'irrelevant'
 
 export interface SolutionOption {
   id: string
   text: string
   kind: SolutionKind
-  /** Why this option is right, weaker, unsafe or beside the point. */
+  /** Why this option is right, unsafe or beside the point. */
   feedback: string
   /** Correct options only: the level cannot be passed without this step. */
   mandatory?: boolean
-  /** Partial options only: id of the correct step this is a weaker version of. */
-  substitutes?: string
 }
 
+/** Do every task among the marked spots; at least one spot is a thing not to do. */
 export interface TapTargetsConfig {
   type: 'tap-targets'
   instruction: string
   targets: { id: string; label: string; x: number; y: number }[]
+  /** Things that look like tasks but must be left alone; tapping one costs accuracy. */
+  decoys: {
+    id: string
+    label: string
+    x: number
+    y: number
+    /** Shown when the decoy is tapped: why not to do it. */
+    note: string
+  }[]
 }
 
 /** Find every hazard among labelled spots; tapping a harmless spot costs accuracy. */
@@ -89,6 +102,8 @@ export interface HoldConfig {
   releaseText: string
   /** What the real duration or rule is, so the short hold teaches nothing wrong. */
   realityNote: string
+  /** The thing being held: art id of its picture, and where on the scene it is applied (percent). */
+  tool: { art: string; x: number; y: number }
 }
 
 /** Move each item to the zone where it belongs; decoy items stay in the tray. */
@@ -99,6 +114,8 @@ export interface DragPlaceConfig {
   items: {
     id: string
     label: string
+    /** Art id of the item's picture, e.g. "item-gauze". */
+    art: string
     /** Zone this item belongs in; null for a decoy that must not be used. */
     zoneId: string | null
     /** Shown when the item is dropped in the wrong place, or a decoy is used. */
@@ -161,13 +178,10 @@ export interface LevelDef {
   title: string
   /** Label for the placeholder scene, e.g. "Lớp học". */
   scene: string
-  /** Gameplay clock for the timed phases. Not a real medical time limit. */
-  timeLimitSec: number
   intro: DialogueLine[]
   observe: {
+    /** At least two are essential; see Clue.essential. */
     clues: Clue[]
-    /** How many clues must be inspected before moving on. */
-    required: number
   }
   assess: {
     question: string

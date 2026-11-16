@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { initialState, step, summarize, type LevelEvent } from '@/game/levelMachine'
+import {
+  CHOOSE_TIME_SEC,
+  initialState,
+  step,
+  summarize,
+  type LevelEvent,
+} from '@/game/levelMachine'
 import { score } from '@/game/scoring'
 import { PHASES, type LevelDef, type SingleMinigameConfig } from '@/game/types'
 import { AREAS } from './areas'
@@ -13,16 +19,62 @@ import { LEVEL_OUTLINE, LEVELS } from './levels'
 const levels = Object.values(LEVELS).filter((l): l is LevelDef => l !== undefined)
 const OUTCOMES = ['success', 'partial-success', 'recoverable-mistake', 'unsafe-failure', 'timeout']
 
+const ART = Object.keys(import.meta.glob('../assets/art/*.webp')).map((path) =>
+  path.replace(/^.*\/(.+)\.webp$/, '$1'),
+)
+
 const inScene = (p: { x: number; y: number }) => p.x >= 6 && p.x <= 94 && p.y >= 8 && p.y <= 92
 const unique = (ids: string[]) => new Set(ids).size === ids.length
+
+/** Markers on a scene must not sit on top of each other. */
+function apart(points: { x: number; y: number }[]): boolean {
+  return points.every((a, i) =>
+    points.slice(i + 1).every((b) => Math.abs(a.x - b.x) >= 9 || Math.abs(a.y - b.y) >= 11),
+  )
+}
+
+const words = (text: string) =>
+  new Set(
+    text
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+      .split(/\s+/)
+      .filter(Boolean),
+  )
+
+/** Share of words two answers have in common (0 = none, 1 = the same words). */
+function overlap(a: string, b: string): number {
+  const [x, y] = [words(a), words(b)]
+  const shared = [...x].filter((w) => y.has(w)).length
+  return shared / (x.size + y.size - shared)
+}
+
+/** The most alike pair among some answers, so a failure names the culprits. */
+function mostAlike(texts: string[]): { share: number; pair: string } {
+  let best = { share: 0, pair: '' }
+  texts.forEach((a, i) =>
+    texts.slice(i + 1).forEach((b) => {
+      const share = overlap(a, b)
+      if (share > best.share) best = { share, pair: `"${a}" / "${b}"` }
+    }),
+  )
+  return best
+}
+
+/** Two answers sharing more than this share of their words read as near-duplicates. */
+const MAX_OVERLAP = 0.5
 
 function checkMinigame(config: SingleMinigameConfig) {
   expect(config.instruction.trim()).not.toBe('')
   switch (config.type) {
     case 'tap-targets':
       expect(config.targets.length).toBeGreaterThanOrEqual(2)
-      expect(unique(config.targets.map((t) => t.id))).toBe(true)
-      expect(config.targets.every(inScene)).toBe(true)
+      // At least one thing that must not be done, each with its reason.
+      expect(config.decoys.length).toBeGreaterThanOrEqual(1)
+      expect(config.decoys.every((d) => d.note.trim() !== '')).toBe(true)
+      expect(unique([...config.targets, ...config.decoys].map((t) => t.id))).toBe(true)
+      expect([...config.targets, ...config.decoys].every(inScene)).toBe(true)
+      expect(apart([...config.targets, ...config.decoys])).toBe(true)
       break
     case 'scan':
       expect(config.spots.filter((s) => s.hazard).length).toBeGreaterThanOrEqual(2)
@@ -35,6 +87,8 @@ function checkMinigame(config: SingleMinigameConfig) {
       expect(config.holdSec).toBeGreaterThanOrEqual(3)
       expect(config.holdSec).toBeLessThanOrEqual(8)
       expect(config.realityNote.trim()).not.toBe('')
+      expect(ART, 'picture of the held thing').toContain(config.tool.art)
+      expect(inScene(config.tool)).toBe(true)
       break
     case 'drag-place': {
       const zoneIds = config.zones.map((z) => z.id)
@@ -45,15 +99,17 @@ function checkMinigame(config: SingleMinigameConfig) {
       for (const item of config.items) {
         if (item.zoneId !== null) expect(zoneIds).toContain(item.zoneId)
         expect(item.wrongNote.trim()).not.toBe('')
+        expect(ART, `picture of ${item.id}`).toContain(item.art)
       }
+      expect(apart(config.zones)).toBe(true)
       // Every zone is used, so no zone is a dead end.
       for (const id of zoneIds) expect(config.items.some((i) => i.zoneId === id)).toBe(true)
       break
     }
     case 'quick-decision':
       expect(config.cards.length).toBeGreaterThanOrEqual(4)
-      expect(config.secPerCard).toBeGreaterThanOrEqual(6)
-      expect(config.secPerCard).toBeLessThanOrEqual(10)
+      expect(config.secPerCard).toBeGreaterThanOrEqual(10)
+      expect(config.secPerCard).toBeLessThanOrEqual(15)
       expect(new Set(config.cards.map((c) => c.answer)).size).toBe(2)
       expect(config.cards.every((c) => c.why.trim() !== '')).toBe(true)
       break
@@ -69,7 +125,7 @@ function perfectRun(level: LevelDef, seconds: number) {
     { type: 'assess-answer', id: level.assess.options.find((o) => o.correct)!.id },
     { type: 'tick', ms: seconds * 1000 },
     ...level.choose.order.map((id): LevelEvent => ({ type: 'pick', id })),
-    { type: 'confirm-solution' },
+    { type: 'start-act' },
     { type: 'act-done', result: { completed: true, accuracy: 1 } },
   ]
   const state = events.reduce((s, e) => step(level, s, e), initialState())
@@ -91,15 +147,13 @@ describe('level list', () => {
 })
 
 describe.each(levels.map((l) => [l.id, l] as const))('level %s', (_id, level) => {
-  it('has a readable intro, enough clues and a fair clock', () => {
+  it('has a readable intro and clues, at least two of them essential', () => {
     expect(level.intro.length).toBeGreaterThanOrEqual(3)
     expect(level.intro.length).toBeLessThanOrEqual(6)
-    expect(level.observe.required).toBeGreaterThanOrEqual(2)
-    expect(level.observe.clues.length).toBeGreaterThanOrEqual(level.observe.required)
+    expect(level.observe.clues.filter((c) => c.essential).length).toBeGreaterThanOrEqual(2)
     expect(unique(level.observe.clues.map((c) => c.id))).toBe(true)
     expect(level.observe.clues.every(inScene)).toBe(true)
-    expect(level.timeLimitSec).toBeGreaterThanOrEqual(75)
-    expect(level.timeLimitSec).toBeLessThanOrEqual(150)
+    expect(apart(level.observe.clues)).toBe(true)
   })
 
   it('has exactly one right assessment among 3–4 options', () => {
@@ -107,14 +161,16 @@ describe.each(levels.map((l) => [l.id, l] as const))('level %s', (_id, level) =>
     expect(level.assess.options.length).toBeLessThanOrEqual(4)
     expect(level.assess.options.filter((o) => o.correct)).toHaveLength(1)
     expect(unique(level.assess.options.map((o) => o.id))).toBe(true)
+    // Assessments share a frame ("Nghi ngờ … bị …"), so only exact repeats are checked here.
+    expect(unique(level.assess.options.map((o) => o.text))).toBe(true)
   })
 
-  it('offers all four kinds of solution, with safety and calling for help mandatory', () => {
+  it('offers right, unsafe and irrelevant solutions, none of them near-duplicates', () => {
     const { options, order } = level.choose
     expect(unique(options.map((o) => o.id))).toBe(true)
     expect(options.length).toBeGreaterThanOrEqual(6)
     expect(options.length).toBeLessThanOrEqual(8)
-    for (const kind of ['correct', 'partial', 'unsafe', 'irrelevant']) {
+    for (const kind of ['correct', 'unsafe', 'irrelevant']) {
       expect(
         options.some((o) => o.kind === kind),
         `no ${kind} option`,
@@ -126,9 +182,10 @@ describe.each(levels.map((l) => [l.id, l] as const))('level %s', (_id, level) =>
     for (const o of options) {
       expect(o.feedback.trim()).not.toBe('')
       if (o.mandatory) expect(o.kind).toBe('correct')
-      if (o.kind === 'partial') expect(correctIds).toContain(o.substitutes)
-      else expect(o.substitutes).toBeUndefined()
     }
+    // No answer may read like a twin of another: that only confuses.
+    const alike = mostAlike(options.map((o) => o.text))
+    expect(alike.share, `too alike: ${alike.pair}`).toBeLessThanOrEqual(MAX_OVERLAP)
     // The options must not be listed in the answer order.
     expect(correctIds).not.toEqual(order)
   })
@@ -163,10 +220,10 @@ describe.each(levels.map((l) => [l.id, l] as const))('level %s', (_id, level) =>
   })
 
   it('gives three stars for a quick, flawless run and still passes a slow one', () => {
-    const quick = perfectRun(level, level.timeLimitSec * 0.3)
+    const quick = perfectRun(level, CHOOSE_TIME_SEC * 0.3)
     expect(quick.outcome).toBe('success')
     expect(quick.stars).toBe(3)
-    const slow = perfectRun(level, level.timeLimitSec * 0.95)
+    const slow = perfectRun(level, CHOOSE_TIME_SEC * 0.95)
     expect(slow.passed).toBe(true)
   })
 })

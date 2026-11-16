@@ -10,6 +10,8 @@ export interface MinigameProps<C extends MinigameConfig = MinigameConfig> {
   scene: string
   /** True while the hint or pause panel is open: timers must stand still. */
   paused: boolean
+  /** Called when a chained mini-game moves on to its next step, so the clock can start afresh. */
+  onStep?: () => void
   /** Call exactly once, when the player finishes or fails the mini-game. */
   onDone: (result: ActResult) => void
 }

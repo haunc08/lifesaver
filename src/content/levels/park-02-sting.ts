@@ -10,7 +10,6 @@ const level: LevelDef = {
   areaId: 'park',
   title: 'Vị khách không mời',
   scene: 'Bãi dã ngoại',
-  timeLimitSec: 90,
 
   intro: [
     {
@@ -36,7 +35,6 @@ const level: LevelDef = {
   ],
 
   observe: {
-    required: 3,
     clues: [
       {
         id: 'arm',
@@ -45,6 +43,7 @@ const level: LevelDef = {
           'Trên cẳng tay chị Mai có một nốt sưng đỏ, ở giữa còn cắm một chiếc ngòi nhỏ màu đen.',
         x: 46,
         y: 64,
+        essential: true,
       },
       {
         id: 'face',
@@ -52,6 +51,7 @@ const level: LevelDef = {
         caption: 'Mặt, môi và mắt chị Mai không sưng. Chị ấy nói chuyện rõ ràng.',
         x: 47,
         y: 45,
+        essential: true,
       },
       {
         id: 'breath',
@@ -59,6 +59,7 @@ const level: LevelDef = {
         caption: 'Chị Mai thở đều, không khò khè, không kêu tức ngực hay chóng mặt.',
         x: 61,
         y: 55,
+        essential: true,
       },
       {
         id: 'bees',
@@ -66,6 +67,7 @@ const level: LevelDef = {
         caption: 'Mấy con ong vẫn bay quanh bồn hoa và cốc nước cam ngay cạnh chỗ ngồi.',
         x: 72,
         y: 12,
+        essential: false,
       },
       {
         id: 'skin',
@@ -73,6 +75,7 @@ const level: LevelDef = {
         caption: 'Ngoài nốt đốt, da ở cổ, ngực và tay chân chị Mai không nổi mẩn đỏ.',
         x: 48,
         y: 82,
+        essential: false,
       },
     ],
   },
@@ -150,13 +153,6 @@ const level: LevelDef = {
           'Phản ứng nặng có thể đến rất nhanh, nên cần có người lớn hỗ trợ và sẵn sàng gọi 115.',
       },
       {
-        id: 'rinse',
-        text: 'Dội nước sạch lên vết đốt',
-        kind: 'partial',
-        substitutes: 'care',
-        feedback: 'Rửa là đúng, nhưng dùng thêm xà phòng, chườm lạnh và kê cao tay thì tốt hơn.',
-      },
-      {
         id: 'stinger',
         text: 'Dùng cạnh thẻ cứng gạt ngang để lấy ngòi ong ra',
         kind: 'correct',
@@ -175,12 +171,28 @@ const level: LevelDef = {
   act: {
     type: 'tap-targets',
     instruction:
-      'Chăm sóc vết đốt cho chị Mai: chạm vào từng việc cần làm. Nhớ gạt ngòi bằng cạnh thẻ, đừng bóp!',
+      'Chăm sóc vết đốt cho chị Mai: chạm vào từng việc cần làm. Có việc không nên làm đâu nhé!',
     targets: [
       { id: 'stinger', label: 'Gạt ngòi bằng cạnh thẻ', x: 46, y: 62 },
       { id: 'wash', label: 'Rửa xà phòng và nước', x: 25, y: 80 },
       { id: 'cold', label: 'Chườm đá bọc khăn', x: 75, y: 80 },
       { id: 'watch', label: 'Theo dõi hơi thở', x: 48, y: 40 },
+    ],
+    decoys: [
+      {
+        id: 'squeeze',
+        label: 'Bóp nặn ngòi bằng ngón tay',
+        x: 61,
+        y: 60,
+        note: 'Không bóp, nặn ngòi: làm vậy đẩy thêm nọc vào da. Hãy gạt ngang bằng cạnh thẻ.',
+      },
+      {
+        id: 'swat',
+        label: 'Đập đuổi đàn ong',
+        x: 53,
+        y: 12,
+        note: 'Không xua hay đập ong: chúng sẽ đốt thêm. Bình tĩnh tránh ra xa là đủ.',
+      },
     ],
   },
 
@@ -199,7 +211,8 @@ const level: LevelDef = {
 
   hints: {
     intro: 'Đọc hết đoạn hội thoại để biết chuyện gì vừa xảy ra.',
-    observe: 'Chạm vào các điểm sáng trên hình. Cần xem ít nhất 3 manh mối trước khi kết luận.',
+    observe:
+      'Chạm vào từng dấu “?” trên hình. Khi đã xem hết những điểm quan trọng, bạn mới kết luận được.',
     assess:
       'Có ngòi ong, sưng đỏ quanh vết đốt, vẫn thở đều, mặt không sưng: hãy chọn “Nghi ngờ chị Mai bị ong đốt, mới chỉ sưng đau tại chỗ”.',
     choose:
@@ -230,6 +243,7 @@ const level: LevelDef = {
       'Không hút nọc bằng miệng',
       'Không bôi vôi, nước mắm, kem đánh răng hay các mẹo dân gian khác',
       'Không chườm đá trực tiếp lên da',
+      'Không nán lại gần ong để chụp ảnh, xua hay đập chúng',
     ],
     callForHelp: [
       'Khó thở, thở khò khè, tức ngực',

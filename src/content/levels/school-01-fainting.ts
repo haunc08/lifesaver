@@ -10,7 +10,6 @@ const level: LevelDef = {
   areaId: 'school',
   title: 'Tiết bốn oi ả',
   scene: 'Lớp học',
-  timeLimitSec: 90,
 
   intro: [
     {
@@ -28,7 +27,6 @@ const level: LevelDef = {
   ],
 
   observe: {
-    required: 3,
     clues: [
       {
         id: 'face',
@@ -36,6 +34,7 @@ const level: LevelDef = {
         caption: 'Mặt Nam tái nhợt, trán vã mồ hôi.',
         x: 64,
         y: 58,
+        essential: true,
       },
       {
         id: 'chest',
@@ -43,6 +42,7 @@ const level: LevelDef = {
         caption: 'Ngực Nam vẫn phập phồng đều: bạn ấy vẫn đang thở.',
         x: 67,
         y: 74,
+        essential: true,
       },
       {
         id: 'limbs',
@@ -50,6 +50,7 @@ const level: LevelDef = {
         caption: 'Tay chân Nam mềm, không co cứng hay giật.',
         x: 53,
         y: 84,
+        essential: true,
       },
       {
         id: 'room',
@@ -57,6 +58,7 @@ const level: LevelDef = {
         caption: 'Cửa sổ đóng kín, phòng rất nóng. Hộp đồ ăn sáng của Nam còn nguyên.',
         x: 15,
         y: 30,
+        essential: false,
       },
     ],
   },
@@ -129,13 +131,6 @@ const level: LevelDef = {
         feedback: 'Gọi người hỗ trợ sớm để Nam được chăm sóc đúng cách.',
       },
       {
-        id: 'lay-flat',
-        text: 'Đặt Nam nằm ngửa trên sàn',
-        kind: 'partial',
-        substitutes: 'lay',
-        feedback: 'Nằm ngửa là đúng, nhưng kê cao chân nữa thì tốt hơn.',
-      },
-      {
         id: 'check',
         text: 'Gọi tên, vỗ nhẹ vai và xem Nam có thở bình thường không',
         kind: 'correct',
@@ -153,11 +148,28 @@ const level: LevelDef = {
 
   act: {
     type: 'tap-targets',
-    instruction: 'Giúp Nam dễ chịu hơn: chạm vào những chỗ cần xử lý.',
+    instruction:
+      'Giúp Nam dễ chịu hơn: chạm vào những việc cần làm. Có việc không nên làm đâu nhé!',
     targets: [
       { id: 'legs', label: 'Kê ba lô dưới chân', x: 72, y: 86 },
       { id: 'collar', label: 'Nới lỏng cổ áo', x: 56, y: 68 },
       { id: 'window', label: 'Mở cửa sổ', x: 24, y: 28 },
+    ],
+    decoys: [
+      {
+        id: 'feed',
+        label: 'Đút hộp cơm cho Nam',
+        x: 10,
+        y: 55,
+        note: 'Không cho ăn uống khi Nam chưa tỉnh hẳn: bạn ấy có thể bị sặc.',
+      },
+      {
+        id: 'pull-up',
+        label: 'Xốc Nam ngồi dậy',
+        x: 71,
+        y: 60,
+        note: 'Không xốc dậy hay lay mạnh. Nam cần nằm yên để máu lên não.',
+      },
     ],
   },
 
@@ -175,7 +187,8 @@ const level: LevelDef = {
 
   hints: {
     intro: 'Đọc hết đoạn hội thoại để biết chuyện gì vừa xảy ra.',
-    observe: 'Chạm vào các điểm sáng trên hình. Cần xem ít nhất 3 manh mối trước khi kết luận.',
+    observe:
+      'Chạm vào từng dấu “?” trên hình. Khi đã xem hết những điểm quan trọng, bạn mới kết luận được.',
     assess:
       'Nam chóng mặt, mặt tái, vã mồ hôi, vẫn thở đều và không co giật: hãy chọn “Nghi ngờ Nam bị ngất xỉu”.',
     choose:
@@ -206,6 +219,7 @@ const level: LevelDef = {
       'Không cho ăn uống khi nạn nhân chưa tỉnh hẳn',
       'Không xốc dậy, lay mạnh hay tát vào mặt',
       'Không vây kín xung quanh nạn nhân',
+      'Không quay phim, chụp ảnh thay vì giúp nạn nhân',
     ],
     callForHelp: [
       'Nạn nhân không tỉnh lại sau khoảng một phút',

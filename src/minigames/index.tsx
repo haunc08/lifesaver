@@ -31,7 +31,7 @@ function Single(props: MinigameProps<SingleMinigameConfig>) {
 }
 
 /** Plays several mechanics in a row; the result is their average, and one failure ends it. */
-function Sequence({ config, onDone, ...rest }: MinigameProps<SequenceConfig>) {
+function Sequence({ config, onDone, onStep, ...rest }: MinigameProps<SequenceConfig>) {
   const [index, setIndex] = useState(0)
   const scores = useRef<number[]>([])
 
@@ -41,14 +41,15 @@ function Sequence({ config, onDone, ...rest }: MinigameProps<SequenceConfig>) {
     if (!result.completed) return onDone({ completed: false, accuracy })
     if (index === config.steps.length - 1) return onDone({ completed: true, accuracy })
     setIndex(index + 1)
+    onStep?.()
   }
 
   return (
-    <div className="flex h-full flex-col gap-2">
+    <div className="flex flex-1 flex-col gap-2">
       <p className="text-center text-sm font-bold text-blue-ink">
         Bước {index + 1}/{config.steps.length}
       </p>
-      <div className="flex-1">
+      <div className="flex flex-1 flex-col">
         <Single key={index} {...rest} config={config.steps[index]} onDone={stepDone} />
       </div>
     </div>

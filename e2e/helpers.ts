@@ -60,20 +60,20 @@ export async function openLevel(page: Page, id: string): Promise<LevelDef> {
   }, id)
 }
 
-/** Read the story, look at the required clues, then answer and choose correctly. */
+/** Read the story, look at the essential clues, then answer and choose correctly. */
 export async function playToAct(page: Page, level: LevelDef) {
   for (let i = 1; i < level.intro.length; i++) await button(page, 'Tiếp tục').click()
   await button(page, 'Quan sát hiện trường').click()
-  for (const clue of level.observe.clues.slice(0, level.observe.required)) {
+  for (const clue of level.observe.clues.filter((c) => c.essential)) {
     await button(page, clue.label).click()
-    await page.locator('[data-zoomed]').click({ position: { x: 8, y: 8 } })
   }
   await button(page, 'Mình đã rõ rồi').click()
   await button(page, level.assess.options.find((o) => o.correct)!.text).click()
   for (const stepId of level.choose.order) {
     await button(page, level.choose.options.find((o) => o.id === stepId)!.text).click()
   }
-  await button(page, 'Thực hiện').click()
+  // The action starts by itself a moment after the last right step is picked.
+  await expect(page.getByText(/^Đã chọn/)).toHaveCount(0)
 }
 
 /** Where to press for a hold mini-game. */

@@ -38,11 +38,9 @@ for (const size of SIZES) {
     await shot(page, `small-${tag}-intro`)
     for (let i = 1; i < level.intro.length; i++) await button(page, 'Tiếp tục').click()
     await button(page, 'Quan sát hiện trường').click()
-    await expectOnScreen(page, `Đã xem 0/${level.observe.required} manh mối`)
-    for (const clue of level.observe.clues.slice(0, level.observe.required)) {
-      await button(page, clue.label).click()
-      await page.locator('[data-zoomed]').click({ position: { x: 8, y: 8 } })
-    }
+    const essential = level.observe.clues.filter((c) => c.essential)
+    await expectOnScreen(page, `Còn ${essential.length} điểm quan trọng chưa xem`)
+    for (const clue of essential) await button(page, clue.label).click()
     await button(page, 'Mình đã rõ rồi').click()
 
     // Assess and choose: long option lists may scroll, but never sideways.
@@ -54,10 +52,13 @@ for (const size of SIZES) {
     for (const stepId of level.choose.order) {
       await button(page, level.choose.options.find((o) => o.id === stepId)!.text).click()
     }
-    await button(page, 'Thực hiện').scrollIntoViewIfNeeded()
-    await button(page, 'Thực hiện').click()
+    await expect(page.getByText(/^Đã chọn/)).toHaveCount(0)
     await shot(page, `small-${tag}-act`)
     await expectNoSidewaysScroll(page)
+    // Scrolled to the end, the last control keeps clear of the bottom edge.
+    await page.locator('main').evaluate((el) => el.scrollTo(0, el.scrollHeight))
+    const last = await page.locator('main button').last().boundingBox()
+    expect(size.height - (last!.y + last!.height)).toBeGreaterThanOrEqual(20)
 
     // Home: every area marker and the play button are on screen.
     await page.goto('/lobby')

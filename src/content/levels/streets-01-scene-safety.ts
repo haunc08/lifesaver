@@ -10,7 +10,6 @@ const level: LevelDef = {
   areaId: 'streets',
   title: 'Ngã tư giờ tan tầm',
   scene: 'Ngã tư',
-  timeLimitSec: 135,
 
   intro: [
     {
@@ -32,7 +31,6 @@ const level: LevelDef = {
   ],
 
   observe: {
-    required: 3,
     clues: [
       {
         id: 'rider',
@@ -40,6 +38,7 @@ const level: LevelDef = {
         caption: 'Anh Hải ngồi trên mặt đường, tỉnh táo, nói chuyện rõ. Anh vẫn đội mũ bảo hiểm.',
         x: 50,
         y: 51,
+        essential: true,
       },
       {
         id: 'leg',
@@ -47,6 +46,7 @@ const level: LevelDef = {
         caption: 'Anh ôm chân phải, nhăn mặt mỗi khi cử động. Không thấy chảy máu nhiều.',
         x: 43,
         y: 69,
+        essential: true,
       },
       {
         id: 'bike',
@@ -54,6 +54,7 @@ const level: LevelDef = {
         caption: 'Xe đổ nghiêng nhưng vẫn nổ máy, bánh sau còn quay. Xăng đang rỉ ra mặt đường.',
         x: 78,
         y: 57,
+        essential: false,
       },
       {
         id: 'traffic',
@@ -61,6 +62,7 @@ const level: LevelDef = {
         caption: 'Xe máy, ô tô vẫn chạy sát chỗ anh Hải ngồi. Nhiều người chưa kịp nhìn thấy anh.',
         x: 25,
         y: 30,
+        essential: true,
       },
       {
         id: 'road',
@@ -68,6 +70,7 @@ const level: LevelDef = {
         caption: 'Mảnh gương xe vỡ văng khắp nơi, mặt đường ướt và trơn.',
         x: 40,
         y: 88,
+        essential: false,
       },
     ],
   },
@@ -138,14 +141,6 @@ const level: LevelDef = {
         text: 'Bảo anh Hải ngồi yên, giữ nguyên chân đau, ở cạnh trấn an anh',
         kind: 'correct',
         feedback: 'Giữ yên chỗ đau và có người ở bên giúp anh Hải bớt đau, bớt sợ.',
-      },
-      {
-        id: 'engine-only',
-        text: 'Tắt máy chiếc xe bị đổ',
-        kind: 'partial',
-        substitutes: 'warn',
-        feedback:
-          'Tắt máy là đúng, nhưng còn cần người ra hiệu để xe khác nhìn thấy và đi chậm lại.',
       },
       {
         id: 'rush',
@@ -225,7 +220,7 @@ const level: LevelDef = {
         type: 'quick-decision',
         instruction: 'Mọi người xúm lại, mỗi người một ý. Việc nào nên làm, việc nào không?',
         answers: ['Nên làm', 'Không nên'],
-        secPerCard: 9,
+        secPerCard: 12,
         cards: [
           {
             id: 'wave',
@@ -283,7 +278,8 @@ const level: LevelDef = {
 
   hints: {
     intro: 'Đọc hết đoạn hội thoại để biết chuyện gì vừa xảy ra ở ngã tư.',
-    observe: 'Chạm vào các điểm sáng trên hình. Cần xem ít nhất 3 manh mối trước khi kết luận.',
+    observe:
+      'Chạm vào từng dấu “?” trên hình. Khi đã xem hết những điểm quan trọng, bạn mới kết luận được.',
     assess:
       'Anh Hải tỉnh, đau chân, còn xung quanh thì xe chạy, xăng rỉ, kính vỡ: hãy chọn “Nghi ngờ anh Hải bị thương ở chân, và hiện trường còn nguy hiểm”.',
     choose:
@@ -316,6 +312,8 @@ const level: LevelDef = {
       'Không tháo mũ bảo hiểm khi nạn nhân còn tỉnh và thở bình thường',
       'Không nắn, kéo chỗ nghi bị gãy; không cho nạn nhân ăn uống',
       'Không hút thuốc hay bật lửa gần chỗ xăng rò rỉ',
+      'Không đứng quay phim, chụp ảnh thay vì giúp và gọi cấp cứu',
+      'Không xúm lại vây kín quanh nạn nhân',
     ],
     callForHelp: [
       'Nạn nhân bất tỉnh, lơ mơ hoặc thở bất thường',

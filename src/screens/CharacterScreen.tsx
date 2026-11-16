@@ -27,7 +27,7 @@ export function CharacterScreen() {
   return (
     <form
       onSubmit={submit}
-      className="flex h-full flex-col px-5 pt-[max(2rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+      className="flex h-full flex-col px-5 pt-[max(2rem,env(safe-area-inset-top))] pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
     >
       <h1 className="text-center font-display text-3xl font-bold text-ink">Bạn tên là gì?</h1>
       <div className="flex flex-1 flex-col items-center justify-center gap-6">

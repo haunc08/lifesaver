@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router'
+import { preloadArt } from '@/art'
 import { sfx } from '@/audio'
 import { LEVELS } from '@/content/levels'
 import {
@@ -67,6 +68,24 @@ function LevelRun({ level, onReplay }: { level: LevelDef; onReplay: () => void }
 
   useLevelSounds(level, state)
 
+  // Fetch the level's pictures up front, so none pops in late during a mini-game.
+  useEffect(() => {
+    const steps = level.act.type === 'sequence' ? level.act.steps : [level.act]
+    preloadArt([
+      level.id,
+      'guide-cheer',
+      'guide-relieved',
+      'guide-worried',
+      ...steps.flatMap((step) =>
+        step.type === 'hold'
+          ? [step.tool.art]
+          : step.type === 'drag-place'
+            ? step.items.map((item) => item.art)
+            : [],
+      ),
+    ])
+  }, [level])
+
   const ended = state.phase === 'outcome'
   const result = useMemo(
     () => (ended ? score(summarize(level, state)) : null),
@@ -95,13 +114,13 @@ function LevelRun({ level, onReplay }: { level: LevelDef; onReplay: () => void }
     <div className="relative flex h-full flex-col">
       <Hud
         phase={state.phase}
-        remainingMs={isTimedPhase(state.phase) ? level.timeLimitSec * 1000 - state.elapsedMs : null}
+        remainingMs={isTimedPhase(state.phase) ? state.roundLimitMs - state.roundMs : null}
         onHint={() => open('hint')}
         onPause={() => open('pause')}
       />
       <main
         key={state.phase}
-        className="flex-1 animate-screen-in overflow-y-auto px-4 pt-2 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+        className="flex-1 animate-screen-in overflow-y-auto px-4 pt-2 pb-[calc(1.75rem+env(safe-area-inset-bottom))]"
       >
         {state.phase === 'intro' && <IntroPhase {...phaseProps} />}
         {state.phase === 'observe' && <ObservePhase {...phaseProps} />}
@@ -159,10 +178,12 @@ function useLevelSounds(level: LevelDef, state: LevelState) {
       const unsafe = level.choose.options.find((o) => o.id === id)?.kind === 'unsafe'
       sfx(unsafe ? 'warn' : 'wrong')
     }
-    if (state.solutionConfirmed && !before.solutionConfirmed && state.phase === 'act') sfx('right')
+    if (state.solutionConfirmed && !before.solutionConfirmed) sfx('right')
 
-    const left = (ms: number) => Math.ceil((level.timeLimitSec * 1000 - ms) / 1000)
-    const now = left(state.elapsedMs)
-    if (now !== left(before.elapsedMs) && now <= TICK_FROM_SEC && now > 0) sfx('tick')
+    // The last seconds of the current round's clock.
+    const left = (s: LevelState) => Math.ceil((s.roundLimitMs - s.roundMs) / 1000)
+    const sameRound = state.phase === before.phase && state.actStep === before.actStep
+    const now = left(state)
+    if (sameRound && now !== left(before) && now <= TICK_FROM_SEC && now > 0) sfx('tick')
   }, [level, state])
 }
