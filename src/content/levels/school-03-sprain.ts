@@ -204,17 +204,6 @@ const level: LevelDef = {
         ],
       },
       {
-        type: 'hold',
-        instruction: 'Giữ túi chườm lạnh áp đều lên cổ chân Huy.',
-        action: 'Giữ túi chườm lạnh',
-        holdSec: 5,
-        tool: { art: 'item-cold-pack', x: 62, y: 64 },
-        holdingText: 'Giữ yên tay… Huy thấy dễ chịu hơn rồi.',
-        releaseText: 'Túi chườm bị tuột mất rồi. Áp lại và giữ đều tay nhé.',
-        realityNote:
-          'Ngoài đời, mỗi lần chườm lạnh khoảng 15–20 phút, luôn bọc túi lạnh trong khăn, rồi nghỉ trước khi chườm lại.',
-      },
-      {
         type: 'trace',
         instruction:
           'Chườm xong rồi. Giờ quấn băng thun để đỡ cổ chân: kéo cuộn băng từ bàn chân, vòng qua cổ chân rồi lên cẳng chân.',
@@ -235,7 +224,7 @@ const level: LevelDef = {
           'Băng bị tuột khỏi chân Huy rồi. Cầm lại cuộn băng, quấn đều tay theo đường chấm.',
         doneNote: 'Băng đã ôm đều cổ chân. Huy vẫn cử động được các ngón chân.',
         realityNote:
-          'Ngoài đời, quấn băng thun từ bàn chân lên qua cổ chân, vừa đủ để đỡ khớp. Nếu ngón chân tê, lạnh hoặc tím thì nới băng ra ngay.',
+          'Ngoài đời, chườm lạnh mỗi lần khoảng 15–20 phút, rồi quấn băng thun từ bàn chân lên qua cổ chân, vừa đủ để đỡ khớp. Nếu ngón chân tê, lạnh hoặc tím thì nới băng ra ngay.',
       },
     ],
   },
@@ -261,7 +250,7 @@ const level: LevelDef = {
       'Huy lật cổ chân khi tiếp đất, cổ chân đau và sưng nhưng không biến dạng: hãy chọn “Nghi ngờ Huy bị bong gân cổ chân”.',
     choose:
       'Thứ tự đúng: tạm dừng trận đấu → để Huy ngồi yên → nhờ báo thầy thể dục và phòng y tế → chườm túi lạnh bọc khăn rồi kê chân cao.',
-    act: 'Đưa túi chườm lạnh bọc khăn vào “Cổ chân đau” và ba lô vào “Dưới bắp chân”; dầu nóng và túi chườm nóng thì để yên. Sau đó nhấn giữ nút cho đến khi thanh đầy, đừng thả tay giữa chừng. Cuối cùng, giữ cuộn băng thun và kéo chậm theo đường chấm đến vòng tròn.',
+    act: 'Đưa túi chườm lạnh bọc khăn vào “Cổ chân đau” và ba lô vào “Dưới bắp chân”; dầu nóng và túi chườm nóng thì để yên. Sau đó giữ cuộn băng thun và kéo chậm theo đường chấm đến vòng tròn.',
     outcome: 'Bấm “Xem kết quả” để biết điểm và lời giải thích.',
   },
 

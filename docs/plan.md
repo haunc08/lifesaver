@@ -77,7 +77,7 @@ Twelve levels, 2–3 per area. Titles and themes are proposals. All twelve are b
 | --- | --- | --- | --- | --- |
 | 1 | School | Tiết bốn oi ả | Fainting | Tap the targets |
 | 2 | School | Giờ tự học ở thư viện | Seizure | Drag and place: clear the space, protect the head |
-| 3 | School | Trận bóng chiều thứ sáu | Sprain | Drag and place, hold, then follow a path: wrap the ankle with an elastic bandage |
+| 3 | School | Trận bóng chiều thứ sáu | Sprain | Drag and place, then follow a path: wrap the ankle with an elastic bandage |
 | 4 | Dormitory | Đĩa trái cây đêm khuya | Cut | Hold steady pressure, then follow a path: wrap the finger |
 | 5 | Dormitory | Mùi lạ trong bếp chung | Gas leak | Scan for hazards, turn the gas valve shut, phone call to 114 |
 | 6 | Streets | Ngã tư giờ tan tầm | Scene safety at a traffic accident | Scan for hazards, quick decision, phone call to 115 |
@@ -147,7 +147,7 @@ You asked on 2026-11-16 for mini-games with more involved and more interesting i
 | Turn | Turns a dial round its centre, in the right direction | Close the gas cylinder valve, clockwise (5) |
 | Phone call | Dials the emergency number, then answers the dispatcher | Call 114 from outside after a gas leak (5), call 115 at a traffic accident (6) |
 
-Eight of the twelve levels changed. The first two school levels are unchanged on purpose: they are the first levels a player meets and stay simple. The third school level gained the ankle wrap at your request on 2026-11-16; its lesson already said an elastic bandage may be used. Choking (8) is unchanged too, see below.
+Eight of the twelve levels changed. The first two school levels are unchanged on purpose: they are the first levels a player meets and stay simple. The third school level gained the ankle wrap at your request on 2026-11-16; its lesson already said an elastic bandage may be used. Its old "hold the cold pack" step was removed the same day with your agreement, because the step before it already places the cold pack; the real-life duration of cooling is now stated under the wrap. Choking (8) is unchanged too, see below.
 
 No level asks for the same thing twice in an old mini-game and a new one (checked on 2026-11-16 at your request). Where a new mini-game took over a task, the old version of that task had already been removed: the bandage slot in level 7's drag and place, the towel in level 10's, and the "call 115" card in level 6's quick decision.
 
