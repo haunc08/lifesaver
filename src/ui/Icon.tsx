@@ -89,6 +89,15 @@ const PATHS = {
       fill="currentColor"
     />
   ),
+  phone: (
+    <path d="M6.5 3.5h3l1.5 4-2 1.5a11 11 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2 2A15.5 15.5 0 0 1 4.5 5.5a2 2 0 0 1 2-2Z" />
+  ),
+  erase: (
+    <>
+      <path d="M9 5.5h10.5v13H9L3.5 12 9 5.5Z" />
+      <path d="m12 9.5 5 5M17 9.5l-5 5" />
+    </>
+  ),
   soon: (
     <>
       <circle cx="12" cy="12" r="8.5" />

@@ -155,15 +155,38 @@ const level: LevelDef = {
   },
 
   act: {
-    type: 'hold',
-    instruction: 'Giữ bàn tay chị Lan dưới vòi nước mát. Đừng rút tay ra sớm!',
-    action: 'Giữ tay dưới vòi nước',
-    holdSec: 7,
-    tool: { art: 'item-tap', x: 69, y: 43 },
-    holdingText: 'Nước mát đang làm dịu vết bỏng… giữ tiếp nào.',
-    releaseText: 'Chưa đủ đâu! Rút tay ra sớm thì hơi nóng vẫn còn làm tổn thương da.',
-    realityNote:
-      'Ngoài đời, cần làm mát vết bỏng dưới vòi nước sạch khoảng 20 phút, càng sớm càng tốt.',
+    type: 'sequence',
+    steps: [
+      {
+        type: 'hold',
+        instruction: 'Giữ bàn tay chị Lan dưới vòi nước mát. Đừng rút tay ra sớm!',
+        action: 'Giữ tay dưới vòi nước',
+        holdSec: 7,
+        tool: { art: 'item-tap', x: 69, y: 43 },
+        holdingText: 'Nước mát đang làm dịu vết bỏng… giữ tiếp nào.',
+        releaseText: 'Chưa đủ đâu! Rút tay ra sớm thì hơi nóng vẫn còn làm tổn thương da.',
+        realityNote:
+          'Ngoài đời, cần làm mát vết bỏng dưới vòi nước sạch khoảng 20 phút, càng sớm càng tốt.',
+      },
+      {
+        type: 'trace',
+        instruction:
+          'Bàn tay chị Lan sắp sưng lên. Tháo chiếc nhẫn ra thật nhẹ nhàng, trước khi nó bị kẹt.',
+        art: 'closeup-food-district-02',
+        tool: { art: 'item-ring', label: 'Chiếc nhẫn', size: 11 },
+        path: [
+          { x: 51, y: 27.5 },
+          { x: 83, y: 22 },
+        ],
+        trail: 'none',
+        gentle: true,
+        slipNote:
+          'Từ từ thôi! Kéo mạnh tay làm chị Lan đau và dễ trầy da. Tháo nhẫn thật chậm, dọc theo ngón tay.',
+        doneNote: 'Chiếc nhẫn đã ra trước khi ngón tay kịp sưng.',
+        realityNote:
+          'Ngoài đời, tháo nhẫn, đồng hồ, vòng tay sớm vì chỗ bỏng sẽ sưng. Nếu không tháo được nhẹ nhàng thì để yên và đi khám.',
+      },
+    ],
   },
 
   outcomes: {
@@ -187,7 +210,7 @@ const level: LevelDef = {
       'Nước sôi đổ lên tay, da đỏ ửng và rát, không chảy máu: hãy chọn “Nghi ngờ chị Lan bị bỏng nước sôi ở bàn tay”.',
     choose:
       'Thứ tự đúng: tắt bếp và dời ấm nước → đưa tay dưới vòi nước mát khoảng 20 phút → tháo nhẫn và đồng hồ → gọi quản lý quán đến hỗ trợ.',
-    act: 'Nhấn giữ nút “Giữ tay dưới vòi nước” cho đến khi thanh đầy. Đừng thả tay giữa chừng.',
+    act: 'Bước 1: nhấn giữ nút “Giữ tay dưới vòi nước” cho đến khi thanh đầy, đừng thả tay giữa chừng. Bước 2: giữ chiếc nhẫn và kéo thật chậm dọc theo ngón tay, ra đến vòng tròn ở đầu ngón.',
     outcome: 'Bấm “Xem kết quả” để biết điểm và lời giải thích.',
   },
 
@@ -214,6 +237,7 @@ const level: LevelDef = {
       'Không chọc vỡ bóng nước',
       'Không cố gỡ quần áo đã dính vào vết bỏng',
       'Không trì hoãn làm mát vết bỏng để lo việc khác',
+      'Không giật mạnh nhẫn, đồng hồ ra khỏi bàn tay bị bỏng',
     ],
     callForHelp: [
       'Vết bỏng rộng hơn lòng bàn tay của nạn nhân',

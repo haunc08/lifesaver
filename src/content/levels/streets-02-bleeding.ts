@@ -178,11 +178,10 @@ const level: LevelDef = {
       },
       {
         type: 'drag-place',
-        instruction: 'Máu đã chậm lại. Băng vết thương cho bác: đặt mỗi món vào đúng chỗ.',
+        instruction: 'Máu đã chậm lại. Đặt gạc vào đúng chỗ; món không nên dùng thì để yên.',
         zones: [
           { id: 'wound', label: 'Trên vết thương', x: 28, y: 52 },
           { id: 'soaked', label: 'Chỗ máu thấm ra ngoài', x: 66, y: 54 },
-          { id: 'wrap', label: 'Quấn ngoài cùng', x: 44, y: 74 },
         ],
         items: [
           {
@@ -198,13 +197,6 @@ const level: LevelDef = {
             art: 'item-cotton',
             zoneId: null,
             wrongNote: 'Bông gòn dễ dính sợi vào vết thương. Hãy dùng gạc sạch.',
-          },
-          {
-            id: 'bandage',
-            label: 'Cuộn băng',
-            art: 'item-bandage',
-            zoneId: 'wrap',
-            wrongNote: 'Cuộn băng dùng để quấn giữ lớp gạc ở ngoài cùng.',
           },
           {
             id: 'coffee',
@@ -228,6 +220,27 @@ const level: LevelDef = {
             wrongNote: 'Thuốc lào không cầm được máu và dễ gây nhiễm trùng.',
           },
         ],
+      },
+      {
+        type: 'trace',
+        instruction:
+          'Giờ quấn băng để giữ lớp gạc: kéo cuộn băng lượn qua lại quanh cánh tay bác Tư.',
+        art: 'closeup-streets-02',
+        tool: { art: 'item-bandage', label: 'Cuộn băng', size: 15 },
+        path: [
+          { x: 36, y: 37 },
+          { x: 42, y: 66 },
+          { x: 48, y: 38 },
+          { x: 54, y: 67 },
+          { x: 60, y: 40 },
+          { x: 65, y: 65 },
+        ],
+        trail: 'band',
+        slipNote:
+          'Băng bị tuột khỏi cánh tay rồi. Cầm lại cuộn băng, quấn đều tay theo đường chấm.',
+        doneNote: 'Lớp gạc đã được giữ chắc trên vết thương. Bác Tư đỡ lo hẳn.',
+        realityNote:
+          'Ngoài đời, quấn băng đủ chắc để giữ gạc và vẫn ép lên vết thương, nhưng không siết đến mức bàn tay tím, lạnh hay tê.',
       },
     ],
   },
@@ -253,7 +266,7 @@ const level: LevelDef = {
       'Bác Tư tỉnh, tay không biến dạng, nhưng máu chảy đều và thấm ướt tay áo: hãy chọn “Nghi ngờ bác có vết thương chảy máu nhiều ở cẳng tay, cần cầm máu ngay”.',
     choose:
       'Thứ tự đúng: nhìn quanh xem đã an toàn chưa → đeo găng tay → đặt gạc sạch và ép chặt → nhờ người gọi 115.',
-    act: 'Trước tiên nhấn giữ nút “Ép chặt miếng gạc” cho đến khi đầy thanh, đừng thả tay. Sau đó: gạc sạch đặt trên vết thương, miếng gạc thứ hai đặt chỗ máu thấm ra, cuộn băng quấn ngoài cùng. Không dùng bông gòn, bột cà phê, thuốc lào.',
+    act: 'Bước 1: nhấn giữ nút “Ép chặt miếng gạc” cho đến khi đầy thanh, đừng thả tay. Bước 2: gạc sạch đặt trên vết thương, miếng gạc thứ hai đặt chỗ máu thấm ra; không dùng bông gòn, bột cà phê, thuốc lào. Bước 3: giữ cuộn băng rồi kéo theo đường chấm, lượn qua lại quanh cánh tay cho đến vòng tròn.',
     outcome: 'Bấm “Xem kết quả” để biết điểm và lời giải thích.',
   },
 

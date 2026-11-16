@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { button, openLevel, shot } from './helpers'
+import { button, openLevel, playMinigame, playToAct, shot } from './helpers'
 
 /** The layout must hold on the smallest phones still in common use. */
 
@@ -72,5 +72,24 @@ for (const size of SIZES) {
       )
     }
     await shot(page, `small-${tag}-home`)
+  })
+}
+
+// The gesture mini-games and the phone call, on the smallest screen: two levels that
+// between them use every new mechanic.
+for (const id of ['dormitory-02', 'park-02']) {
+  test(`the mini-games of ${id} can be played on a 320x568 screen`, async ({ page }) => {
+    await page.setViewportSize(SIZES[0])
+    const level = await openLevel(page, id)
+    const steps = level.act.type === 'sequence' ? level.act.steps : [level.act]
+    await playToAct(page, level)
+    for (const [i, step] of steps.entries()) {
+      await expect(page.getByText(`Bước ${i + 1}/${steps.length}`)).toBeVisible()
+      await expectNoSidewaysScroll(page)
+      await shot(page, `small-${id}-${step.type}`)
+      await playMinigame(page, step)
+    }
+    await button(page, 'Xem kết quả').click()
+    await expect(page.getByRole('heading', { name: 'Tuyệt vời!' })).toBeVisible()
   })
 }

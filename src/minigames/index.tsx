@@ -1,11 +1,15 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ActResult } from '@/game/levelMachine'
 import type { SequenceConfig, SingleMinigameConfig } from '@/game/types'
+import { Call } from './Call'
 import { DragPlace } from './DragPlace'
 import { Hold } from './Hold'
 import { QuickDecision } from './QuickDecision'
+import { Rotate } from './Rotate'
+import { Rub } from './Rub'
 import { Scan } from './Scan'
 import { TapTargets } from './TapTargets'
+import { Trace } from './Trace'
 import type { MinigameProps } from './types'
 
 /** Renders the mini-game a level asks for. Add a case per new mechanic. */
@@ -27,6 +31,14 @@ function Single(props: MinigameProps<SingleMinigameConfig>) {
       return <DragPlace {...props} config={config} />
     case 'quick-decision':
       return <QuickDecision {...props} config={config} />
+    case 'trace':
+      return <Trace {...props} config={config} />
+    case 'rub':
+      return <Rub {...props} config={config} />
+    case 'rotate':
+      return <Rotate {...props} config={config} />
+    case 'call':
+      return <Call {...props} config={config} />
   }
 }
 
@@ -34,6 +46,12 @@ function Single(props: MinigameProps<SingleMinigameConfig>) {
 function Sequence({ config, onDone, onStep, ...rest }: MinigameProps<SequenceConfig>) {
   const [index, setIndex] = useState(0)
   const scores = useRef<number[]>([])
+  const top = useRef<HTMLDivElement>(null)
+
+  // A new step starts at its top: the last one may have left the page scrolled down.
+  useEffect(() => {
+    if (index > 0) top.current?.scrollIntoView({ block: 'start' })
+  }, [index])
 
   const stepDone = (result: ActResult) => {
     scores.current.push(result.accuracy)
@@ -45,7 +63,7 @@ function Sequence({ config, onDone, onStep, ...rest }: MinigameProps<SequenceCon
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-2">
+    <div ref={top} className="flex flex-1 scroll-mt-4 flex-col gap-2">
       <p className="text-center text-sm font-bold text-blue-ink">
         Bước {index + 1}/{config.steps.length}
       </p>

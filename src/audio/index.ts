@@ -1,16 +1,24 @@
+import type { AreaId } from '@/game/types'
 import { useSave } from '@/state/save'
 
 /**
- * Sound effects and music. Files live in src/assets/audio as `sfx-<name>.mp3`
- * and `music-<name>.mp3`; a name with no file is silently skipped, so the game
- * runs the same with or without audio files. Nothing plays before the player's
- * first tap, which phone browsers require.
+ * Sound effects and background sound. Files live in src/assets/audio as
+ * `sfx-<name>.mp3`, `music-<name>.mp3` and `ambience-<area>.mp3`; a name with no
+ * file is silently skipped, so the game runs the same with or without audio
+ * files. Nothing plays before the player's first tap, which phone browsers
+ * require.
+ *
+ * One background sound plays at a time: the town tune outside the areas, and
+ * inside an area the sound of that place (a classroom, a street, a park).
  */
 
 export type SfxName =
   'tap' | 'clue' | 'right' | 'wrong' | 'warn' | 'hit' | 'tick' | 'star' | 'pass' | 'fail'
 
-export type MusicName = 'town' | 'level'
+export type MusicName = 'town'
+
+/** What plays in the background: a music track, or the sound of an area. */
+export type Background = { kind: 'music'; name: MusicName } | { kind: 'ambience'; area: AreaId }
 
 const FILES = import.meta.glob<string>('../assets/audio/*.mp3', {
   eager: true,
@@ -18,7 +26,7 @@ const FILES = import.meta.glob<string>('../assets/audio/*.mp3', {
   import: 'default',
 })
 
-function url(kind: 'sfx' | 'music', name: string): string | undefined {
+function url(kind: 'sfx' | 'music' | 'ambience', name: string): string | undefined {
   return FILES[`../assets/audio/${kind}-${name}.mp3`]
 }
 
@@ -36,14 +44,18 @@ const SFX_GAIN: Record<SfxName, number> = {
   fail: 0.7,
 }
 const MUSIC_VOLUME = 0.28
+/** Recordings of places are quieter than music to begin with, so they are turned up more. */
+const AMBIENCE_VOLUME = 0.5
 /** Extra time the music stays lowered after a jingle, so the two do not collide. */
 const FADE_MS = 400
 
 let context: AudioContext | null = null
 const buffers = new Map<SfxName, AudioBuffer>()
 let musicElement: HTMLAudioElement | null = null
-let wanted: MusicName | null = null
-let playing: MusicName | null = null
+let wanted: Background | null = null
+/** Name of the file now loaded, e.g. "town" or "ambience-park". */
+let playing: string | null = null
+let volume = MUSIC_VOLUME
 let unlocked = false
 
 async function load(name: SfxName) {
@@ -69,24 +81,37 @@ export function sfx(name: SfxName) {
   source.start()
 }
 
+/** The file for what is wanted; null when there is none, and then nothing plays. */
+function resolve(background: Background | null) {
+  if (!background) return null
+  if (background.kind === 'ambience') {
+    const src = url('ambience', background.area)
+    return src ? { name: `ambience-${background.area}`, src, volume: AMBIENCE_VOLUME } : null
+  }
+  const src = url('music', background.name)
+  return src ? { name: background.name, src, volume: MUSIC_VOLUME } : null
+}
+
 function syncMusic() {
   if (!unlocked || !musicElement) return
   const on = useSave.getState().settings.music && !document.hidden
-  const src = wanted ? url('music', wanted) : undefined
-  if (!on || !src) {
+  const track = resolve(wanted)
+  if (!on || !track) {
     musicElement.pause()
     return
   }
-  if (playing !== wanted) {
-    playing = wanted
-    musicElement.src = src
+  if (playing !== track.name) {
+    playing = track.name
+    volume = track.volume
+    musicElement.src = track.src
+    musicElement.volume = volume
   }
   void musicElement.play().catch(() => undefined)
 }
 
-/** Choose the background track; null stops the music. */
-export function setMusic(track: MusicName | null) {
-  wanted = track
+/** Choose what plays in the background; null stops it. */
+export function setBackground(background: Background | null) {
+  wanted = background
   syncMusic()
 }
 
@@ -94,8 +119,8 @@ export function setMusic(track: MusicName | null) {
 export function duckMusic(ms: number) {
   if (!musicElement) return
   const element = musicElement
-  element.volume = MUSIC_VOLUME * 0.25
-  setTimeout(() => (element.volume = MUSIC_VOLUME), ms + FADE_MS)
+  element.volume = volume * 0.25
+  setTimeout(() => (element.volume = volume), ms + FADE_MS)
 }
 
 function unlock() {
@@ -109,7 +134,7 @@ function unlock() {
   }
   musicElement = new Audio()
   musicElement.loop = true
-  musicElement.volume = MUSIC_VOLUME
+  musicElement.volume = volume
   syncMusic()
 }
 

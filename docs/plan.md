@@ -1,6 +1,6 @@
 # Lifesaver — MVP plan
 
-Status: draft for review, 2026-11-16. Requirements live in [high-level-req.md](../high-level-req.md); this plan covers the MVP column of its section 10. Art and sound have their own plan in [art-and-audio.md](art-and-audio.md). Current progress is in [status.md](status.md).
+Status: 2026-11-16. The MVP is built (your word on 2026-11-16: "that's the MVP done"); section 8 is the plan for what came next, richer mini-games. Requirements live in [high-level-req.md](../high-level-req.md); this plan covers the MVP column of its section 10. Art and sound have their own plan in [art-and-audio.md](art-and-audio.md). Current progress is in [status.md](status.md).
 
 ## 1. What the MVP is
 
@@ -23,7 +23,7 @@ These are the choices I made where the requirements left room. Tell me which one
 | Visual style | Muted pastel colours, simple shapes, no gradients; blur allowed | Your instructions on 2026-11-16; this differs from section 9 of the requirements, see art-and-audio.md |
 | Art production | Generated with the Seedream 5.5 model through the Kie API, from prompts kept in the repository; interface icons are drawn in code | Your instruction on 2026-11-16. One shared style prompt keeps the images consistent; cost is tracked in art-and-audio.md |
 | Animation | CSS only: screens and level phases ease in, feedback pops or shakes, the result counts up and its stars land one by one | Small, and it respects the "reduce motion" setting. Nothing loops or wiggles on its own (your instruction) |
-| Sound | Web Audio for effects, one audio element for music, MP3 files | Works on phone browsers, which only allow sound after the first tap |
+| Sound | Web Audio for effects, one audio element for the background, MP3 files. The background is the town tune outside the areas and a recording of the place inside each area | Works on phone browsers, which only allow sound after the first tap. A sound per area was your instruction: it fits better than more music |
 | Hosting | GitHub Pages, published by running `pnpm deploy:pages`, which pushes the built site to the `gh-pages` branch | Your choice on 2026-11-16; it is free and needs no other account. It required making the repository public. Publishing is a manual command because GitHub would not run an Action on the account (billing lock) |
 | Saved progress | Browser localStorage, versioned | Meets "progress still there on the next visit" on the same device and browser |
 | Tests | Vitest for game rules and content rules; Playwright plays every level, the mistake paths, small screens and the sound engine | Rules and scoring are where bugs would hurt most |
@@ -40,7 +40,7 @@ The requirements give the shape of the rules; these are the specifics I chose so
 | Rule | Decision |
 | --- | --- |
 | Player character | One fixed character; creation only asks for a name (your instruction on 2026-11-16; the requirements table still says "a small set of looks") |
-| Clock | Runs only in the assess, choose and act phases, and is not shown anywhere else (your instruction: a clock that stands still confuses). Every round has its own clock, which starts afresh: 60 seconds to assess, 120 to choose, 90 for each mini-game, and 24 per card for a quick-decision run (your instruction: generous, and reset each round). Opening the hint or pause stops it |
+| Clock | Runs only in the assess, choose and act phases, and is not shown anywhere else (your instruction: a clock that stands still confuses). Every round has its own clock, which starts afresh: 60 seconds to assess, 120 to choose, 90 for each mini-game, 24 per card for a quick-decision run, and 30 plus 25 per question for a phone call (your instruction: generous, and reset each round). Opening the hint or pause stops it |
 | Skipping | Nothing can be skipped: the town intro and each level's story are read line by line, also on a replay (your instruction) |
 | Assessment | Right first time: 20 points. Right second time: 10. Wrong twice: the level ends as a recoverable mistake |
 | Unsafe option | Blocked with an explanation and never carried out; costs 8 of the 15 safety points. A second unsafe choice in the same run ends the level as an unsafe failure |
@@ -56,12 +56,17 @@ The requirements give the shape of the rules; these are the specifics I chose so
 | Unlocking | A level opens when the one before it is cleared; an area opens when every level of the area before it is cleared. Tapping a locked area or level explains this and offers to open it straight away, so any level can be shown to someone (your instruction). There is no "unlock everything" switch |
 | Home | The home screen is the town map: a marker per area, the player's name and level above, the library and "play the next level" below. There is no separate map screen (your instruction) |
 | Library | A lesson is added when its level is finished with any result. One core safety lesson is open from the start |
-| Mini-game accuracy | The first slip in a mini-game is free (a decoy tapped, a wrong drop, letting go of a hold). After that each slip lowers the action score |
+| Mini-game accuracy | The first slip in a mini-game is free (a decoy tapped, a wrong drop, letting go of a hold, leaving a path, turning the wrong way, a wrong number or reply). After that each slip lowers the action score |
+| Scan for hazards | A hazard the player found is a right answer, so it turns mint with a tick; a harmless spot that was tapped turns grey with a cross. Red is not used on a right answer (your instruction: it read as a mistake) |
 | Tap the targets | The numbered things include at least one that must not be done; tapping it is refused with the reason (your instruction) |
 | Drag and place | The item's picture follows the finger, riding a little above it so it stays visible; the slot it would land in lights up, and letting go near a slot drops the item into the nearest one. Tapping an item and then a slot also works. An item that was placed, or a decoy that was tried and refused, leaves the tray (your instruction) |
 | Item pictures | Every item that is dragged or held has its own picture (your instruction) |
 | Hold | Letting go early loses a quarter of the progress. The hold lasts a few seconds of game time, and the screen states the real-life duration so the short hold teaches nothing wrong |
 | Quick decision | Each card has its own short timer; running out counts as a wrong answer. At least 60% of cards must be right, otherwise the level ends as a recoverable mistake |
+| Follow a path | The player holds a tool (a bandage roll, a card, a ring) and moves it along a dotted path on a close-up picture. The tool follows the finger only along the path, so cutting across a zigzag leaves it behind; a finger that goes far from the path lets go of the tool, which is a slip, and the tool waits where it stopped. A path can be marked gentle: then moving faster than a set speed is also a slip |
+| Rub | The player moves a tool back and forth over each marked place until its ring is full. Only movement over the place counts; there is no way to fail it |
+| Turn | The player turns a dial by moving a finger round its centre. Only the right direction makes progress; the wrong direction gives a little and is then refused with the reason, which is a slip |
+| Phone call | The player dials the emergency number themselves: the instruction names the service, not the number. A wrong number is explained and can be tried again; the second wrong number gives the answer away. Then the dispatcher asks three to five questions, each with three replies of which one helps. An unhelpful reply is explained, crossed out and costs accuracy. The call ends when the dispatcher says the player may hang up |
 | Chained mini-games | The action score is the average of the steps; failing one step ends the level as a recoverable mistake |
 
 ## 3. Levels
@@ -73,17 +78,17 @@ Twelve levels, 2–3 per area. Titles and themes are proposals. All twelve are b
 | 1 | School | Tiết bốn oi ả | Fainting | Tap the targets |
 | 2 | School | Giờ tự học ở thư viện | Seizure | Drag and place: clear the space, protect the head |
 | 3 | School | Trận bóng chiều thứ sáu | Sprain | Drag and place, then hold |
-| 4 | Dormitory | Đĩa trái cây đêm khuya | Cut | Hold: steady pressure |
-| 5 | Dormitory | Mùi lạ trong bếp chung | Gas leak | Scan the scene for hazards |
-| 6 | Streets | Ngã tư giờ tan tầm | Scene safety at a traffic accident | Scan the scene, quick decision |
-| 7 | Streets | Cú ngã ở trạm xe buýt | Bleeding | Hold, then drag and place |
+| 4 | Dormitory | Đĩa trái cây đêm khuya | Cut | Hold steady pressure, then follow a path: wrap the finger |
+| 5 | Dormitory | Mùi lạ trong bếp chung | Gas leak | Scan for hazards, turn the gas valve shut, phone call to 114 |
+| 6 | Streets | Ngã tư giờ tan tầm | Scene safety at a traffic accident | Scan for hazards, quick decision, phone call to 115 |
+| 7 | Streets | Cú ngã ở trạm xe buýt | Bleeding | Hold, drag and place, then follow a path: wrap the forearm |
 | 8 | Food district | Miếng bánh vội vàng | Choking | Quick decision; needs the most care from the reviewer |
-| 9 | Food district | Ấm nước sau quầy | Burn | Hold: cool under running water |
-| 10 | Park | Chạy bộ giữa trưa | Heat illness | Drag and place |
-| 11 | Park | Vị khách không mời | Insect sting | Tap the targets, watch for allergy signs |
+| 9 | Food district | Ấm nước sau quầy | Burn | Hold under running water, then follow a gentle path: slide the ring off |
+| 10 | Park | Chạy bộ giữa trưa | Heat illness | Drag and place, then rub: cool with a wet towel |
+| 11 | Park | Vị khách không mời | Insect sting | Follow a path: scrape the stinger off; rub: wash; tap the targets |
 | 12 | Park | Buổi dã ngoại cuối tuần | Sports injury | Mixed |
 
-All five mini-game mechanics are built: tap the targets, scan the scene, hold, drag and place, and quick decision. A level can also chain two or three of them. Rotate, swipe and multi-tasking are Phase 2.
+Nine mini-game mechanics are built: tap the targets, scan the scene, hold, drag and place, quick decision, and since the MVP follow a path, rub, turn and phone call (section 8). A level chains up to three of them.
 
 ### Medical content
 
@@ -101,8 +106,9 @@ I write level and lesson text as drafts from general first-aid knowledge. I am n
 | M5 | Polish | Screen transitions, result animation, empty and locked states reviewed, works on small phones, loads fast on mobile data | Done in the browser test at 320 × 568 and 360 × 640; not yet tried on a real phone |
 | M6 | Review and playtest | Every lesson has a source, reviewer and date; a few people from the target group have played it; fixes are in | Needs a reviewer |
 | M7 | Release | Deployed to a public address | A demo build is published on GitHub Pages; a release to real players waits for M6 |
+| M8 | Richer mini-games | Four new mechanics exist and are used in the levels they fit (section 8) | Done on 2026-11-16 |
 
-M0 to M5 were built on 2026-11-16. What remains is M6, which needs people: a medical reviewer and playtesters.
+M0 to M5 and M8 were built on 2026-11-16. What remains is M6, which needs people: a medical reviewer and playtesters.
 
 ## 5. Questions for you
 
@@ -125,4 +131,36 @@ Everything in the Phase 2 column of the requirements: the other five areas, area
 | Generated images drift in style or show something wrong for the lesson | The game looks inconsistent, or a picture contradicts the text | One shared style prompt; I look at every image before using it; the reviewer should check pictures as well as text |
 | The 10 USD budget runs out | Missing scenes | Each image costs about 0.02 USD and the whole set so far cost 0.36 USD; spend is tracked in art/spend.json and art-and-audio.md |
 | The public demo is mistaken for a finished first-aid course | Someone relies on unreviewed content | Every lesson says it is an unreviewed draft and that the game does not replace a course; share the link only for demos until M6 is done |
-| A mini-game teaches a wrong habit, for example a wrong rhythm | Breaks a core requirement | No rhythm-based first-aid mini-games in the MVP; reviewer checks each mechanic, not just the text |
+| A mini-game teaches a wrong habit, for example a wrong rhythm | Breaks a core requirement | No rhythm-based first-aid mini-games in the MVP; every gesture mini-game states what the gesture stands for in real life; reviewer checks each mechanic, not just the text |
+| A gesture mini-game is fiddly under a real finger | Players get stuck on the action | Wide tolerances, the first slip is free, the tool waits where it stopped. Tested with a simulated mouse only, so it needs a try on real phones |
+
+## 8. Richer mini-games (after the MVP)
+
+You asked on 2026-11-16 for mini-games with more involved and more interesting interaction, used in the rounds where they fit. The five MVP mechanics were all taps, one hold and one drag; this adds four that ask for a real gesture or a real decision. Rules are in the table in section 2.
+
+### What was added and where
+
+| Mechanic | What the player does | Used in |
+| --- | --- | --- |
+| Follow a path | Holds a tool and moves it along a dotted path on a close-up picture | Wrap the cut finger (level 4), wrap the forearm over the gauze (7), slide the ring off a scalded hand, slowly (9), scrape the stinger off sideways with a card (11) |
+| Rub | Moves a tool back and forth over marked places | Cool forehead, neck and arms with a wet towel (10), wash the sting with soap and water (11) |
+| Turn | Turns a dial round its centre, in the right direction | Close the gas cylinder valve, clockwise (5) |
+| Phone call | Dials the emergency number, then answers the dispatcher | Call 114 from outside after a gas leak (5), call 115 at a traffic accident (6) |
+
+Seven of the twelve levels changed. The three school levels are unchanged on purpose: they are the first levels a player meets and stay simple. Choking (8) is unchanged too, see below.
+
+### Choices I made
+
+- **Close-up pictures.** A gesture needs room, and the people in a scene are small. Each gesture mini-game is played on its own close-up (a forearm, a hand), as the requirements say for the act phase: "the view moves to the spot that needs handling". What changes is drawn in code on top: the bandage as it unrolls, the stinger, the ring.
+- **No technique is reduced to a swipe.** The requirements forbid turning a complex medical technique into one swipe. So the gestures stand for things that are simple in real life too (wrapping a bandage, scraping a stinger sideways, closing a valve, taking a ring off), and each states its real-life version under the picture. Back blows and abdominal thrusts stay as decision cards; I did not make them a gesture.
+- **The number is not given.** In the phone call the instruction says which service to call, not its number, so the player has to know 113, 114 and 115. The hint gives it, and so does the second wrong attempt.
+- **A wrong reply never ends the call.** It is explained and crossed out, and the question stays, because the point is to learn what a dispatcher needs: where, what happened, how the person is, and not hanging up first.
+- **Rubbing cannot be failed.** It is a calm step between harder ones; the clock is its only pressure.
+- **Lessons gained "do not" lines** for the new wrong choices: vague or false reports to a dispatcher, hanging up first, taking an injured person to hospital by motorbike, turning the valve the opening way, pulling a ring off a scalded hand.
+
+### Not built, as candidates for later
+
+- Two things at once (the requirements' "advanced" group): keep pressure on a wound with one thumb while answering the dispatcher with the other hand. It needs two fingers on the screen at once, which I could not test here.
+- Recovery position as a series of guided moves. It needs a figure whose limbs can be drawn in several positions, which one generated picture cannot give.
+- Draw a safe way out of a room or across a road, avoiding marked dangers.
+- A gesture for the school levels, once the simple versions have been played by real players.

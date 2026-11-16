@@ -164,50 +164,63 @@ const level: LevelDef = {
   },
 
   act: {
-    type: 'drag-place',
-    instruction:
-      'Giúp anh Khoa hạ nhiệt: đưa từng thứ đến đúng chỗ. Có thứ không nên dùng đâu nhé!',
-    zones: [
-      { id: 'shade', label: 'Bóng râm gốc cây', x: 30, y: 68 },
-      { id: 'neck', label: 'Cổ và trán', x: 69, y: 44 },
-      { id: 'hand', label: 'Bàn tay', x: 75, y: 67 },
-    ],
-    items: [
+    type: 'sequence',
+    steps: [
       {
-        id: 'towel',
-        label: 'Khăn ướt mát',
-        art: 'item-towel',
-        zoneId: 'neck',
-        wrongNote: 'Khăn ướt đắp lên cổ và trán mới giúp hạ nhiệt nhanh.',
+        type: 'drag-place',
+        instruction:
+          'Giúp anh Khoa ra khỏi nắng: đưa từng thứ đến đúng chỗ. Có thứ không nên dùng đâu nhé!',
+        zones: [
+          { id: 'shade', label: 'Bóng râm gốc cây', x: 30, y: 68 },
+          { id: 'hand', label: 'Bàn tay', x: 75, y: 67 },
+        ],
+        items: [
+          {
+            id: 'coffee',
+            label: 'Cà phê đá',
+            art: 'item-iced-coffee',
+            zoneId: null,
+            wrongNote:
+              'Cà phê và nước tăng lực không giúp bù nước. Hãy chọn nước lọc hoặc nước bù điện giải.',
+          },
+          {
+            id: 'move',
+            label: 'Dìu anh Khoa đi',
+            art: 'item-hands',
+            zoneId: 'shade',
+            wrongNote: 'Anh Khoa cần ra khỏi nắng: hãy dìu anh ấy vào bóng râm gốc cây.',
+          },
+          {
+            id: 'jacket',
+            label: 'Áo khoác dày',
+            art: 'item-thick-jacket',
+            zoneId: null,
+            wrongNote: 'Ủ ấm làm cơ thể nóng thêm. Anh Khoa cần được nới lỏng quần áo và làm mát.',
+          },
+          {
+            id: 'water',
+            label: 'Chai nước lọc',
+            art: 'item-water-bottle',
+            zoneId: 'hand',
+            wrongNote: 'Đưa chai nước vào tay để anh Khoa tự uống từng ngụm nhỏ.',
+          },
+        ],
       },
       {
-        id: 'coffee',
-        label: 'Cà phê đá',
-        art: 'item-iced-coffee',
-        zoneId: null,
-        wrongNote:
-          'Cà phê và nước tăng lực không giúp bù nước. Hãy chọn nước lọc hoặc nước bù điện giải.',
-      },
-      {
-        id: 'move',
-        label: 'Dìu anh Khoa đi',
-        art: 'item-hands',
-        zoneId: 'shade',
-        wrongNote: 'Anh Khoa cần ra khỏi nắng: hãy dìu anh ấy vào bóng râm gốc cây.',
-      },
-      {
-        id: 'jacket',
-        label: 'Áo khoác dày',
-        art: 'item-thick-jacket',
-        zoneId: null,
-        wrongNote: 'Ủ ấm làm cơ thể nóng thêm. Anh Khoa cần được nới lỏng quần áo và làm mát.',
-      },
-      {
-        id: 'water',
-        label: 'Chai nước lọc',
-        art: 'item-water-bottle',
-        zoneId: 'hand',
-        wrongNote: 'Đưa chai nước vào tay để anh Khoa tự uống từng ngụm nhỏ.',
+        type: 'rub',
+        instruction:
+          'Anh Khoa đã ngồi trong bóng râm. Lau khăn ướt mát lên trán, cổ và hai cánh tay để hạ nhiệt.',
+        art: 'closeup-park-01',
+        tool: { art: 'item-towel', label: 'Khăn ướt mát' },
+        spots: [
+          { id: 'forehead', label: 'Trán', x: 50, y: 41 },
+          { id: 'neck', label: 'Cổ', x: 50, y: 67 },
+          { id: 'arm-left', label: 'Cánh tay bên trái', x: 31, y: 84 },
+          { id: 'arm-right', label: 'Cánh tay bên phải', x: 69, y: 84 },
+        ],
+        doneNote: 'Người anh Khoa mát dần, anh thấy dễ chịu hơn rồi.',
+        realityNote:
+          'Ngoài đời, lau và đắp khăn ướt mát liên tục, kết hợp quạt, cho đến khi nạn nhân đỡ hẳn; thay khăn khi khăn hết mát.',
       },
     ],
   },
@@ -233,7 +246,7 @@ const level: LevelDef = {
       'Chạy lâu dưới nắng gắt, vã mồ hôi, da tái, chóng mặt, chuột rút nhưng vẫn tỉnh: hãy chọn “Nghi ngờ anh Khoa bị kiệt sức vì nóng”.',
     choose:
       'Thứ tự đúng: kiểm tra an toàn trên đường chạy → dìu vào bóng râm, nằm nghỉ, kê cao chân → gọi người giúp, sẵn sàng gọi 115 → đắp khăn ướt, quạt và cho uống từng ngụm nhỏ.',
-    act: 'Dìu anh Khoa vào bóng râm gốc cây, đặt khăn ướt lên cổ và trán, đưa chai nước lọc vào tay. Để yên cà phê đá và áo khoác dày.',
+    act: 'Bước 1: dìu anh Khoa vào bóng râm gốc cây và đưa chai nước lọc vào tay; để yên cà phê đá và áo khoác dày. Bước 2: giữ chiếc khăn ướt, kéo lên hình rồi chà qua lại lên trán, cổ và hai cánh tay cho đến khi các vòng tròn đầy.',
     outcome: 'Bấm “Xem kết quả” để biết điểm và lời giải thích.',
   },
 

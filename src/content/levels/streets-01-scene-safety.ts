@@ -241,12 +241,6 @@ const level: LevelDef = {
             why: 'Anh Hải đang tỉnh và thở tốt. Tháo mũ sai cách có thể làm tổn thương cổ.',
           },
           {
-            id: 'call-115',
-            text: 'Gọi 115, nói rõ tên ngã tư và tình trạng anh Hải',
-            answer: 0,
-            why: 'Thông tin rõ ràng giúp xe cấp cứu tìm đến nhanh.',
-          },
-          {
             id: 'crowd',
             text: 'Kéo nhau ra đứng vây kín quanh anh Hải',
             answer: 1,
@@ -259,6 +253,112 @@ const level: LevelDef = {
             why: 'Giữ yên giúp chỗ bị thương không nặng thêm trong lúc chờ cấp cứu.',
           },
         ],
+      },
+      {
+        type: 'call',
+        instruction: 'Xe cộ đã đi chậm lại. Giờ gọi cấp cứu y tế cho anh Hải.',
+        number: '115',
+        callee: 'Tổng đài 115',
+        turns: [
+          {
+            id: 'where',
+            ask: 'Cấp cứu 115 xin nghe. Bạn đang ở đâu?',
+            replies: [
+              {
+                id: 'vague',
+                text: 'Ở ngoài đường lớn, gần chỗ em hay đi học về',
+                right: false,
+                why: 'Tổng đài không biết “chỗ em hay đi học về” là đâu. Hãy nói tên đường, ngã tư hoặc một mốc dễ thấy.',
+              },
+              {
+                id: 'no-name',
+                text: 'Em không nhớ tên đường, anh chị cứ ra khu trung tâm là thấy',
+                right: false,
+                why: 'Khu trung tâm rất rộng. Nhìn biển tên đường hoặc hỏi người bên cạnh rồi nói cho rõ.',
+              },
+              {
+                id: 'exact',
+                text: 'Ngã tư đường Hoa Sữa và đường Bằng Lăng, ngay trước dãy nhà phố',
+                right: true,
+                why: 'Tên hai con đường và một mốc dễ thấy giúp xe cấp cứu đến đúng chỗ.',
+              },
+            ],
+          },
+          {
+            id: 'what',
+            ask: 'Chuyện gì đã xảy ra?',
+            replies: [
+              {
+                id: 'facts',
+                text: 'Một anh đi xe máy bị trượt ngã giữa ngã tư, chỉ có một người bị nạn',
+                right: true,
+                why: 'Nói rõ loại tai nạn và số người bị nạn để tổng đài điều đủ xe.',
+              },
+              {
+                id: 'panic',
+                text: 'Tai nạn kinh khủng lắm, anh chị đến nhanh lên!',
+                right: false,
+                why: 'Hối thúc không giúp xe đến nhanh hơn. Tổng đài cần biết chuyện gì và mấy người bị nạn.',
+              },
+              {
+                id: 'passer-by',
+                text: 'Em không biết, em chỉ đi ngang qua thôi',
+                right: false,
+                why: 'Bạn đã nhìn thấy sự việc. Kể lại ngắn gọn điều bạn thấy là đủ.',
+              },
+            ],
+          },
+          {
+            id: 'state',
+            ask: 'Người bị nạn hiện thế nào?',
+            replies: [
+              {
+                id: 'guess',
+                text: 'Chắc không sao đâu ạ',
+                right: false,
+                why: 'Đừng đoán. Hãy tả điều bạn thấy: còn tỉnh không, thở thế nào, đau ở đâu.',
+              },
+              {
+                id: 'observed',
+                text: 'Anh ấy tỉnh, nói chuyện được, thở bình thường, đau chân và không đứng dậy được',
+                right: true,
+                why: 'Còn tỉnh không, thở thế nào, đau ở đâu: đó là ba điều tổng đài cần nhất.',
+              },
+              {
+                id: 'lift',
+                text: 'Em chưa xem, để em đỡ anh ấy dậy rồi báo lại',
+                right: false,
+                why: 'Không đỡ người bị thương dậy. Chỉ cần quan sát và hỏi anh ấy.',
+              },
+            ],
+          },
+          {
+            id: 'wait',
+            ask: 'Xe cấp cứu đang đến. Trong lúc chờ, bạn sẽ làm gì?',
+            replies: [
+              {
+                id: 'carry',
+                text: 'Em chở anh ấy đến bệnh viện bằng xe máy cho nhanh',
+                right: false,
+                why: 'Tự chở người bị thương có thể làm chỗ gãy nặng thêm. Hãy chờ xe cấp cứu.',
+              },
+              {
+                id: 'hang-up',
+                text: 'Em cúp máy luôn để gọi cho người nhà anh ấy',
+                right: false,
+                why: 'Chưa cúp máy khi tổng đài viên chưa cho phép: họ còn có thể hướng dẫn bạn sơ cứu.',
+              },
+              {
+                id: 'stay',
+                text: 'Em giữ máy, ở cạnh anh ấy, để anh ấy ngồi yên và làm theo lời anh chị dặn',
+                right: true,
+                why: 'Giữ máy để nghe hướng dẫn, và ở bên nạn nhân cho đến khi xe đến.',
+              },
+            ],
+          },
+        ],
+        closing:
+          'Cảm ơn bạn. Xe sẽ đến trong ít phút nữa. Giờ bạn có thể cúp máy và ở cạnh anh ấy nhé.',
       },
     ],
   },
@@ -284,7 +384,7 @@ const level: LevelDef = {
       'Anh Hải tỉnh, đau chân, còn xung quanh thì xe chạy, xăng rỉ, kính vỡ: hãy chọn “Nghi ngờ anh Hải bị thương ở chân, và hiện trường còn nguy hiểm”.',
     choose:
       'Thứ tự đúng: dừng lại quan sát xe cộ → nhờ người ra hiệu và tắt máy xe → gọi 115 → bảo anh Hải ngồi yên và ở cạnh trấn an.',
-    act: 'Phần tìm mối nguy: chạm vào làn xe đang chạy, xe còn nổ máy, vệt xăng và mảnh kính; đừng chạm vỉa hè và xe đạp. Phần thẻ: nên ra hiệu cho xe, gọi 115, bảo anh Hải ngồi yên; không nên kéo anh dậy, tháo mũ hay vây quanh.',
+    act: 'Bước 1: chạm vào làn xe đang chạy, xe còn nổ máy, vệt xăng và mảnh kính; đừng chạm vỉa hè và xe đạp. Bước 2 (thẻ): nên ra hiệu cho xe và bảo anh Hải ngồi yên; không nên kéo anh dậy, tháo mũ hay vây quanh. Bước 3: bấm 115, rồi nói rõ ngã tư nào, chuyện gì đã xảy ra, anh Hải đang thế nào, và giữ máy.',
     outcome: 'Bấm “Xem kết quả” để biết điểm và lời giải thích.',
   },
 
@@ -314,6 +414,9 @@ const level: LevelDef = {
       'Không hút thuốc hay bật lửa gần chỗ xăng rò rỉ',
       'Không đứng quay phim, chụp ảnh thay vì giúp và gọi cấp cứu',
       'Không xúm lại vây kín quanh nạn nhân',
+      'Không báo địa điểm chung chung hay đoán mò tình trạng nạn nhân khi gọi 115',
+      'Không cúp máy trước khi tổng đài viên cho phép',
+      'Không tự chở người bị thương nặng đi viện bằng xe máy',
     ],
     callForHelp: [
       'Nạn nhân bất tỉnh, lơ mơ hoặc thở bất thường',

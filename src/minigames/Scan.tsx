@@ -9,7 +9,9 @@ import { useDone } from './useDone'
 
 /**
  * Find every hazard among the numbered spots: tap a pin in the scene or its row
- * in the list. Marking a harmless spot costs accuracy.
+ * in the list. Marking a harmless spot costs accuracy. A hazard that was found
+ * is a right answer, so it is shown in the "right" colour (mint, with a tick),
+ * never in red: red on a right answer read as a mistake.
  */
 export function Scan({ config, artId, scene, onDone }: MinigameProps<ScanConfig>) {
   const [tapped, setTapped] = useState<string[]>([])
@@ -43,12 +45,12 @@ export function Scan({ config, artId, scene, onDone }: MinigameProps<ScanConfig>
               key={s.id}
               x={s.x}
               y={s.y}
-              tone={!seen ? 'idle' : s.hazard ? 'alert' : 'off'}
+              tone={!seen ? 'idle' : s.hazard ? 'done' : 'off'}
               aria-hidden
               tabIndex={-1}
               onClick={() => tap(s.id)}
             >
-              {seen ? (s.hazard ? '!' : '✓') : i + 1}
+              {seen ? (s.hazard ? '✓' : '✕') : i + 1}
             </Pin>
           )
         })}
@@ -60,7 +62,7 @@ export function Scan({ config, artId, scene, onDone }: MinigameProps<ScanConfig>
           const look = !seen
             ? 'border-cotton bg-cotton text-ink shadow-[0_3px_0_var(--color-mist-deep)]'
             : s.hazard
-              ? 'border-coral-edge bg-coral/40 text-ink'
+              ? 'border-mint-edge bg-mint/40 text-ink'
               : 'border-mist-deep bg-mist text-ink-soft'
           return (
             <button
@@ -72,15 +74,15 @@ export function Scan({ config, artId, scene, onDone }: MinigameProps<ScanConfig>
             >
               <span
                 aria-hidden
-                className={`flex size-6 shrink-0 items-center justify-center rounded-full font-display ${!seen ? 'bg-mist' : s.hazard ? 'bg-coral' : 'bg-cotton'}`}
+                className={`flex size-6 shrink-0 items-center justify-center rounded-full font-display ${!seen ? 'bg-mist' : s.hazard ? 'bg-mint' : 'bg-cotton'}`}
               >
-                {seen ? (s.hazard ? '!' : '✓') : i + 1}
+                {seen ? (s.hazard ? '✓' : '✕') : i + 1}
               </span>
               <span>
                 {s.label}
                 {seen && (
                   <span className="block text-xs font-normal">
-                    {s.hazard ? 'Nguy hiểm' : 'Không nguy hiểm'}
+                    {s.hazard ? 'Đúng, đây là mối nguy' : 'Không phải mối nguy'}
                   </span>
                 )}
               </span>

@@ -36,17 +36,20 @@ pnpm deploy:pages # build and publish to GitHub Pages (at the end of each round,
 src/
   game/        Pure rules, no React: types.ts (content schema), levelMachine.ts
                (six-phase reducer), scoring.ts, progression.ts (rewards, unlocks)
-  content/     Data only: areas.ts, levels/ (one file per level + index.ts), lessons.ts
+  content/     Data only: areas.ts, levels/ (one file per level + index.ts), lessons.ts,
+               emergency.ts (the three emergency numbers)
   state/       save.ts: the persisted save (zustand + localStorage);
                unlocks.ts: the unlock rules applied to the save
-  audio/       Sound effects and music; a sound with no file is skipped
+  audio/       Sound effects and background sound; a sound with no file is skipped
   minigames/   One component per mechanic; index.tsx picks by config.type and
-               runs `sequence` configs step by step
+               runs `sequence` configs step by step. geometry.ts holds the tested
+               maths for the gesture games; art.ts lists a config's pictures
   screens/     One file per screen; level/ holds the in-level screen, HUD, phases, result
   ui/          Shared pieces: Button, Card, Dialog, UnlockDialog, Screen, Sticker, Stars,
                Logo, Icon, Pin, Guide, Player (and PlayerAvatar)
   assets/art/  Generated pictures (WebP), loaded by id through src/art.ts
-  assets/audio/  sfx-<name>.mp3 and music-<name>.mp3, made by scripts/import-audio.mjs
+  assets/audio/  sfx-<name>.mp3, music-<name>.mp3 and ambience-<area>.mp3, made by
+               scripts/import-audio.mjs
   app/         Router and the phone-sized shell
 art/           manifest.json (every picture's prompt), spend.json; raw/ is not in git
 scripts/       gen-art.mjs (Kie image generation), scene-grid.mjs, contact-sheet.mjs,
@@ -83,8 +86,14 @@ The level flow: `LevelScreen` runs `step(level, state, event)` from `levelMachin
 - **After an area's last level, "next" opens the new area**, not its first level.
 - **Every round has its own clock** (constants at the top of `game/levelMachine.ts`). Keep them generous.
 - **No zoom on scenes.** It was tried on the clue view and removed at the owner's request.
-- **Things the player drags or holds have a picture** (`art` on drag items, `tool` on a hold), and `tap-targets` needs at least one decoy.
-- **Sound** comes only from CC0 files, mapped in `scripts/import-audio.mjs`. Play effects with `sfx(name)` from `@/audio`. Buttons get the tap sound automatically; wrap an area in `data-sfx="none"` when its buttons make their own sound.
+- **Things the player drags, holds, rubs with or turns have a picture** (`art` on drag items, `tool` on a hold, trace or rub, `dial` on a rotate), and `tap-targets` needs at least one decoy.
+- **A right answer is never red.** In the hazard scan a found hazard is mint with a tick; coral is for mistakes and refusals only.
+- **Gesture mini-games play on a close-up** (`art: 'closeup-<level id>'` on a trace or rub), because people in a scene are too small to work on. Draw what changes in code on top of it; do not zoom the scene.
+- **Gestures follow the finger but not across the path.** `followPath` in `minigames/geometry.ts` walks the tool forward along the path; do not replace it with "nearest point", which lets a straight swipe finish a zigzag. Distances there are in units (percent of the picture's width), not pixels.
+- **A gesture stands for something simple.** Do not turn a complex technique (back blows, chest compressions, the recovery position) into one gesture; state the real-life version in `realityNote`.
+- **The phone call does not give the number.** Its instruction names the service; the content test rejects an instruction that contains the number. A wrong reply is explained and never ends the call.
+- **Background sound belongs to the place.** Each area plays its own recording (`ambience-<area>.mp3`) in its level list and levels; the town tune plays elsewhere. Do not add music inside areas.
+- **Sound** comes only from CC0 or public-domain files, mapped in `scripts/import-audio.mjs`. Play effects with `sfx(name)` from `@/audio`. Buttons get the tap sound automatically; wrap an area in `data-sfx="none"` when its buttons make their own sound.
 - **Scenes must stay visible.** Mark places on a scene with `Pin` (small, numbered) and put names in a list under the scene, not label chips on the picture.
 - **No rhythm-based first-aid mini-games**, and a `hold` must state the real-life duration in `realityNote`.
 - **MVP scope:** one fixed player character (name only). Shop, coins, leaderboard, quizzes and the like are Phase 2; do not build them.
@@ -103,8 +112,8 @@ Agent skills are installed in `.claude/skills/` (tracked by `skills-lock.json`).
 
 1. Copy a level file in `src/content/levels/`, name it `<level-id>-<topic>.ts`, keep the `id` from `LEVEL_OUTLINE` in `levels/index.ts`, and default-export the `LevelDef`. Every file matching `*-*.ts` in that folder is registered automatically.
 2. Fill every field of `LevelDef`: clues with at least two marked `essential`, 3–4 assessment options with exactly one correct, solution options of all three kinds (correct, unsafe, irrelevant), `choose.order` listing the correct steps in order, outcome text for all five end states.
-3. If the level needs a new mechanic, add its config to `SingleMinigameConfig` in `game/types.ts`, a component in `minigames/`, a case in `minigames/index.tsx`, a check in `levels.test.ts` and a case in `playMinigame` in `e2e/helpers.ts`. A mini-game calls `onDone` once with `{ completed, accuracy }` and must stop its timers while `paused`.
-4. Add the scene to `art/manifest.json` with the level id as its `id`, generate it (below), and place the clue and mini-game coordinates from the grid picture.
+3. If the level needs a new mechanic, add its config to `SingleMinigameConfig` in `game/types.ts`, a component in `minigames/`, a case in `minigames/index.tsx`, its pictures in `minigames/art.ts`, its time in `minigameTimeSec` if 90 seconds does not fit, a check in `levels.test.ts` and a case in `playMinigame` in `e2e/helpers.ts`. A mini-game calls `onDone` once with `{ completed, accuracy }` and must stop its timers while `paused`.
+4. Add the scene to `art/manifest.json` with the level id as its `id` (and a close-up as `closeup-<level id>` if a gesture needs one), generate it (below), and place the clue and mini-game coordinates from the grid picture.
 5. Add the level id to `LEVEL_IDS` in `e2e/helpers.ts`.
 
 ## Generating art
@@ -115,14 +124,14 @@ Pictures come from the Kie API with the `seedream/5-5-text-to-image` model (the 
 node --env-file=.env scripts/gen-art.mjs <id>…     # generate the named pictures
 node --env-file=.env scripts/gen-art.mjs --missing  # generate every picture with no output yet
 node scripts/gen-art.mjs --process <id>…            # redo only the resize and slicing
-node scripts/scene-grid.mjs <level-id>…             # art/raw/_grid-<id>.jpg with a 10% grid
+node scripts/scene-grid.mjs <id>…                   # art/raw/_grid-<id>.jpg with a 10% grid (scenes and close-ups)
 ```
 
 Small objects are generated six to a sheet (`items-1` … in the manifest, style `item`) and cut into `item-<name>.webp`; a sheet's `out` field sets that shared prefix. Prompts describe only the subject; the shared style text in `manifest.styles` is appended. Keep writing out of pictures, show injuries without blood or gore, and use a white cross on mint green for first-aid items, not a red cross. Look at every generated picture before using it. `art(id)` in `src/art.ts` returns the picture's URL, or undefined if it does not exist.
 
 ## Sound
 
-Files are `src/assets/audio/sfx-<name>.mp3` and `music-<name>.mp3`; names are the `SfxName` and `MusicName` types in `src/audio/index.ts`. To swap a sound, change its line in the table at the top of `scripts/import-audio.mjs` and run the script on a folder holding the downloads (layout in the script's header; sources in `docs/credits.md`). Downloading a new file needs the owner's permission first, with its name, source and size. Update `docs/credits.md` and the table in `docs/art-and-audio.md` section 3 in the same change. No agent can hear the result: say so, and ask the owner to listen.
+Files are `src/assets/audio/sfx-<name>.mp3`, `music-<name>.mp3` and `ambience-<area id>.mp3`; names are the `SfxName` and `MusicName` types in `src/audio/index.ts` and the area ids. `setBackground` in `src/audio` chooses what plays behind a screen; `AppShell` calls it from the route. To swap a sound, change its line in the tables at the top of `scripts/import-audio.mjs` and run the script on a folder holding the downloads, naming the group to convert (`sfx`, `music` or `ambience`; layout in the script's header; sources in `docs/credits.md`). Downloading a new file needs the owner's permission first, with its name, source and size. Update `docs/credits.md` and the table in `docs/art-and-audio.md` section 3 in the same change. No agent can hear the result: say so, and ask the owner to listen.
 
 ## Deploying
 
@@ -142,3 +151,5 @@ Bump `SAVE_VERSION` in `src/state/save.ts` and add a `migrate` function to the p
 - Entrance animations (`animate-screen-in`, `animate-pop`) fill backwards only. With `both`, a finished animation keeps a transform on the element, which then becomes the anchor of any `position: fixed` child; that broke the dragged item once. Draw such overlays through `createPortal(…, document.body)`.
 - Playwright empties `e2e/.results` at the start of every run, so screenshots from an earlier run are gone; run the specs you want pictures of together.
 - Screenshots taken by the `shot` helper finish CSS animations first; the result screen's count-up is JavaScript, so wait for it.
+- If an end-to-end run takes many minutes and the hold or card tests time out, the machine was throttling timers (it happened once while the computer sat idle). Run it again before looking for a bug.
+- Gesture tests move the mouse in small steps on purpose: one big jump is further than a tool can follow in one move.

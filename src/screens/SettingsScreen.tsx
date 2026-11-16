@@ -34,7 +34,7 @@ export function SettingsScreen() {
   return (
     <Screen title="Cài đặt" back="/lobby" className="space-y-3">
       <Card>
-        <Toggle label="Nhạc nền" setting="music" />
+        <Toggle label="Nhạc và tiếng nền" setting="music" />
         <Toggle label="Hiệu ứng âm thanh" setting="sfx" />
       </Card>
 

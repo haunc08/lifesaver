@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest'
+import { LEVELS } from '@/content/levels'
 import level from '@/content/levels/school-01-fainting'
 import {
   ASSESS_TIME_SEC,
+  CALL_DIAL_SEC,
+  CALL_TURN_SEC,
   CHOOSE_TIME_SEC,
   initialState,
   MINIGAME_TIME_SEC,
+  minigameTimeSec,
   step,
   summarize,
   type LevelEvent,
@@ -144,5 +148,39 @@ describe('level machine', () => {
     expect(play([{ type: 'assess-answer', id: 'faint' }, ...pick('safe'), finishAct])).toEqual(
       start,
     )
+  })
+})
+
+describe('time allowed for a mini-game', () => {
+  const gasLeak = LEVELS['dormitory-02']!
+  const steps = gasLeak.act.type === 'sequence' ? gasLeak.act.steps : []
+
+  it('gives a phone call time to dial plus time for each question', () => {
+    const call = steps.find((s) => s.type === 'call')!
+    expect(call.type === 'call' && call.turns.length).toBe(4)
+    expect(minigameTimeSec(call)).toBe(CALL_DIAL_SEC + 4 * CALL_TURN_SEC)
+  })
+
+  it('gives every gesture mini-game the standard time', () => {
+    expect(minigameTimeSec(steps.find((s) => s.type === 'rotate')!)).toBe(MINIGAME_TIME_SEC)
+    expect(minigameTimeSec(steps.find((s) => s.type === 'scan')!)).toBe(MINIGAME_TIME_SEC)
+  })
+
+  it('starts each step of a chain with its own clock', () => {
+    const toAct: LevelEvent[] = [
+      { type: 'intro-done' },
+      ...gasLeak.observe.clues.map((c): LevelEvent => ({ type: 'clue-found', id: c.id })),
+      { type: 'observe-done' },
+      { type: 'assess-answer', id: gasLeak.assess.options.find((o) => o.correct)!.id },
+      ...gasLeak.choose.order.map((id): LevelEvent => ({ type: 'pick', id })),
+      { type: 'start-act' },
+    ]
+    let state = toAct.reduce((s, e) => step(gasLeak, s, e), initialState())
+    expect(state.roundLimitMs).toBe(MINIGAME_TIME_SEC * 1000)
+    state = step(gasLeak, state, { type: 'act-step' })
+    state = step(gasLeak, state, { type: 'act-step' })
+    expect(state.actStep).toBe(2)
+    expect(state.roundLimitMs).toBe((CALL_DIAL_SEC + 4 * CALL_TURN_SEC) * 1000)
+    expect(state.roundMs).toBe(0)
   })
 })

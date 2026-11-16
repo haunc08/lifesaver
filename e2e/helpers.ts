@@ -83,6 +83,42 @@ export async function holdPoint(page: Page, action: string) {
   return { x: box.x + box.width / 2, y: box.y + box.height / 2 }
 }
 
+/** Points given in percent of the mini-game's picture, as places on the page. */
+export async function scenePoints(page: Page, points: { x: number; y: number }[]) {
+  const surface = page.locator('[data-surface]')
+  await surface.scrollIntoViewIfNeeded()
+  const box = await surface.boundingBox()
+  if (!box) throw new Error('mini-game picture not found')
+  return points.map((p) => ({
+    x: box.x + (box.width * p.x) / 100,
+    y: box.y + (box.height * p.y) / 100,
+  }))
+}
+
+/** Drag round the dial's centre by this many degrees, starting at its right-hand side. */
+export async function turnDial(page: Page, direction: 'cw' | 'ccw', degrees: number) {
+  const dial = page.locator('[data-dial]')
+  await dial.scrollIntoViewIfNeeded()
+  const box = await dial.boundingBox()
+  if (!box) throw new Error('dial not found')
+  const centre = { x: box.x + box.width / 2, y: box.y + box.height / 2 }
+  const at = (deg: number) => {
+    const rad = (deg * Math.PI) / 180
+    return {
+      x: centre.x + box.width * 0.36 * Math.cos(rad),
+      y: centre.y + box.width * 0.36 * Math.sin(rad),
+    }
+  }
+  await page.mouse.move(at(0).x, at(0).y)
+  await page.mouse.down()
+  // On a screen the angle grows clockwise.
+  for (let deg = 12; deg <= degrees; deg += 12) {
+    const p = at(direction === 'cw' ? deg : -deg)
+    await page.mouse.move(p.x, p.y)
+  }
+  await page.mouse.up()
+}
+
 export async function playMinigame(page: Page, config: SingleMinigameConfig) {
   switch (config.type) {
     case 'tap-targets':
@@ -106,6 +142,55 @@ export async function playMinigame(page: Page, config: SingleMinigameConfig) {
         await button(page, item.label).click()
         await page.getByRole('button', { name: `Vị trí: ${zone.label}` }).click()
       }
+      break
+    case 'trace': {
+      const at = await scenePoints(page, config.path)
+      await page.mouse.move(at[0].x, at[0].y)
+      await page.mouse.down()
+      for (let i = 1; i < at.length; i++) {
+        // Short steps, as a finger would make; a gentle path is also taken slowly.
+        const steps = Math.ceil(Math.hypot(at[i].x - at[i - 1].x, at[i].y - at[i - 1].y) / 6)
+        for (let k = 1; k <= steps; k++) {
+          await page.mouse.move(
+            at[i - 1].x + ((at[i].x - at[i - 1].x) * k) / steps,
+            at[i - 1].y + ((at[i].y - at[i - 1].y) * k) / steps,
+          )
+          if (config.gentle) await page.waitForTimeout(40)
+        }
+      }
+      await page.mouse.up()
+      await expect(page.getByRole('status')).toContainText(config.doneNote)
+      break
+    }
+    case 'rub': {
+      const at = await scenePoints(page, config.spots)
+      for (const [i, spot] of config.spots.entries()) {
+        const row = page.getByRole('progressbar', { name: spot.label, exact: true })
+        await page.mouse.move(at[i].x, at[i].y)
+        await page.mouse.down()
+        // Back and forth across the place until it is done.
+        for (let pass = 0; pass < 12; pass++) {
+          if ((await row.getAttribute('aria-valuenow')) === '100') break
+          await page.mouse.move(at[i].x + (pass % 2 ? -18 : 18), at[i].y, { steps: 4 })
+        }
+        await page.mouse.up()
+        await expect(row).toHaveAttribute('aria-valuenow', '100')
+      }
+      break
+    }
+    case 'rotate':
+      await turnDial(page, config.direction, config.turns * 360 + 20)
+      await expect(page.getByRole('status')).toContainText(config.doneNote)
+      break
+    case 'call':
+      for (const digit of config.number) await button(page, digit).click()
+      await button(page, 'Gọi').click()
+      for (const turn of config.turns) {
+        await expect(page.getByText(turn.ask)).toBeVisible()
+        await button(page, turn.replies.find((r) => r.right)!.text).click()
+      }
+      await expect(page.getByText(config.closing)).toBeVisible()
+      await button(page, 'Cúp máy').click()
       break
     case 'quick-decision':
       for (const [i, card] of config.cards.entries()) {

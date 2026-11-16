@@ -33,15 +33,27 @@ test('sound starts on the first tap, follows the screen and obeys the settings',
   expect((await status(page)).track).toBe('town')
 
   // The music switch stops and restarts it.
-  await page.getByRole('switch', { name: 'Nhạc nền' }).click()
+  await page.getByRole('switch', { name: 'Nhạc và tiếng nền' }).click()
   await expect.poll(async () => (await status(page)).musicPlaying).toBe(false)
-  await page.getByRole('switch', { name: 'Nhạc nền' }).click()
+  await page.getByRole('switch', { name: 'Nhạc và tiếng nền' }).click()
   await expect.poll(async () => (await status(page)).musicPlaying).toBe(true)
 
-  // Inside a level the calmer track plays.
+  // Inside an area, and in its levels, the sound of that place plays instead.
   await button(page, 'Quay lại').click()
   await button(page, 'Trường học, đã qua 3 trên 3 màn').click()
+  await expect.poll(async () => (await status(page)).track).toBe('ambience-school')
   await button(page, /Tiết bốn oi ả/).click()
-  await expect.poll(async () => (await status(page)).track).toBe('level')
   await expect.poll(async () => (await status(page)).musicPlaying).toBe(true)
+  expect((await status(page)).track).toBe('ambience-school')
+
+  // Each area has its own recording, and the town tune comes back outside.
+  for (const area of ['dormitory', 'streets', 'food-district', 'park']) {
+    await page.goto(`/area/${area}`)
+    await page.getByRole('heading').first().click()
+    await expect.poll(async () => (await status(page)).track).toBe(`ambience-${area}`)
+    await expect.poll(async () => (await status(page)).musicPlaying).toBe(true)
+  }
+  await page.goto('/lobby')
+  await button(page, 'Cài đặt').click()
+  await expect.poll(async () => (await status(page)).track).toBe('town')
 })

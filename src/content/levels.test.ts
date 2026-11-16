@@ -8,7 +8,10 @@ import {
 } from '@/game/levelMachine'
 import { score } from '@/game/scoring'
 import { PHASES, type LevelDef, type SingleMinigameConfig } from '@/game/types'
+import { distance, nearestOnPath, pathLength, toUnits } from '@/minigames/geometry'
+import { RUB_RADIUS } from '@/minigames/Rub'
 import { AREAS } from './areas'
+import { SERVICES } from './emergency'
 import { LEVEL_OUTLINE, LEVELS } from './levels'
 
 /**
@@ -113,6 +116,72 @@ function checkMinigame(config: SingleMinigameConfig) {
       expect(new Set(config.cards.map((c) => c.answer)).size).toBe(2)
       expect(config.cards.every((c) => c.why.trim() !== '')).toBe(true)
       break
+    case 'trace': {
+      expect(config.path.length).toBeGreaterThanOrEqual(2)
+      expect(config.path.every(inScene)).toBe(true)
+      // Long enough to be a gesture, and it starts where the tool can be grabbed.
+      expect(pathLength(config.path.map(toUnits))).toBeGreaterThanOrEqual(20)
+      expect(ART, 'picture of the tool').toContain(config.tool.art)
+      if (config.art) expect(ART, 'close-up picture').toContain(config.art)
+      if (config.tool.size !== undefined) {
+        expect(config.tool.size).toBeGreaterThanOrEqual(8)
+        expect(config.tool.size).toBeLessThanOrEqual(24)
+      }
+      if (config.speck) {
+        // The thing to take away lies on the path, where the tool will pass.
+        const { distance } = nearestOnPath(config.path.map(toUnits), toUnits(config.speck))
+        expect(distance).toBeLessThanOrEqual(3)
+      }
+      for (const text of [config.slipNote, config.doneNote, config.realityNote]) {
+        expect(text.trim()).not.toBe('')
+      }
+      break
+    }
+    case 'rub':
+      expect(config.spots.length).toBeGreaterThanOrEqual(1)
+      expect(unique(config.spots.map((spot) => spot.id))).toBe(true)
+      expect(config.spots.every(inScene)).toBe(true)
+      // Two places must not be rubbed by one stroke.
+      config.spots.forEach((a, i) =>
+        config.spots
+          .slice(i + 1)
+          .forEach((b) =>
+            expect(distance(toUnits(a), toUnits(b))).toBeGreaterThanOrEqual(2 * RUB_RADIUS),
+          ),
+      )
+      expect(ART, 'picture of the tool').toContain(config.tool.art)
+      if (config.art) expect(ART, 'close-up picture').toContain(config.art)
+      expect(config.doneNote.trim()).not.toBe('')
+      expect(config.realityNote.trim()).not.toBe('')
+      break
+    case 'rotate':
+      expect([1, 2, 3]).toContain(config.turns)
+      expect(inScene(config)).toBe(true)
+      expect(ART, 'picture of the dial').toContain(config.dial.art)
+      for (const text of [config.wrongWayNote, config.doneNote, config.realityNote]) {
+        expect(text.trim()).not.toBe('')
+      }
+      break
+    case 'call': {
+      expect(Object.keys(SERVICES)).toContain(config.number)
+      // The player has to know the number: the instruction names the service only.
+      expect(config.instruction).not.toContain(config.number)
+      expect(config.turns.length).toBeGreaterThanOrEqual(3)
+      expect(config.turns.length).toBeLessThanOrEqual(5)
+      expect(unique(config.turns.map((t) => t.id))).toBe(true)
+      for (const turn of config.turns) {
+        expect(turn.ask.trim()).not.toBe('')
+        expect(turn.replies).toHaveLength(3)
+        expect(turn.replies.filter((r) => r.right)).toHaveLength(1)
+        expect(unique(turn.replies.map((r) => r.id))).toBe(true)
+        expect(turn.replies.every((r) => r.text.trim() !== '' && r.why.trim() !== '')).toBe(true)
+      }
+      // The good reply must not sit in the same place every time.
+      const places = config.turns.map((t) => t.replies.findIndex((r) => r.right))
+      expect(new Set(places).size).toBeGreaterThanOrEqual(2)
+      expect(config.closing.trim()).not.toBe('')
+      break
+    }
   }
 }
 

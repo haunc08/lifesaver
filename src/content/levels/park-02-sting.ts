@@ -169,29 +169,61 @@ const level: LevelDef = {
   },
 
   act: {
-    type: 'tap-targets',
-    instruction:
-      'Chăm sóc vết đốt cho chị Mai: chạm vào từng việc cần làm. Có việc không nên làm đâu nhé!',
-    targets: [
-      { id: 'stinger', label: 'Gạt ngòi bằng cạnh thẻ', x: 46, y: 62 },
-      { id: 'wash', label: 'Rửa xà phòng và nước', x: 25, y: 80 },
-      { id: 'cold', label: 'Chườm đá bọc khăn', x: 75, y: 80 },
-      { id: 'watch', label: 'Theo dõi hơi thở', x: 48, y: 40 },
-    ],
-    decoys: [
+    type: 'sequence',
+    steps: [
       {
-        id: 'squeeze',
-        label: 'Bóp nặn ngòi bằng ngón tay',
-        x: 61,
-        y: 60,
-        note: 'Không bóp, nặn ngòi: làm vậy đẩy thêm nọc vào da. Hãy gạt ngang bằng cạnh thẻ.',
+        type: 'trace',
+        instruction:
+          'Ngòi ong còn cắm trên tay chị Mai. Dùng cạnh thẻ gạt ngang qua để hất ngòi ra.',
+        art: 'closeup-park-02',
+        tool: { art: 'item-card', label: 'Chiếc thẻ cứng', size: 18 },
+        path: [
+          { x: 30, y: 46 },
+          { x: 70, y: 50 },
+        ],
+        trail: 'none',
+        speck: { x: 50, y: 47 },
+        slipNote:
+          'Thẻ trượt khỏi tay chị Mai rồi. Đặt lại cạnh thẻ và gạt ngang một đường qua ngòi ong.',
+        doneNote: 'Ngòi ong đã bật ra mà không bị bóp nặn.',
+        realityNote:
+          'Ngoài đời, gạt ngang sát mặt da bằng cạnh thẻ hoặc móng tay. Không bóp, nặn ngòi vì sẽ đẩy thêm nọc vào da.',
       },
       {
-        id: 'swat',
-        label: 'Đập đuổi đàn ong',
-        x: 53,
-        y: 12,
-        note: 'Không xua hay đập ong: chúng sẽ đốt thêm. Bình tĩnh tránh ra xa là đủ.',
+        type: 'rub',
+        instruction: 'Rửa vết đốt: chà nhẹ xà phòng với nước lên chỗ sưng.',
+        art: 'closeup-park-02',
+        tool: { art: 'item-soap', label: 'Xà phòng và nước' },
+        spots: [{ id: 'sting', label: 'Chỗ bị đốt', x: 50, y: 48 }],
+        doneNote: 'Vết đốt đã sạch.',
+        realityNote:
+          'Ngoài đời, rửa nhẹ nhàng bằng xà phòng và nước sạch rồi thấm khô; không chà xát mạnh lên chỗ sưng.',
+      },
+      {
+        type: 'tap-targets',
+        instruction:
+          'Chăm sóc tiếp cho chị Mai: chạm vào từng việc cần làm. Có việc không nên làm đâu nhé!',
+        targets: [
+          { id: 'cold', label: 'Chườm đá bọc khăn', x: 75, y: 80 },
+          { id: 'raise', label: 'Kê cao cánh tay', x: 46, y: 63 },
+          { id: 'watch', label: 'Theo dõi hơi thở', x: 48, y: 40 },
+        ],
+        decoys: [
+          {
+            id: 'bare-ice',
+            label: 'Áp thẳng viên đá lên da',
+            x: 65,
+            y: 64,
+            note: 'Không chườm đá trực tiếp lên da: dễ gây bỏng lạnh. Luôn bọc đá trong khăn.',
+          },
+          {
+            id: 'swat',
+            label: 'Đập đuổi đàn ong',
+            x: 53,
+            y: 12,
+            note: 'Không xua hay đập ong: chúng sẽ đốt thêm. Bình tĩnh tránh ra xa là đủ.',
+          },
+        ],
       },
     ],
   },
@@ -217,7 +249,7 @@ const level: LevelDef = {
       'Có ngòi ong, sưng đỏ quanh vết đốt, vẫn thở đều, mặt không sưng: hãy chọn “Nghi ngờ chị Mai bị ong đốt, mới chỉ sưng đau tại chỗ”.',
     choose:
       'Thứ tự đúng: đưa hai chị em ra xa bồn hoa → gạt ngòi ong bằng cạnh thẻ → báo người lớn, sẵn sàng gọi 115 → rửa xà phòng, chườm đá bọc khăn, kê cao tay.',
-    act: 'Chạm vào cả bốn việc: gạt ngòi bằng cạnh thẻ, rửa xà phòng và nước, chườm đá bọc khăn, theo dõi hơi thở.',
+    act: 'Bước 1: giữ chiếc thẻ rồi kéo ngang theo đường chấm, qua ngòi ong. Bước 2: giữ bánh xà phòng, kéo lên hình và chà qua lại lên chỗ sưng cho đến khi vòng tròn đầy. Bước 3: chạm chườm đá bọc khăn, kê cao cánh tay và theo dõi hơi thở; đừng chạm việc áp thẳng đá lên da hay đập ong.',
     outcome: 'Bấm “Xem kết quả” để biết điểm và lời giải thích.',
   },
 

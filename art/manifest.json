@@ -225,6 +225,75 @@
       "transparent": true,
       "width": 240,
       "prompt": "One object: a curved kitchen sink tap in soft grey-blue with a steady stream of light blue running water pouring straight down from it and a few small droplets."
+    },
+    {
+      "id": "closeup-dormitory-01",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "Extreme close-up of a teenage girl's left hand lying flat on a pale wooden table, seen from above, back of the hand facing the viewer. The wrist enters from the left edge with the cuff of a coral-pink sweater. The hand is closed in a loose fist except the index finger, which is stretched out straight toward the right: the index finger is very large and thick, lying horizontally across the exact middle of the image and ending near the right edge. In the middle of the index finger there is one small thin coral-pink line, a tiny cut, with no blood. The skin is one flat peach colour with no crease lines, no wrinkles and no red lines anywhere else; plain natural nails with no nail polish. Nothing else on the table. Only the hand is shown, no face, no body."
+    },
+    {
+      "id": "closeup-streets-02",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "Extreme close-up of an older man's bare forearm lying horizontally across the middle of the image from the left edge to the right edge, elbow side on the left with a rolled-up off-white shirt sleeve, open relaxed hand on the right. The forearm is very large and thick, filling the middle band of the image. In the centre of the forearm lies one square white gauze pad. Plain soft dusty-blue background with a pale pavement below. Only the arm is shown, no face, no body, no other objects."
+    },
+    {
+      "id": "closeup-park-02",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "Extreme close-up of a teenage girl's bare forearm lying horizontally across the middle of the image from the left edge to the right edge, resting on a pale picnic blanket on green grass, relaxed hand on the right. The forearm is very large, filling the middle band of the image. In the exact centre of the forearm there is one round soft pink swollen bump, like an insect sting, with no stinger and no blood. Only the arm is shown, no face, no body, no insects, no other objects."
+    },
+    {
+      "id": "closeup-park-01",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "Close-up of a tired young man with short dark navy hair in a coral-pink sleeveless running top, sitting in the shade and leaning back against a large tree trunk, shown from the waist up and facing the viewer, centred. His face is flushed pink with a few sweat drops, eyes half closed, mouth slightly open. His head is in the upper middle, his neck and both bare shoulders and upper arms are clearly visible, arms hanging relaxed at his sides slightly away from the body. Soft green park grass and cool blue-green shade behind him. No other people, no objects."
+    },
+    {
+      "id": "closeup-food-district-02",
+      "style": "scene",
+      "aspect": "4:3",
+      "prompt": "Extreme close-up of a young woman's left hand seen from above, back of the hand facing the viewer, lying flat on a pale mint-green cafe counter. The wrist enters from the left edge and the fingers are spread and stretched out toward the right; the ring finger lies horizontally across the middle of the image and is very large and long. The back of the hand has a soft pink-red patch, a mild scald, with no blisters. The hand wears no ring, no watch and no jewellery at all. Only the hand is shown, no face, no body, no other objects."
+    },
+    {
+      "id": "item-gas-valve",
+      "style": "item",
+      "aspect": "1:1",
+      "transparent": true,
+      "width": 480,
+      "prompt": "One object seen exactly from the front, flat and perfectly centred: a round hand wheel of a gas cylinder valve, like a small steering wheel, soft coral-pink, with a thick round rim, four straight spokes forming a cross and a round off-white hub in the middle with a small navy bolt. On the rim, at the very top, one single small butter-yellow round knob as a marker. Perfectly circular, symmetrical, no perspective, no cylinder, no pipe, nothing else."
+    },
+    {
+      "id": "items-4",
+      "out": "item",
+      "style": "item",
+      "aspect": "3:2",
+      "transparent": true,
+      "width": 240,
+      "slice": {
+        "grid": [
+          3,
+          2
+        ],
+        "names": [
+          "card",
+          "ring",
+          "soap",
+          "plaster",
+          "phone",
+          "fan"
+        ]
+      },
+      "prompt": "Object sheet: six separate objects arranged in a tidy grid of three columns and two rows, each object centred in its own cell with wide empty space around it, all drawn at a similar size and never touching or overlapping. Top row, left to right: a plain dusty-blue plastic card with rounded corners and one off-white stripe, seen slightly tilted; a simple butter-yellow finger ring with no stone, seen from the front as a round band; a mint-green bar of soap with two small white soap bubbles. Bottom row, left to right: one beige adhesive bandage strip with a white pad in the middle, lying flat; a smartphone with a blank pale blue screen, standing upright; a folded paper hand fan, open, in soft coral pink."
+    },
+    {
+      "id": "operator",
+      "style": "character",
+      "aspect": "1:1",
+      "transparent": true,
+      "width": 240,
+      "prompt": "Head-and-shoulders portrait of one friendly emergency call operator, facing the viewer: a young Vietnamese woman with dark navy hair tied back, wearing a dark navy headset with a small microphone and a mint-green uniform shirt with a small white cross on the chest pocket. Calm reassuring smile."
     }
   ]
 }

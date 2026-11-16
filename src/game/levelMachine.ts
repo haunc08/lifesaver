@@ -24,11 +24,16 @@ export const MINIGAME_TIME_SEC = 90
 /** Quick-decision cards carry their own timers; this is added per card for reading the explanation. */
 export const CARD_READING_SEC = 12
 
+/** A phone call: time to dial, plus this much to read and answer each question. */
+export const CALL_DIAL_SEC = 30
+export const CALL_TURN_SEC = 25
+
 /** Seconds allowed for one mini-game. */
 export function minigameTimeSec(config: SingleMinigameConfig): number {
   if (config.type === 'quick-decision') {
     return config.cards.length * (config.secPerCard + CARD_READING_SEC)
   }
+  if (config.type === 'call') return CALL_DIAL_SEC + config.turns.length * CALL_TURN_SEC
   return MINIGAME_TIME_SEC
 }
 

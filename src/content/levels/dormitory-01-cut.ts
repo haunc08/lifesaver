@@ -154,15 +154,39 @@ const level: LevelDef = {
   },
 
   act: {
-    type: 'hold',
-    instruction: 'Cầm máu cho Mai: ép miếng gạc sạch lên vết cắt và giữ đều tay.',
-    action: 'Ép chặt miếng gạc',
-    holdSec: 6,
-    tool: { art: 'item-gauze', x: 43, y: 49 },
-    holdingText: 'Giữ đều tay, đừng nhấc gạc lên xem…',
-    releaseText: 'Nhấc gạc lên sớm thì máu lại rỉ ra. Ép lại và giữ yên nhé.',
-    realityNote:
-      'Ngoài đời, cần ép liên tục khoảng 10 phút và không nhấc gạc lên xem giữa chừng. Nếu máu thấm ướt gạc, đặt thêm lớp gạc mới lên trên.',
+    type: 'sequence',
+    steps: [
+      {
+        type: 'hold',
+        instruction: 'Cầm máu cho Mai: ép miếng gạc sạch lên vết cắt và giữ đều tay.',
+        action: 'Ép chặt miếng gạc',
+        holdSec: 6,
+        tool: { art: 'item-gauze', x: 43, y: 49 },
+        holdingText: 'Giữ đều tay, đừng nhấc gạc lên xem…',
+        releaseText: 'Nhấc gạc lên sớm thì máu lại rỉ ra. Ép lại và giữ yên nhé.',
+        realityNote:
+          'Ngoài đời, cần ép liên tục khoảng 10 phút và không nhấc gạc lên xem giữa chừng. Nếu máu thấm ướt gạc, đặt thêm lớp gạc mới lên trên.',
+      },
+      {
+        type: 'trace',
+        instruction: 'Máu đã cầm và vết cắt đã được rửa sạch. Quấn băng gạc che vết cắt cho Mai.',
+        art: 'closeup-dormitory-01',
+        tool: { art: 'item-bandage', label: 'Cuộn băng gạc', size: 15 },
+        path: [
+          { x: 57, y: 27 },
+          { x: 61, y: 50 },
+          { x: 65, y: 27 },
+          { x: 69, y: 50 },
+          { x: 73, y: 28 },
+        ],
+        trail: 'band',
+        slipNote:
+          'Băng bị lệch ra ngoài ngón tay rồi. Cầm lại cuộn băng và quấn sát theo đường chấm nhé.',
+        doneNote: 'Băng vừa kín vết cắt mà không quá chặt. Khéo lắm!',
+        realityNote:
+          'Ngoài đời, vết cắt nhỏ chỉ cần băng cá nhân hoặc gạc sạch. Quấn vừa đủ kín, không siết đến mức ngón tay tím hay tê.',
+      },
+    ],
   },
 
   outcomes: {
@@ -186,7 +210,7 @@ const level: LevelDef = {
       'Vết cắt nhỏ, nông, máu rỉ chậm và Mai vẫn tỉnh táo: hãy chọn “Nghi ngờ Mai bị đứt tay nhẹ, vết cắt nông”.',
     choose:
       'Thứ tự đúng: cất dao và rửa sạch tay → ép gạc sạch lên vết cắt → nhờ báo cô quản lý ký túc xá → khi máu đã cầm thì rửa vết cắt và băng lại.',
-    act: 'Nhấn và giữ nút “Ép chặt miếng gạc” cho đến khi thanh đầy. Đừng thả tay giữa chừng.',
+    act: 'Bước 1: nhấn và giữ nút “Ép chặt miếng gạc” cho đến khi thanh đầy, đừng thả tay giữa chừng. Bước 2: giữ cuộn băng rồi kéo theo đường chấm, lượn qua lại trên ngón tay cho đến vòng tròn.',
     outcome: 'Bấm “Xem kết quả” để biết điểm và lời giải thích.',
   },
 

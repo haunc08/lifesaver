@@ -141,8 +141,106 @@ export interface QuickDecisionConfig {
   }[]
 }
 
+/** A point on a scene, in percent of its width and height. */
+export interface ScenePoint {
+  x: number
+  y: number
+}
+
+/**
+ * Move a tool along a marked path without leaving it, e.g. wrap a bandage round
+ * an arm, or scrape a stinger off sideways with the edge of a card.
+ */
+export interface TraceConfig {
+  type: 'trace'
+  instruction: string
+  /** Art id of the close-up this is played on; the level's scene when left out. */
+  art?: string
+  /** The thing moved along the path; `size` is its width in percent of the picture (default 16). */
+  tool: { art: string; label: string; size?: number }
+  /** The path from start to end, at least two points. */
+  path: ScenePoint[]
+  /** 'band': the part already covered is drawn as a bandage. 'none': only the tool moves. */
+  trail: 'band' | 'none'
+  /** A small thing lying on the path that the tool takes away as it passes, e.g. a stinger. */
+  speck?: ScenePoint
+  /** True when the movement must be slow: going too fast counts as a slip. */
+  gentle?: boolean
+  /** Shown when the tool leaves the path (or, for a gentle path, goes too fast). */
+  slipNote: string
+  /** Shown when the end is reached. */
+  doneNote: string
+  /** What this stands for in real life, so the short gesture teaches nothing wrong. */
+  realityNote: string
+}
+
+/** Rub a tool back and forth over each marked place until it is done, e.g. a cool wet towel. */
+export interface RubConfig {
+  type: 'rub'
+  instruction: string
+  /** Art id of the close-up this is played on; the level's scene when left out. */
+  art?: string
+  tool: { art: string; label: string }
+  spots: { id: string; label: string; x: number; y: number }[]
+  /** Shown when every place is done. */
+  doneNote: string
+  realityNote: string
+}
+
+/** Turn a dial the right way round, e.g. close a gas valve. Turning the wrong way is a slip. */
+export interface RotateConfig {
+  type: 'rotate'
+  instruction: string
+  /** The thing that is turned: art id of its picture seen from the front, and its name. */
+  dial: { art: string; label: string }
+  /** Where the thing is on the scene. */
+  x: number
+  y: number
+  /** 'cw' is clockwise. */
+  direction: 'cw' | 'ccw'
+  /** Full turns needed (1–3). */
+  turns: number
+  /** Shown when the dial is turned the wrong way. */
+  wrongWayNote: string
+  /** Shown when the dial is fully turned. */
+  doneNote: string
+  realityNote: string
+}
+
+/** Dial an emergency number, then answer the dispatcher's questions one by one. */
+export interface CallConfig {
+  type: 'call'
+  instruction: string
+  /** The number to dial; the instruction names the service, not the number. */
+  number: '113' | '114' | '115'
+  /** Who answers, e.g. "Tổng đài 115". */
+  callee: string
+  /** The dispatcher's questions, in order; each has exactly one good reply. */
+  turns: {
+    id: string
+    ask: string
+    replies: {
+      id: string
+      text: string
+      right: boolean
+      /** Why this reply helps, or does not. */
+      why: string
+    }[]
+  }[]
+  /** The dispatcher's last line, shown when the call is done. */
+  closing: string
+}
+
 export type SingleMinigameConfig =
-  TapTargetsConfig | ScanConfig | HoldConfig | DragPlaceConfig | QuickDecisionConfig
+  | TapTargetsConfig
+  | ScanConfig
+  | HoldConfig
+  | DragPlaceConfig
+  | QuickDecisionConfig
+  | TraceConfig
+  | RubConfig
+  | RotateConfig
+  | CallConfig
 
 /** Two or three mechanics played one after another. */
 export interface SequenceConfig {

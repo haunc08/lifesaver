@@ -13,6 +13,7 @@ import {
   type LevelState,
 } from '@/game/levelMachine'
 import type { Reward } from '@/game/progression'
+import { minigameArt } from '@/minigames/art'
 import { score } from '@/game/scoring'
 import type { LevelDef } from '@/game/types'
 import { useSave } from '@/state/save'
@@ -76,13 +77,7 @@ function LevelRun({ level, onReplay }: { level: LevelDef; onReplay: () => void }
       'guide-cheer',
       'guide-relieved',
       'guide-worried',
-      ...steps.flatMap((step) =>
-        step.type === 'hold'
-          ? [step.tool.art]
-          : step.type === 'drag-place'
-            ? step.items.map((item) => item.art)
-            : [],
-      ),
+      ...steps.flatMap(minigameArt),
     ])
   }, [level])
 

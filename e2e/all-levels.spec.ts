@@ -65,8 +65,9 @@ test('a dragged item follows the pointer, lands in the nearest slot, and a decoy
   page,
 }) => {
   const level = await openLevel(page, 'park-01')
-  if (level.act.type !== 'drag-place') throw new Error('park-01 should be drag-and-place')
-  const { items, zones } = level.act
+  const first = level.act.type === 'sequence' ? level.act.steps[0] : level.act
+  if (first.type !== 'drag-place') throw new Error('park-01 should start with drag-and-place')
+  const { items, zones } = first
   await playToAct(page, level)
 
   const centre = async (name: string) => {
@@ -85,8 +86,8 @@ test('a dragged item follows the pointer, lands in the nearest slot, and a decoy
   }
 
   // While it is dragged, the item's picture travels with the pointer.
-  const first = items.find((i) => i.zoneId !== null)!
-  const start = await centre(first.label)
+  const real = items.find((i) => i.zoneId !== null)!
+  const start = await centre(real.label)
   await page.mouse.move(start.x, start.y)
   await page.mouse.down()
   await page.mouse.move(start.x - 60, start.y - 150, { steps: 6 })
@@ -99,7 +100,7 @@ test('a dragged item follows the pointer, lands in the nearest slot, and a decoy
   await page.mouse.move(8, start.y - 150)
   await page.mouse.up()
   await expect(page.locator('body > span[aria-hidden]')).toHaveCount(0)
-  await expect(button(page, first.label)).toBeVisible()
+  await expect(button(page, real.label)).toBeVisible()
 
   // A decoy dropped on a zone is refused and explained.
   const decoy = items.find((i) => i.zoneId === null)!
@@ -113,6 +114,6 @@ test('a dragged item follows the pointer, lands in the nearest slot, and a decoy
   for (const item of items.filter((i) => i.zoneId !== null)) {
     await drag(item.label, zones.find((z) => z.id === item.zoneId)!.label, 30)
   }
-  await button(page, 'Xem kết quả').click()
-  await expect(page.getByText(/\/ 100/)).toBeVisible()
+  // With everything in place the level moves on to its next step.
+  await expect(page.getByText('Bước 2/2')).toBeVisible()
 })
